@@ -3,17 +3,20 @@ module BetterErrors
     def self.from_exception(exception)
       exception.backtrace.each_with_index.map { |frame, idx|
         next unless frame =~ /\A(.*):(\d*):in `(.*)'\z/
-        ErrorFrame.new($1, $2.to_i, $3, exception.__better_errors_bindings_stack[idx])
+        b = exception.__better_errors_bindings_stack[idx]
+        ErrorFrame.new($1, $2.to_i, $3, b)
       }.compact
     end
     
     attr_reader :filename, :line, :name, :frame_binding
     
-    def initialize(filename, line, name, frame_binding)
+    def initialize(filename, line, name, frame_binding = nil)
       @filename       = filename
       @line           = line
       @name           = name
       @frame_binding  = frame_binding
+      
+      set_pretty_method_name if frame_binding
     end
     
     def application?
@@ -65,6 +68,17 @@ module BetterErrors
     end
     
   private
+    def set_pretty_method_name
+      name =~ /\A(block (\([^)]+\) )?in )?/
+      recv = frame_binding.eval("self")
+      method = frame_binding.eval("__method__")
+      @name = if recv.is_a? Module
+                "#{$1}#{recv}.#{method}"
+              else
+                "#{$1}#{recv.class}##{method}"
+              end
+    end
+  
     def starts_with?(haystack, needle)
       haystack[0, needle.length] == needle
     end

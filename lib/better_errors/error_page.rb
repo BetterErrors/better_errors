@@ -23,12 +23,10 @@ module BetterErrors
     
   private
     def real_exception(exception)
-      loop do
-        case exception
-        when ActionView::Template::Error; exception = exception.original_exception
-        else
-          return exception
-        end
+      if exception.respond_to? :original_exception
+        exception.original_exception
+      else
+        exception
       end
     end
   

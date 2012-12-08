@@ -2,7 +2,7 @@
 
 Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails.
 
-![image](http://i.imgur.com/xR6Nz.png)
+![image](http://i.imgur.com/1GepF.png)
 
 ## Installation
 

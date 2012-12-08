@@ -59,7 +59,14 @@ module BetterErrors
     
     def local_variables
       return {} unless frame_binding
-      Hash[frame_binding.eval("local_variables").map { |x| [x, frame_binding.eval(x.to_s)] }]
+      frame_binding.eval("local_variables").each_with_object({}) do |name, hash|
+        begin
+          hash[name] = frame_binding.eval(name.to_s)
+        rescue NameError => e
+          # local_variables sometimes returns broken variables.
+          # https://bugs.ruby-lang.org/issues/7536
+        end
+      end
     end
     
     def instance_variables

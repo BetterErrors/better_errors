@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= exception.class %> at <%= request_path %></title>
+    <style>
+    * {
+        margin:0;
+        padding:0;
+    }
+    body {
+        font-family:Verdana, sans-serif;
+        margin:0;
+        font-size:13px;
+    }
+    header {
+        padding:32px 32px;
+        border-bottom:1px solid #ea6756;
+        background-color: #ffe5e7;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#ffe5e7), to(#ffb2b8)); /* Safari 4+, Chrome */
+        background-image: -webkit-linear-gradient(top, #ffe5e7, #ffb2b8); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+        background-image:    -moz-linear-gradient(top, #ffe5e7, #ffb2b8); /* Firefox 3.6-15 */
+        background-image:      -o-linear-gradient(top, #ffe5e7, #ffb2b8); /* Opera 11.10-12.00 */
+        background-image:         linear-gradient(to bottom, #ffe5e7, #ffb2b8); /* Firefox 16+, IE10, Opera 12.50+ */
+    }
+    h2 {
+        font-weight:normal;
+        margin:0;
+        margin-bottom:16px;
+    }
+    h2 span {
+        color:#666666;
+    }
+    header table {
+        border-collapse:collapse;
+    }
+    header table th {
+        text-align:right;
+        font-weight:bold;
+        padding-right:12px;
+    }
+    header table th, header table td {
+        padding:4px 6px;
+    }
+    .frames {
+        width:50%;
+        float:left;
+    }
+    .frames li {
+        list-style:none;
+        display:block;
+        padding:12px;
+        overflow:hidden;
+        cursor:pointer;
+        background-color: #f4f7ff;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f7ff), to(#e4ebfe)); /* Safari 4+, Chrome */
+        background-image: -webkit-linear-gradient(top, #f4f7ff, #e4ebfe); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+        background-image:    -moz-linear-gradient(top, #f4f7ff, #e4ebfe); /* Firefox 3.6-15 */
+        background-image:      -o-linear-gradient(top, #f4f7ff, #e4ebfe); /* Opera 11.10-12.00 */
+        background-image:         linear-gradient(to bottom, #f4f7ff, #e4ebfe); /* Firefox 16+, IE10, Opera 12.50+ */
+        border-bottom:1px solid #cccccc;
+    }
+    .frames li:hover, .frames li.selected {
+        background-color: #e4ebfe;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#e4ebfe), to(#c2d3fe)); /* Safari 4+, Chrome */
+        background-image: -webkit-linear-gradient(top, #e4ebfe, #c2d3fe); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+        background-image:    -moz-linear-gradient(top, #e4ebfe, #c2d3fe); /* Firefox 3.6-15 */
+        background-image:      -o-linear-gradient(top, #e4ebfe, #c2d3fe); /* Opera 11.10-12.00 */
+        background-image:         linear-gradient(to bottom, #e4ebfe, #c2d3fe); /* Firefox 16+, IE10, Opera 12.50+ */
+    }
+    .name {
+        font-family:Monaco, Incosolata, Consolas, monospace;
+        font-size:14px;
+        margin-bottom:4px;
+    }
+    .location {
+        color:#888888;
+    }
+    .location .filename, .location .line {
+        color:#333333;
+    }
+    .frame_info {
+        background-color:#efefef;
+        border-bottom:1px solid #cccccc;
+        float:left;
+        width:50%;
+        overflow:hidden;
+    }
+    .frame_info h2 {
+        font-family:Monaco, Incosolata, Consolas, monospace;
+        margin:16px;
+    }
+    .frame_info .location {
+        margin:16px;
+    }
+    .frame_info .code {
+        font-family:Monaco, Incosolata, Consolas, monospace;
+        margin:16px;
+        background-color:#ffffff;
+        border:1px solid #cccccc;
+        border-collapse:collapse;
+        overflow:auto;
+    }
+    .frame_info .code pre:nth-child(2n+1) {
+        background-color:#f9f9f9;
+    }
+    .frame_info .code pre:nth-child(2n) {
+        background-color:#f3f3f3;
+    }
+    .frame_info .code pre.highlight {
+        background-color:#ffeaaa;
+    }
+    .frame_info .code .line {
+        text-align:right;
+        padding-right:12px;
+        padding-left:0px;
+    }
+    code {
+        background-color:#f0f0f0;
+        padding:2px 4px;
+        border:1px solid #d0d0d0;
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h2><%= exception.class %> <span>at <%= request_path %></span></h2>
+        <table>
+            <tr>
+                <th>Message</th>
+                <td><%= exception.message %></td>
+            </tr>
+            <% if backtrace_frames.any? %>
+                <tr>
+                    <th>File</th>
+                    <td><%= backtrace_frames.first.filename %></td>
+                </tr>
+                <tr>
+                    <th>Line</th>
+                    <td><%= backtrace_frames.first.line %></td>
+                </tr>
+            <% end %>
+        </table>
+    </header>
+    <section class="backtrace">
+        <ul class="frames">
+            <% backtrace_frames.each_with_index do |frame, index| %>
+                <li
+                    data-context="<%= frame.context %>"
+                    data-full-filename="<%= frame.filename %>"
+                    data-filename="<%= frame.pretty_path %>"
+                    data-line="<%= frame.line %>"
+                    data-name="<%= frame.name %>"
+                    data-index="<%= index %>"
+                >
+                    <div class="name"><%= frame.name %></div>
+                    <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
+                </li>
+            <% end %>
+        </ul>
+        <% backtrace_frames.each_with_index do |frame, index| %>
+            <div class="frame_info" id="frame_info_<%= index %>" style="display:none;">
+                <h2 class="name"><%= frame.name %></h2>
+                <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
+                <%= highlighted_code_block frame %>
+            </div>
+        <% end %>
+        <div style="clear:both"></div>
+    </section>
+</body>
+<script>
+(function() {
+    var previous = null;
+    var previousFrameInfo = null;
+    var frames = document.querySelectorAll("ul.frames li");
+    
+    var header = document.querySelector("header");
+    var headerHeight = header.offsetHeight;
+    
+    function updateMarginTop() {
+        if(previousFrameInfo) {
+            previousFrameInfo.style.marginTop = Math.max(window.scrollY - headerHeight, 0) + "px";
+        }
+    }
+
+    window.onscroll = updateMarginTop;
+    
+    for(var i = 0; i < frames.length; i++) {
+        (function(el) {
+            el.onclick = function() {
+                if(previous) {
+                    previous.className = "";
+                }
+                el.className = "selected";
+                previous = el;
+                
+                if(previousFrameInfo) {
+                    previousFrameInfo.style.display = "none";
+                }
+                previousFrameInfo = document.getElementById("frame_info_" + el.attributes["data-index"].value);
+                previousFrameInfo.style.display = "block";
+                
+                updateMarginTop();
+            };
+        })(frames[i]);
+    }
+})();
+</script>
+</html>

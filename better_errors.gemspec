@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   
   s.add_dependency "erubis"
   s.add_dependency "coderay"
-  
   # optional dependency:
   # s.add_dependency "binding_of_caller"
 end

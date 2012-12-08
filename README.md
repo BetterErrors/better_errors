@@ -2,11 +2,17 @@
 
 Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails.
 
-![image](http://i.imgur.com/1GepF.png)
+![image](http://i.imgur.com/O9anD.png)
+
+## Features
+
+* Full stack trace
+* Source code inspection for all stack frames (with highlighting)
+* Local and instance variable inspection
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's Gemfile (under the **development** group):
 
     gem 'better_errors'
 

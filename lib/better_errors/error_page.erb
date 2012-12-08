@@ -214,15 +214,6 @@
         previousFrameInfo.style.display = "block";
     }
     
-    function updateMarginTop() {
-        return;
-        if(previousFrameInfo) {
-            previousFrameInfo.style.marginTop = Math.max(window.scrollY - headerHeight, 0) + "px";
-        }
-    }
-
-    window.onscroll = updateMarginTop;
-    
     for(var i = 0; i < frames.length; i++) {
         (function(el) {
             el.onclick = function() {
@@ -233,7 +224,6 @@
                 previous = el;
                 
                 selectFrameInfo(el.attributes["data-index"].value);
-                updateMarginTop();
             };
         })(frames[i]);
     }

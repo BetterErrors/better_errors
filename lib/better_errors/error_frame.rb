@@ -3,16 +3,17 @@ module BetterErrors
     def self.from_exception(exception)
       exception.backtrace.each_with_index.map { |frame, idx|
         next unless frame =~ /\A(.*):(\d*):in `(.*)'\z/
-        ErrorFrame.new($1, $2.to_i, $3)
+        ErrorFrame.new($1, $2.to_i, $3, exception.__better_errors_bindings_stack[idx])
       }.compact
     end
     
-    attr_reader :filename, :line, :name
+    attr_reader :filename, :line, :name, :frame_binding
     
-    def initialize(filename, line, name)
+    def initialize(filename, line, name, frame_binding)
       @filename       = filename
       @line           = line
       @name           = name
+      @frame_binding  = frame_binding
     end
     
     def application?
@@ -51,6 +52,16 @@ module BetterErrors
       when :gem;          gem_path
       else                filename
       end
+    end
+    
+    def local_variables
+      return {} unless frame_binding
+      Hash[frame_binding.eval("local_variables").map { |x| [x, frame_binding.eval(x.to_s)] }]
+    end
+    
+    def instance_variables
+      return {} unless frame_binding
+      Hash[frame_binding.eval("instance_variables").map { |x| [x, frame_binding.eval(x.to_s)] }]
     end
     
   private

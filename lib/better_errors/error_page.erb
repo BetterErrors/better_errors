@@ -67,7 +67,7 @@
         background-image:      -o-linear-gradient(top, #e4ebfe, #c2d3fe); /* Opera 11.10-12.00 */
         background-image:         linear-gradient(to bottom, #e4ebfe, #c2d3fe); /* Firefox 16+, IE10, Opera 12.50+ */
     }
-    .name {
+    .frames .name, .frame_info h2.name {
         font-family:Monaco, Incosolata, Consolas, monospace;
         font-size:14px;
         margin-bottom:4px;
@@ -83,18 +83,15 @@
         border-bottom:1px solid #cccccc;
         float:left;
         width:50%;
-        overflow:hidden;
+    }
+    .frame_info > * {
+        margin:16px;
     }
     .frame_info h2 {
         font-family:Monaco, Incosolata, Consolas, monospace;
-        margin:16px;
-    }
-    .frame_info .location {
-        margin:16px;
     }
     .frame_info .code {
         font-family:Monaco, Incosolata, Consolas, monospace;
-        margin:16px;
         background-color:#ffffff;
         border:1px solid #cccccc;
         border-collapse:collapse;
@@ -118,6 +115,23 @@
         background-color:#f0f0f0;
         padding:2px 4px;
         border:1px solid #d0d0d0;
+    }
+    h3 {
+        font-weight:normal;
+        border-top:1px solid #cccccc;
+        padding-top:16px;
+    }
+    .var_table {
+        border-collapse:collapse;
+    }
+    .var_table td {
+        padding:8px;
+    }
+    .var_table td.name {
+        font-style:italic;
+    }
+    .var_table tr {
+        border-bottom:1px solid #cccccc;
     }
     </style>
 </head>
@@ -161,7 +175,21 @@
             <div class="frame_info" id="frame_info_<%= index %>" style="display:none;">
                 <h2 class="name"><%= frame.name %></h2>
                 <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
-                <%= highlighted_code_block frame %>
+                <%== highlighted_code_block frame %>
+                
+                <h3>Local Variables</h3>
+                <table class="var_table">
+                    <% frame.local_variables.each do |name, value| %>
+                        <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
+                    <% end %>
+                </table>
+                
+                <h3>Instance Variables</h3>
+                <table class="var_table">
+                    <% frame.instance_variables.each do |name, value| %>
+                        <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
+                    <% end %>
+                </table>
             </div>
         <% end %>
         <div style="clear:both"></div>
@@ -176,7 +204,18 @@
     var header = document.querySelector("header");
     var headerHeight = header.offsetHeight;
     
+    function selectFrameInfo(index) {
+        var el = document.getElementById("frame_info_" + index);
+        
+        if(previousFrameInfo) {
+            previousFrameInfo.style.display = "none";
+        }
+        previousFrameInfo = el;
+        previousFrameInfo.style.display = "block";
+    }
+    
     function updateMarginTop() {
+        return;
         if(previousFrameInfo) {
             previousFrameInfo.style.marginTop = Math.max(window.scrollY - headerHeight, 0) + "px";
         }
@@ -193,16 +232,13 @@
                 el.className = "selected";
                 previous = el;
                 
-                if(previousFrameInfo) {
-                    previousFrameInfo.style.display = "none";
-                }
-                previousFrameInfo = document.getElementById("frame_info_" + el.attributes["data-index"].value);
-                previousFrameInfo.style.display = "block";
-                
+                selectFrameInfo(el.attributes["data-index"].value);
                 updateMarginTop();
             };
         })(frames[i]);
     }
+    
+    document.querySelector(".frames li:first-child").click();
 })();
 </script>
 </html>

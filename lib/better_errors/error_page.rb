@@ -7,15 +7,13 @@ module BetterErrors
     end
     
     def self.template
-      Erubis::Eruby.new(File.read(template_path)).tap do |erb|
-        erb.extend Erubis::EscapeEnhancer
-      end
+      Erubis::EscapedEruby.new(File.read(template_path))
     end
     
     attr_reader :exception, :env
     
     def initialize(exception, env)
-      @exception = exception
+      @exception = real_exception(exception)
       @env = env
     end
     
@@ -24,6 +22,16 @@ module BetterErrors
     end
     
   private
+    def real_exception(exception)
+      loop do
+        case exception
+        when ActionView::Template::Error; exception = exception.original_exception
+        else
+          return exception
+        end
+      end
+    end
+  
     def request_path
       env["REQUEST_PATH"]
     end

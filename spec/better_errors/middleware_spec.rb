@@ -21,6 +21,14 @@ module BetterErrors
         
         headers["Content-Type"].should == "text/html; charset=utf-8"
       end
+      
+      it "should log the exception" do
+        logger = Object.new
+        logger.should_receive :fatal
+        BetterErrors.stub!(:logger).and_return(logger)
+        
+        app.call({})
+      end
     end
   end
 end

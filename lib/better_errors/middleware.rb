@@ -20,7 +20,19 @@ module BetterErrors
       @app.call env
     rescue Exception => ex
       @error_page = @handler.new ex, env
+      log_exception
       [500, { "Content-Type" => "text/html; charset=utf-8" }, [@error_page.render]]
+    end
+  
+    def log_exception
+      return unless BetterErrors.logger
+      
+      message = "\n#{@error_page.exception.class} - #{@error_page.exception.message}:\n"
+      @error_page.backtrace_frames.each do |frame|
+        message << "  #{frame}\n"
+      end
+      
+      BetterErrors.logger.fatal message
     end
   
     def internal_call(env, opts)

@@ -76,6 +76,10 @@ module BetterErrors
       Hash[frame_binding.eval("instance_variables").map { |x| [x, frame_binding.eval(x.to_s)] }]
     end
     
+    def to_s
+      "#{pretty_path}:#{line}:in `#{name}'"
+    end
+    
   private
     def set_pretty_method_name
       name =~ /\A(block (\([^)]+\) )?in )?/

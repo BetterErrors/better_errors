@@ -40,6 +40,10 @@ module BetterErrors
                   end
       response.merge(highlighted_input: CodeRay.scan(opts["source"], :ruby).div(wrap: nil))
     end
+
+    def backtrace_frames
+      @backtrace_frames ||= ErrorFrame.from_exception(exception)
+    end
     
   private
     def real_exception(exception)
@@ -52,10 +56,6 @@ module BetterErrors
   
     def request_path
       env["REQUEST_PATH"]
-    end
-  
-    def backtrace_frames
-      @backtrace_frames ||= ErrorFrame.from_exception(exception)
     end
     
     def coderay_scanner_for_ext(ext)

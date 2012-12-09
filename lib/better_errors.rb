@@ -8,7 +8,7 @@ require "better_errors/error_frame"
 require "better_errors/middleware"
 
 class << BetterErrors
-  attr_accessor :application_root, :binding_of_caller_available
+  attr_accessor :application_root, :binding_of_caller_available, :logger
   
   alias_method :binding_of_caller_available?, :binding_of_caller_available
 end

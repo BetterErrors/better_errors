@@ -7,7 +7,7 @@ class Exception
     unless Thread.current[:__better_errors_exception_lock]
       Thread.current[:__better_errors_exception_lock] = true
       begin
-        @__better_errors_bindings_stack = binding.callers.drop(2)
+        @__better_errors_bindings_stack = binding.callers.drop(1)
       ensure
         Thread.current[:__better_errors_exception_lock] = false
       end

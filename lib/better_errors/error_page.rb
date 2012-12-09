@@ -64,6 +64,7 @@ module BetterErrors
       when "html";  :html
       when "erb";   :erb
       when "haml";  :haml
+      else          :text
       end
     end
     

@@ -2,13 +2,14 @@
 
 Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails.
 
-![image](http://i.imgur.com/ZzoDD.png)
+![image](http://i.imgur.com/quHUZ.png)
 
 ## Features
 
 * Full stack trace
 * Source code inspection for all stack frames (with highlighting)
 * Local and instance variable inspection
+* Ruby console on every stack frame
 
 ## Installation
 

@@ -253,6 +253,11 @@
                     </div>
 
                     <div class="variable_info"></div>
+                <% else %>
+                    <h3>Advanced features unavailable</h3>
+                    <p class="error">
+                        You must add <code>gem "binding_of_caller"</code> to your Gemfile to enable the REPL and local/instance variable inspection.
+                    </p>
                 <% end %>
             </div>
         <% end %>

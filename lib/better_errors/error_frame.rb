@@ -84,7 +84,7 @@ module BetterErrors
     def set_pretty_method_name
       name =~ /\A(block (\([^)]+\) )?in )?/
       recv = frame_binding.eval("self")
-      method = frame_binding.eval("__method__")
+      return unless method = frame_binding.eval("__method__")
       @name = if recv.is_a? Module
                 "#{$1}#{recv}.#{method}"
               else

@@ -19,9 +19,11 @@ Add this line to your application's Gemfile (under the **development** group):
 gem "better_errors"
 ```
 
-If you would like to use Better Errors' **advanced features**, you need to install the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem:
+If you would like to use Better Errors' **advanced features**, you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem to your Gemfile:
 
-    $ gem install binding_of_caller
+```ruby
+gem "binding_of_caller"
+```
 
 This is an optional dependency however, and Better Errors will work without it.
 

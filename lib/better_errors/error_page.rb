@@ -28,6 +28,17 @@ module BetterErrors
       { html: render("variable_info") }
     end
     
+    def do_eval(opts)
+      index = opts["index"].to_i
+      response =  begin
+                    result = backtrace_frames[index].frame_binding.eval(opts["source"])
+                    { result: result.inspect }
+                  rescue Exception => e
+                    { error: (e.inspect rescue e.class.name rescue "Exception") }
+                  end
+      response.merge(highlighted_input: CodeRay.scan(opts["source"], :ruby).div(wrap: nil))
+    end
+    
   private
     def real_exception(exception)
       if exception.respond_to? :original_exception

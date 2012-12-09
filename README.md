@@ -53,7 +53,8 @@ end
 
 * **Supported**
   * MRI 1.9.2, 1.9.3
-  * Rubinius (untested, should work)
+  * JRuby (1.9 mode) - *advanced features unsupported*
+  * Rubinius (1.9 mode) - *advanced features unsupported*
 * **Coming soon**
   * MRI 2.0.0 - the official API for grabbing caller bindings is slated for MRI 2.0.0, but it has not been implemented yet
 

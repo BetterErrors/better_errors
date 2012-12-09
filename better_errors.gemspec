@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version       = BetterErrors::VERSION
   s.authors       = ["Charlie Somerville"]
   s.email         = ["charlie@charliesomerville.com"]
-  s.description   = %q{Better Errors gives Rails a better error page.}
-  s.summary       = %q{Better Errors gives Rails a better error page}
+  s.description   = %q{Provides a better error page for Rails and other Rack apps. Includes source code inspection, a live REPL and local/instance variable inspection for all stack frames.}
+  s.summary       = %q{Better error page for Rails and other Rack apps}
   s.homepage      = "https://github.com/charliesome/better_errors"
   s.license       = "MIT"
 

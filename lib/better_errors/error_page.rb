@@ -2,12 +2,12 @@ require "json"
 
 module BetterErrors
   class ErrorPage
-    def self.template_path
-      __FILE__.gsub(/\.rb$/, ".erb")
+    def self.template_path(template_name)
+      File.expand_path("../templates/#{template_name}.erb", __FILE__)
     end
     
-    def self.template
-      Erubis::EscapedEruby.new(File.read(template_path))
+    def self.template(template_name)
+      Erubis::EscapedEruby.new(File.read(template_path(template_name)))
     end
     
     attr_reader :exception, :env
@@ -15,10 +15,17 @@ module BetterErrors
     def initialize(exception, env)
       @exception = real_exception(exception)
       @env = env
+      @start_time = Time.now.to_f
     end
     
-    def render
-      self.class.template.result binding
+    def render(template_name = "main")
+      self.class.template(template_name).result binding
+    end
+    
+    def do_variables(opts)
+      index = opts["index"].to_i
+      @frame = backtrace_frames[index]
+      { html: render("variable_info") }
     end
     
   private

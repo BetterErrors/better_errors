@@ -8,7 +8,7 @@ module BetterErrors
     end
     
     def call(env)
-      if env["REQUEST_PATH"] =~ %r{\A/__better_errors/(?<oid>\d+)/(?<method>\w+)\z}
+      if env["PATH_INFO"] =~ %r{/__better_errors/(?<oid>\d+)/(?<method>\w+)}
         internal_call env, $~
       else
         app_call env

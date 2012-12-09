@@ -3,7 +3,9 @@ module BetterErrors
     def self.from_exception(exception)
       exception.backtrace.each_with_index.map { |frame, idx|
         next unless frame =~ /\A(.*):(\d*):in `(.*)'\z/
-        b = exception.__better_errors_bindings_stack[idx]
+        if BetterErrors.binding_of_caller_available?
+          b = exception.__better_errors_bindings_stack[idx]
+        end
         ErrorFrame.new($1, $2.to_i, $3, b)
       }.compact
     end

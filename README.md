@@ -9,21 +9,13 @@ Better Errors replaces the standard Rails error page with a much better and more
 * Full stack trace
 * Source code inspection for all stack frames (with highlighting)
 * Local and instance variable inspection
-* Ruby console on every stack frame
+* Live REPL on every stack frame
 
 ## Installation
 
 Add this line to your application's Gemfile (under the **development** group):
 
     gem 'better_errors'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install better_errors
 
 If you would like to use Better Errors' **advanced features**, you need to install the `binding_of_caller` gem:
 

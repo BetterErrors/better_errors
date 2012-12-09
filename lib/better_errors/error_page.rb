@@ -95,6 +95,8 @@ module BetterErrors
         end
         html << "</div>"
       end
+    rescue Errno::ENOENT
+      "<p>Source unavailable</p>"
     end
   end
 end

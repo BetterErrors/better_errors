@@ -41,5 +41,12 @@ module BetterErrors
         response.should_not include("14 fourteen")
       end
     end
+    
+    it "should not die if the source file is not a real filename" do
+      exception.stub!(:backtrace).and_return([
+        "<internal:prelude>:10:in `spawn_rack_application'"
+      ])
+      response.should include("Source unavailable")
+    end
   end
 end

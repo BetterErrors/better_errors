@@ -243,15 +243,17 @@
                 <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
                 <%== highlighted_code_block frame %>
                 
-                <div class="repl">
-                    <h3>REPL</h3>
-                    <div class="console">
-                        <pre></pre>
-                        <div class="prompt">&gt;&gt; <input/></div>
+                <% if BetterErrors.binding_of_caller_available? %>
+                    <div class="repl">
+                        <h3>REPL</h3>
+                        <div class="console">
+                            <pre></pre>
+                            <div class="prompt">&gt;&gt; <input/></div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="variable_info"></div>
+
+                    <div class="variable_info"></div>
+                <% end %>
             </div>
         <% end %>
         <div style="clear:both"></div>
@@ -290,7 +292,7 @@
         var el = document.getElementById("frame_info_" + index);
         
         var varInfo = el.querySelector(".variable_info");
-        if(varInfo.innerHTML == "") {
+        if(varInfo && varInfo.innerHTML == "") {
             apiCall("variables", { "index": index }, function(response) {
                 if(response.error) {
                     varInfo.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
@@ -306,7 +308,10 @@
         previousFrameInfo = el;
         previousFrameInfo.style.display = "block";
         
-        el.querySelector(".repl input").focus();
+        var replInput = el.querySelector(".repl input");
+        if(replInput) {
+            replInput.focus();
+        }
     }
     
     for(var i = 0; i < frames.length; i++) {
@@ -322,21 +327,23 @@
             };
             var replPre = frameInfo.querySelector(".repl pre");
             var replInput = frameInfo.querySelector(".repl input");
-            replInput.onkeydown = function(ev) {
-                if(ev.keyCode == 13) {
-                    var text = replInput.value;
-                    replInput.value = "";
-                    apiCall("eval", { "index": index, source: text }, function(response) {
-                        replPre.innerHTML += ">> " + response.highlighted_input + "\n";
-                        if(response.error) {
-                            replPre.innerHTML += "!! " + escapeHTML(response.error) + "\n";
-                        } else {
-                            replPre.innerHTML += "=> " + escapeHTML(response.result) + "\n";
-                        }
-                        replPre.scrollTop = replPre.offsetHeight;
-                    });
-                }
-            };
+            if(replInput) {
+                replInput.onkeydown = function(ev) {
+                    if(ev.keyCode == 13) {
+                        var text = replInput.value;
+                        replInput.value = "";
+                        apiCall("eval", { "index": index, source: text }, function(response) {
+                            replPre.innerHTML += ">> " + response.highlighted_input + "\n";
+                            if(response.error) {
+                                replPre.innerHTML += "!! " + escapeHTML(response.error) + "\n";
+                            } else {
+                                replPre.innerHTML += "=> " + escapeHTML(response.result) + "\n";
+                            }
+                            replPre.scrollTop = replPre.offsetHeight;
+                        });
+                    }
+                };
+            }
         })(i, frames[i], frameInfos[i]);
     }
     

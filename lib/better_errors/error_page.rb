@@ -30,8 +30,10 @@ module BetterErrors
     
     def do_eval(opts)
       index = opts["index"].to_i
+      binding = backtrace_frames[index].frame_binding
+      return { error: "binding_of_caller unavailable" } unless binding
       response =  begin
-                    result = backtrace_frames[index].frame_binding.eval(opts["source"])
+                    result = binding.eval(opts["source"])
                     { result: result.inspect }
                   rescue Exception => e
                     { error: (e.inspect rescue e.class.name rescue "Exception") }

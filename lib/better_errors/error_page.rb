@@ -76,6 +76,7 @@ module BetterErrors
       lines = File.readlines(frame.filename)
       min_line = [1, frame.line - lines_of_context].max - 1
       max_line = [frame.line + lines_of_context, lines.count + 1].min - 1
+      raise Errno::EINVAL if min_line > lines.length
       [min_line, max_line, lines[min_line..max_line].join]
     end
     
@@ -96,7 +97,7 @@ module BetterErrors
         end
         html << "</div>"
       end
-    rescue Errno::ENOENT
+    rescue Errno::ENOENT, Errno::EINVAL
       "<p>Source unavailable</p>"
     end
   end

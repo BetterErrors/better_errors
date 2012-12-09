@@ -7,6 +7,16 @@ module BetterErrors
     let(:error_page) { ErrorPage.new exception, { "REQUEST_PATH" => "/some/path" } }
     
     let(:response) { error_page.render }
+    
+    let(:empty_binding) {
+      local_a = :value_for_local_a
+      local_b = :value_for_local_b
+      
+      @inst_c = :value_for_inst_c
+      @inst_d = :value_for_inst_d
+      
+      binding
+    }
   
     it "should include the error message" do
       response.should include("you divided by zero you silly goose!")
@@ -39,6 +49,26 @@ module BetterErrors
       it "should not show more than five lines of context" do
         response.should_not include("2 two")
         response.should_not include("14 fourteen")
+      end
+    end
+    
+    context "variable inspection" do
+      let(:exception) { empty_binding.eval("raise") rescue $! }
+      
+      it "should show local variables" do
+        html = error_page.do_variables("index" => 0)[:html]
+        html.should include("local_a")
+        html.should include(":value_for_local_a")
+        html.should include("local_b")
+        html.should include(":value_for_local_b")
+      end
+      
+      it "should show instance variables" do
+        html = error_page.do_variables("index" => 0)[:html]
+        html.should include("inst_c")
+        html.should include(":value_for_inst_c")
+        html.should include("inst_d")
+        html.should include(":value_for_inst_d")
       end
     end
     

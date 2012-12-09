@@ -14,7 +14,7 @@
     }
     header {
         padding:32px 32px;
-        border-bottom:1px solid #ea6756;
+        border-bottom:1px solid #e64c38;
         background-color: #ffe5e7;
         background-image: -webkit-gradient(linear, left top, left bottom, from(#ffe5e7), to(#ffb2b8)); /* Safari 4+, Chrome */
         background-image: -webkit-linear-gradient(top, #ffe5e7, #ffb2b8); /* Chrome 10+, Safari 5.1+, iOS 5+ */
@@ -40,6 +40,40 @@
     }
     header table th, header table td {
         padding:4px 6px;
+    }
+    nav {
+        display:block;
+        padding:12px 12px;
+        border-bottom:1px solid #000000;
+        background-color: #444444;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#222222)); /* Safari 4+, Chrome */
+        background-image: -webkit-linear-gradient(top, #444444, #222222); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+        background-image:    -moz-linear-gradient(top, #444444, #222222); /* Firefox 3.6-15 */
+        background-image:      -o-linear-gradient(top, #444444, #222222); /* Opera 11.10-12.00 */
+        background-image:         linear-gradient(to bottom, #444444, #222222); /* Firefox 16+, IE10, Opera 12.50+ */
+    }
+    nav a {
+        color:#ffffff;
+        text-decoration:none;
+        padding:4px 16px;
+        border-radius:16px;
+    }
+    nav a:hover {
+        background-color: #666666;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#444444)); /* Safari 4+, Chrome */
+        background-image: -webkit-linear-gradient(top, #666666, #444444); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+        background-image:    -moz-linear-gradient(top, #666666, #444444); /* Firefox 3.6-15 */
+        background-image:      -o-linear-gradient(top, #666666, #444444); /* Opera 11.10-12.00 */
+        background-image:         linear-gradient(to bottom, #666666, #444444); /* Firefox 16+, IE10, Opera 12.50+ */
+    }
+    nav a.selected {
+        color:#000000;
+        background-color: #efefef;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#cfcfcf)); /* Safari 4+, Chrome */
+        background-image: -webkit-linear-gradient(top, #efefef, #cfcfcf); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+        background-image:    -moz-linear-gradient(top, #efefef, #cfcfcf); /* Firefox 3.6-15 */
+        background-image:      -o-linear-gradient(top, #efefef, #cfcfcf); /* Opera 11.10-12.00 */
+        background-image:         linear-gradient(to bottom, #efefef, #cfcfcf); /* Firefox 16+, IE10, Opera 12.50+ */
     }
     .frames {
         width:50%;
@@ -183,6 +217,10 @@
             <% end %>
         </table>
     </header>
+    <nav>
+        <a href="#" id="application_frames">Application Frames</a>
+        <a href="#" id="all_frames">All Frames</a>
+    </nav>
     <section class="backtrace">
         <ul class="frames">
             <% backtrace_frames.each_with_index do |frame, index| %>
@@ -303,6 +341,33 @@
     }
     
     document.querySelector(".frames li:first-child").click();
+    
+    var applicationFrames = document.getElementById("application_frames");
+    var allFrames = document.getElementById("all_frames");
+    
+    applicationFrames.onclick = function() {
+        allFrames.className = "";
+        applicationFrames.className = "selected";
+        for(var i = 0; i < frames.length; i++) {
+            if(frames[i].attributes["data-context"].value == "application") {
+                frames[i].style.display = "block";
+            } else {
+                frames[i].style.display = "none";
+            }
+        }
+        return false;
+    };
+    
+    allFrames.onclick = function() {
+        applicationFrames.className = "";
+        allFrames.className = "selected";
+        for(var i = 0; i < frames.length; i++) {
+            frames[i].style.display = "block";
+        }
+        return false;
+    };
+    
+    applicationFrames.click();
 })();
 </script>
 </html>

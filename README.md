@@ -25,6 +25,12 @@ Or install it yourself as:
 
     $ gem install better_errors
 
+If you would like to use Better Errors' **advanced features**, you need to install the `binding_of_caller` gem:
+
+    $ gem install binding_of_caller
+
+This is an optional dependency however, and Better Errors will work without it.
+
 ## Usage
 
 If you're using Rails, there's nothing else you need to do.

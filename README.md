@@ -16,7 +16,9 @@ Better Errors replaces the standard Rails error page with a much better and more
 Add this line to your application's Gemfile (under the **development** group):
 
 ```ruby
-gem "better_errors"
+group :development do
+  gem "better_errors"
+end
 ```
 
 If you would like to use Better Errors' **advanced features**, you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem to your Gemfile:

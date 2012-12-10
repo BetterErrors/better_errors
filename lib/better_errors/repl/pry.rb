@@ -5,11 +5,7 @@ module BetterErrors
   module REPL
     class Pry
       class Input
-        def initialize(fiber)
-          @fiber = fiber
-        end
-        
-        def readline(*args)
+        def readline
           Fiber.yield
         end
       end
@@ -41,7 +37,7 @@ module BetterErrors
         @fiber = Fiber.new do
           @pry.repl @binding
         end
-        @input = Input.new @fiber
+        @input = Input.new
         @output = Output.new
         @pry = ::Pry.new input: @input, output: @output
         @pry.hooks.clear_all

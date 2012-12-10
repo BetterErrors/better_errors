@@ -423,8 +423,24 @@
         overflow: auto;
     }
 
+    @-webkit-keyframes highlight {
+        0%   { background: rgba(220, 30, 30, 0.3); }
+        100% { background: rgba(220, 30, 30, 0.1); }
+    }
+    @-moz-keyframes highlight {
+        0%   { background: rgba(220, 30, 30, 0.3); }
+        100% { background: rgba(220, 30, 30, 0.1); }
+    }
+    @keyframes highlight {
+        0%   { background: rgba(220, 30, 30, 0.3); }
+        100% { background: rgba(220, 30, 30, 0.1); }
+    }
+
     .code .highlight {
         background: rgba(220, 30, 30, 0.1);
+        -webkit-animation: highlight 400ms linear 1;
+        -moz-animation: highlight 400ms linear 1;
+        animation: highlight 400ms linear 1;
     }
 
     /* REPL shell */

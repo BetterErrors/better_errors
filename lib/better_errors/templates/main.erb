@@ -349,6 +349,13 @@
         // now set the input's text to the previous command
         // in the list. 
         input.value = previousCommand; 
+        
+        INPUT = input;
+        if(input.setSelectionRange) {
+            // set cursor to end of input
+            var pos = previousCommand.length;
+            input.setSelectionRange(pos, pos);
+        }
     }
     
     for(var i = 0; i < frames.length; i++) {
@@ -387,12 +394,14 @@
                             }
                             replPre.scrollTop = replPre.scrollHeight;
                         });
-                    }else if(ev.keyCode == 38) {
+                    } else if(ev.keyCode == 38) {
                         // the user pressed the up arrow.
-                        populateCommandPrompt(replInput, previousCommandOffset - 1, -1);     
-                    }else if(ev.keyCode == 40) {
+                        populateCommandPrompt(replInput, previousCommandOffset - 1, -1);
+                        return false;
+                    } else if(ev.keyCode == 40) {
                         // the user pressed the down arrow.
                         populateCommandPrompt(replInput, previousCommandOffset + 1, previousCommands.length);
+                        return false;
                     }
                 };
             }

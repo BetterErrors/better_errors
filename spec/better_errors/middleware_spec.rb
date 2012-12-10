@@ -4,7 +4,7 @@ module BetterErrors
   describe Middleware do
     it "should pass non-error responses through" do
       app = Middleware.new(->env { ":)" })
-      app.call({}).should == ":)"
+      expect(app.call({})).to eq(":)")
     end
     
     context "when handling an error" do
@@ -13,13 +13,13 @@ module BetterErrors
       it "should return status 500" do
         status, headers, body = app.call({})
       
-        status.should == 500
+        expect(status).to eq(500)
       end
     
       it "should return UTF-8 error pages" do
         status, headers, body = app.call({})
         
-        headers["Content-Type"].should == "text/html; charset=utf-8"
+        expect(headers["Content-Type"]).to eq("text/html; charset=utf-8")
       end
       
       it "should log the exception" do

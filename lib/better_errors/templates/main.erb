@@ -276,7 +276,7 @@
     var header = document.querySelector("header");
     var headerHeight = header.offsetHeight;
     
-    var previousCommands = new Array();
+    var previousCommands = [];
     var previousCommandOffset = 0;
 
     apiCall = function(method, opts, cb) {

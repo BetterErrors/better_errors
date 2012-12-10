@@ -268,10 +268,10 @@
 (function() {
     var OID = <%== object_id.to_s.inspect %>;
     
-    var previous = null;
+    var previousFrame = null;
     var previousFrameInfo = null;
-    var frames = document.querySelectorAll("ul.frames li");
-    var frameInfos = document.querySelectorAll(".frame_info");
+    var allFrames = document.querySelectorAll("ul.frames li");
+    var allFrameInfos = document.querySelectorAll(".frame_info");
 
     function apiCall(method, opts, cb) {
         var req = new XMLHttpRequest();
@@ -290,38 +290,14 @@
         return html.replace(/&/, "&amp;").replace(/</g, "&lt;");
     }
     
-    function selectFrameInfo(index) {
-        var el = document.getElementById("frame_info_" + index);
-        
-        var varInfo = el.querySelector(".variable_info");
-        if(varInfo && varInfo.innerHTML == "") {
-            apiCall("variables", { "index": index }, function(response) {
-                if(response.error) {
-                    varInfo.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
-                } else {
-                    varInfo.innerHTML = response.html;
-                }
-            });
-        }
-        
-        if(previousFrameInfo) {
-            previousFrameInfo.style.display = "none";
-        }
-        previousFrameInfo = el;
-        previousFrameInfo.style.display = "block";
-        
-        var replInput = el.querySelector(".repl input");
-        if(replInput) {
-            replInput.focus();
-        }
-    }
-    
     function REPL(index) {
         this.index = index;
         
         this.previousCommands = [];
         this.previousCommandOffset = 0;
     }
+    
+    REPL.all = [];
     
     REPL.prototype.install = function(containerElement) {
         this.container = containerElement;
@@ -333,7 +309,13 @@
         this.inputElement.onkeydown = this.onKeyDown.bind(this);
     
         this.setPrompt(">>");
+        
+        REPL.all[this.index] = this;
     }
+    
+    REPL.prototype.focus = function() {
+        this.inputElement.focus();
+    };
     
     REPL.prototype.setPrompt = function(prompt) {
         this._prompt = prompt;
@@ -416,52 +398,81 @@
         }
     };
     
-    for(var i = 0; i < frames.length; i++) {
-        (function(index, el, frameInfo) {
+    function populateVariableInfo(index) {
+        var el = allFrameInfos[index];
+        var varInfo = el.querySelector(".variable_info");
+        if(varInfo && varInfo.innerHTML == "") {
+            apiCall("variables", { "index": index }, function(response) {
+                if(response.error) {
+                    varInfo.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
+                } else {
+                    varInfo.innerHTML = response.html;
+                }
+            });
+        }
+    }
+    
+    function selectFrameInfo(index) {
+        populateVariableInfo(index);
+        
+        if(previousFrameInfo) {
+            previousFrameInfo.style.display = "none";
+        }
+        previousFrameInfo = allFrameInfos[index];
+        previousFrameInfo.style.display = "block";
+        
+        if(REPL.all[index]) {
+            REPL.all[index].focus();
+        }
+    }
+    
+    for(var i = 0; i < allFrames.length; i++) {
+        (function(i, el) {
+            var el = allFrames[i];
             el.onclick = function() {
-                if(previous) {
-                    previous.className = "";
+                if(previousFrame) {
+                    previousFrame.className = "";
                 }
                 el.className = "selected";
-                previous = el;
+                previousFrame = el;
                 
                 selectFrameInfo(el.attributes["data-index"].value);
             };
-            var repl = frameInfo.querySelector(".repl .console");
+            var repl = allFrameInfos[i].querySelector(".repl .console");
             if(repl) {
-                new REPL(index).install(repl);
+                new REPL(i).install(repl);
             }
-        })(i, frames[i], frameInfos[i]);
+        })(i);
     }
     
-    document.querySelector(".frames li:first-child").click();
+    allFrames[0].click();
     
-    var applicationFrames = document.getElementById("application_frames");
-    var allFrames = document.getElementById("all_frames");
+    var applicationFramesButton = document.getElementById("application_frames");
+    var allFramesButton = document.getElementById("all_frames");
     
-    applicationFrames.onclick = function() {
-        allFrames.className = "";
-        applicationFrames.className = "selected";
-        for(var i = 0; i < frames.length; i++) {
-            if(frames[i].attributes["data-context"].value == "application") {
-                frames[i].style.display = "block";
+    applicationFramesButton.onclick = function() {
+        allFramesButton.className = "";
+        applicationFramesButton.className = "selected";
+        for(var i = 0; i < allFrames.length; i++) {
+            if(allFrames[i].attributes["data-context"].value == "application") {
+                allFrames[i].style.display = "block";
             } else {
-                frames[i].style.display = "none";
+                allFrames[i].style.display = "none";
             }
         }
         return false;
     };
     
-    allFrames.onclick = function() {
-        applicationFrames.className = "";
-        allFrames.className = "selected";
-        for(var i = 0; i < frames.length; i++) {
-            frames[i].style.display = "block";
+    allFramesButton.onclick = function() {
+        applicationFramesButton.className = "";
+        allFramesButton.className = "selected";
+        for(var i = 0; i < allFrames.length; i++) {
+            allFrames[i].style.display = "block";
         }
         return false;
     };
     
-    applicationFrames.click();
+    applicationFramesButton.click();
 })();
 </script>
 </html>

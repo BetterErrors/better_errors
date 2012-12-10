@@ -50,6 +50,14 @@ module BetterErrors
     end
     
   private
+    def exception_message
+      if exception.is_a?(SyntaxError) && exception.message =~ /\A.*:\d*: (.*)$/
+        $1
+      else
+        exception.message
+      end
+    end
+
     def real_exception(exception)
       if exception.respond_to? :original_exception
         exception.original_exception

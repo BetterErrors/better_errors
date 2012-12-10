@@ -26,16 +26,15 @@ module BetterErrors
         end
         
         def read_buffer
-          @buffer.tap do
-            @buffer = ""
-          end
+          @buffer
+        ensure
+          @buffer = ""
         end
       end
       
       def initialize(binding)
-        @binding = binding
         @fiber = Fiber.new do
-          @pry.repl @binding
+          @pry.repl binding
         end
         @input = Input.new
         @output = Output.new

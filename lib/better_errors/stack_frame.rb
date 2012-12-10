@@ -1,10 +1,10 @@
 module BetterErrors
-  class ErrorFrame
+  class StackFrame
     def self.from_exception(exception)
       exception.backtrace.each_with_index.map { |frame, idx|
         next unless frame =~ /\A(.*):(\d*):in `(.*)'\z/
         frame_binding = exception.__better_errors_bindings_stack[idx]
-        ErrorFrame.new($1, $2.to_i, $3, frame_binding)
+        StackFrame.new($1, $2.to_i, $3, frame_binding)
       }.compact
     end
     

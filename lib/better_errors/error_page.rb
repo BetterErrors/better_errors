@@ -46,7 +46,7 @@ module BetterErrors
     end
 
     def backtrace_frames
-      @backtrace_frames ||= ErrorFrame.from_exception(exception)
+      @backtrace_frames ||= StackFrame.from_exception(exception)
     end
     
   private

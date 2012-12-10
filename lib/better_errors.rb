@@ -4,7 +4,7 @@ require "coderay"
 
 require "better_errors/version"
 require "better_errors/error_page"
-require "better_errors/error_frame"
+require "better_errors/stack_frame"
 require "better_errors/middleware"
 require "better_errors/repl"
 

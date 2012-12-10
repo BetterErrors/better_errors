@@ -3,10 +3,8 @@ module BetterErrors
     def self.from_exception(exception)
       exception.backtrace.each_with_index.map { |frame, idx|
         next unless frame =~ /\A(.*):(\d*):in `(.*)'\z/
-        if BetterErrors.binding_of_caller_available?
-          b = exception.__better_errors_bindings_stack[idx]
-        end
-        ErrorFrame.new($1, $2.to_i, $3, b)
+        frame_binding = exception.__better_errors_bindings_stack[idx]
+        ErrorFrame.new($1, $2.to_i, $3, frame_binding)
       }.compact
     end
     
@@ -22,7 +20,8 @@ module BetterErrors
     end
     
     def application?
-      starts_with? filename, BetterErrors.application_root if BetterErrors.application_root
+      root = BetterErrors.application_root
+      starts_with? filename, root if root
     end
     
     def application_path
@@ -73,7 +72,9 @@ module BetterErrors
     
     def instance_variables
       return {} unless frame_binding
-      Hash[frame_binding.eval("instance_variables").map { |x| [x, frame_binding.eval(x.to_s)] }]
+      Hash[frame_binding.eval("instance_variables").map { |x|
+        [x, frame_binding.eval(x.to_s)]
+      }]
     end
     
     def to_s

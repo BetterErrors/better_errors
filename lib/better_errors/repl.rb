@@ -1,8 +1,10 @@
 module BetterErrors
   module REPL
     PROVIDERS = [
-        { impl:     "better_errors/repl/basic",
-          const:    :Basic }
+        { impl:   "better_errors/repl/pry",
+          const:  :Pry },
+        { impl:   "better_errors/repl/basic",
+          const:  :Basic },
       ]
     
     def self.provider

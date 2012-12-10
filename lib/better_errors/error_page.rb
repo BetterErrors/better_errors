@@ -62,47 +62,8 @@ module BetterErrors
       env["REQUEST_PATH"]
     end
     
-    def coderay_scanner_for_ext(ext)
-      case ext
-      when "rb";    :ruby
-      when "html";  :html
-      when "erb";   :erb
-      when "haml";  :haml
-      else          :text
-      end
-    end
-    
-    def file_extension(filename)
-      filename.split(".").last
-    end
-    
-    def code_extract(frame, lines_of_context = 5)
-      lines = File.readlines(frame.filename)
-      min_line = [1, frame.line - lines_of_context].max - 1
-      max_line = [frame.line + lines_of_context, lines.count + 1].min - 1
-      raise Errno::EINVAL if min_line > lines.length
-      [min_line, max_line, lines[min_line..max_line].join]
-    end
-    
     def highlighted_code_block(frame)
-      ext = file_extension(frame.filename)
-      scanner = coderay_scanner_for_ext(ext)
-      min_line, max_line, code = code_extract(frame)
-      highlighted_code = CodeRay.scan(code, scanner).div wrap: nil
-      "".tap do |html|
-        html << "<div class='code'>"
-        highlighted_code.each_line.each_with_index do |str, index|
-          if min_line + index + 1 == frame.line
-            html << "<pre class='highlight'>"
-          else
-            html << "<pre>"
-          end
-          html << sprintf("%5d", min_line + index + 1) << " " << str << "</pre>"
-        end
-        html << "</div>"
-      end
-    rescue Errno::ENOENT, Errno::EINVAL
-      "<p>Source unavailable</p>"
+      CodeFormatter.new(frame.filename, frame.line).html
     end
   end
 end

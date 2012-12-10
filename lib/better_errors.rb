@@ -6,6 +6,7 @@ require "better_errors/version"
 require "better_errors/error_page"
 require "better_errors/stack_frame"
 require "better_errors/middleware"
+require "better_errors/code_formatter"
 require "better_errors/repl"
 
 class << BetterErrors

@@ -30,28 +30,6 @@ module BetterErrors
       response.should include("ZeroDivisionError")
     end
     
-    context "when showing source code" do
-      before do
-        exception.stub!(:backtrace).and_return([
-          "#{File.expand_path("../support/my_source.rb", __FILE__)}:8:in `some_method'"
-        ])
-      end
-      
-      it "should show the line where the exception was raised" do
-        response.should include("8 eight")
-      end
-      
-      it "should show five lines of context" do
-        response.should include("3 three")
-        response.should include("13 thirteen")
-      end
-      
-      it "should not show more than five lines of context" do
-        response.should_not include("2 two")
-        response.should_not include("14 fourteen")
-      end
-    end
-    
     context "variable inspection" do
       let(:exception) { empty_binding.eval("raise") rescue $! }
       

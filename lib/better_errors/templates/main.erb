@@ -102,10 +102,10 @@
 
     nav.sidebar {
         background: #d3d3da;
-        border-top: solid 5px #444;
-        border-bottom: solid 5px #444;
+        border-top: solid 3px #a33;
+        border-bottom: solid 3px #a33;
         border-radius: 4px;
-        box-shadow: 0 0 6px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
 
     /* ---------------------------------------------------------------------
@@ -115,7 +115,10 @@
     header.exception {
         padding: 18px 20px;
 
-        background-color: #222;
+        height: 57px;
+        overflow: hidden;
+
+        background-color: #20202a;
         color: #aaa;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
         font-weight: 200;
@@ -142,8 +145,7 @@
 
     header.exception h2 strong {
         font-weight: 700;
-        color: #333;
-        color: white;
+        color: #d55;
     }
 
     header.exception p {
@@ -152,15 +154,29 @@
         color: white;
     }
 
+    <%#
+    /* Light theme */
+    header.exception {
+        text-shadow: 0 1px 0 rgba(250, 250, 250, 0.6);
+        background: rgba(200,100,50,0.10);
+        color: #977;
+    }
+    header.exception h2 strong {
+        color: #533;
+    }
+    header.exception p {
+        color: #744;
+    }
+    %>
+
     /* ---------------------------------------------------------------------
      * Navigation
      * --------------------------------------------------------------------- */
 
     nav.tabs {
-        border-top: solid 1px #333;
-        border-bottom: solid 1px #1a1a1a;
+        border-bottom: solid 1px #ddd;
 
-        background-color: #444;
+        background-color: #eee;
         text-align: center;
 
         padding: 6px;
@@ -179,8 +195,8 @@
         font-size: 8pt;
         font-weight: bold;
 
-        color: #888;
-        text-shadow: 0 0 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4);
+        color: #999;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
     }
 
     nav.tabs a.selected {
@@ -188,23 +204,7 @@
         background: rgba(0, 0, 0, 0.5);
         border-radius: 16px;
         box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
-    }
-
-    /* Lighter tabs for smaller screens, because black looks too heavy. */
-    @media screen and (max-width: 1100px) {
-        nav.tabs {
-            background: #eee;
-            border-bottom: solid 1px #ddd;
-        }
-
-        nav.tabs a {
-            color: #999;
-            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
-        }
-
-        nav.tabs a.selected {
-            text-shadow: 0 0 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4);
-        }
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4);
     }
 
     /* ---------------------------------------------------------------------
@@ -255,7 +255,7 @@
 
     /* Selected frame */
     ul.frames li.selected {
-        background: #39a;
+        background: #38a;
         box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1), inset 0 2px 0 rgba(255, 255, 255, 0.01), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
     }
 

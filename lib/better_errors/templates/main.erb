@@ -270,6 +270,11 @@
     }
 
     /* Iconography */
+    ul.frames li {
+        padding-left: 60px;
+        position: relative;
+    }
+
     ul.frames li .icon {
         display: block;
         width: 20px;
@@ -282,14 +287,13 @@
         background: white;
         border: solid 2px #ccc;
 
-        float: left;
-
-        margin-right: 20px;
-        margin-top: 5px;
-
         font-size: 9pt;
         font-weight: 200;
         font-style: normal;
+
+        position: absolute;
+        top: 14px;
+        left: 20px;
     }
 
     ul.frames .icon.application {
@@ -306,20 +310,27 @@
     /* Responsiveness -- flow to single-line mode */
     @media screen and (max-width: 1100px) {
         ul.frames li {
-            padding-top: 4px;
-            padding-bottom: 4px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            padding-left: 36px;
+            line-height: 1.3;
         }
 
         ul.frames li .icon {
-            margin-top: 2px;
             width: 11px;
             height: 11px;
             line-height: 11px;
+
+            top: 7px;
+            left: 10px;
+            font-size: 5pt;
         }
 
         ul.frames .name,
         ul.frames .location {
             display: inline-block;
+            line-height: 1.3;
+            height: 1.3em;
         }
 
         ul.frames .name {

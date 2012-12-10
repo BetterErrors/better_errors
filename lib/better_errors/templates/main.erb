@@ -327,7 +327,7 @@
      * Monospace
      * --------------------------------------------------------------------- */
 
-    pre, code, .repl input {
+    pre, code, .repl input, .repl .prompt span {
         font-family: menlo, lucida console, monospace;
         font-size: 8pt;
     }
@@ -421,6 +421,27 @@
         border-bottom: 0;
     }
 
+    /* .prompt > span + input */
+    .console .prompt {
+        display: table;
+        width: 100%;
+    }
+
+    .console .prompt span,
+    .console .prompt input {
+        display: table-cell;
+    }
+
+    .console .prompt span {
+        width: 1%;
+        padding-right: 5px;
+    }
+
+    .console .prompt input {
+        width: 99%;
+    }
+
+    /* Input box */
     .console input,
     .console input:focus {
         outline: 0;

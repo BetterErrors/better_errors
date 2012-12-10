@@ -248,7 +248,7 @@
                         <h3>REPL</h3>
                         <div class="console">
                             <pre></pre>
-                            <div class="prompt">&gt;&gt; <input/></div>
+                            <div class="prompt"><span>&gt;&gt;</span> <input/></div>
                         </div>
                     </div>
 
@@ -371,6 +371,7 @@
             };
             var replPre = frameInfo.querySelector(".repl pre");
             var replInput = frameInfo.querySelector(".repl input");
+            var replPrompt = frameInfo.querySelector(".repl .prompt span");
             if(replInput) {
                 replInput.onkeydown = function(ev) {
                     if(ev.keyCode == 13) {
@@ -388,9 +389,10 @@
                         apiCall("eval", { "index": index, source: text }, function(response) {
                             replPre.innerHTML += ">> " + response.highlighted_input + "\n";
                             if(response.error) {
-                                replPre.innerHTML += "!! " + escapeHTML(response.error) + "\n";
+                                replPre.innerHTML += "<span class='error'>" + escapeHTML(response.error) + "</span>\n";
                             } else {
-                                replPre.innerHTML += "=> " + escapeHTML(response.result) + "\n";
+                                replPre.innerHTML += escapeHTML(response.result);
+                                replPrompt.innerHTML = escapeHTML(response.prompt);
                             }
                             replPre.scrollTop = replPre.scrollHeight;
                         });

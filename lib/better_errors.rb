@@ -6,6 +6,7 @@ require "better_errors/version"
 require "better_errors/error_page"
 require "better_errors/error_frame"
 require "better_errors/middleware"
+require "better_errors/repl"
 
 class << BetterErrors
   attr_accessor :application_root, :binding_of_caller_available, :logger

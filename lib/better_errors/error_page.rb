@@ -10,12 +10,13 @@ module BetterErrors
       Erubis::EscapedEruby.new(File.read(template_path(template_name)))
     end
     
-    attr_reader :exception, :env
+    attr_reader :exception, :env, :repls
     
     def initialize(exception, env)
       @exception = real_exception(exception)
       @env = env
       @start_time = Time.now.to_f
+      @repls = []
     end
     
     def render(template_name = "main")
@@ -30,15 +31,18 @@ module BetterErrors
     
     def do_eval(opts)
       index = opts["index"].to_i
-      binding = backtrace_frames[index].frame_binding
-      return { error: "binding_of_caller unavailable" } unless binding
-      response =  begin
-                    result = binding.eval(opts["source"])
-                    { result: result.inspect }
-                  rescue Exception => e
-                    { error: (e.inspect rescue e.class.name rescue "Exception") }
-                  end
-      response.merge(highlighted_input: CodeRay.scan(opts["source"], :ruby).div(wrap: nil))
+      code = opts["source"]
+      
+      unless binding = backtrace_frames[index].frame_binding
+        return { error: "REPL unavailable in this stack frame" }
+      end
+      
+      result, prompt =
+        (@repls[index] ||= REPL.provider.new(binding)).send_input(code)
+      
+      { result: result,
+        prompt: prompt,
+        highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil) }
     end
 
     def backtrace_frames

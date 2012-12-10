@@ -396,16 +396,15 @@
         overflow: hidden;
     }
 
-    .trace_info .title .name {
+    .trace_info .title .location {
         float: left;
         font-weight: bold;
         font-size: 10pt;
     }
 
-    .trace_info .title .location {
+    .trace_info .title .name {
         float: right;
         font-weight: 200;
-        color: #999;
     }
 
     .code, .console {
@@ -618,7 +617,7 @@
                 <header class="trace_info">
                 <div class="title">
                 <h2 class="name"><%= frame.name %></h2>
-                <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
+                <div class="location"><span class="filename"><%= frame.pretty_path %></span></div>
                 </div>
                 <%== highlighted_code_block frame %>
                 

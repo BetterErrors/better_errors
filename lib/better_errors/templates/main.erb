@@ -266,22 +266,16 @@
 </body>
 <script>
 (function() {
-    var oid = <%== object_id.to_s.inspect %>;
+    var OID = <%== object_id.to_s.inspect %>;
     
     var previous = null;
     var previousFrameInfo = null;
     var frames = document.querySelectorAll("ul.frames li");
     var frameInfos = document.querySelectorAll(".frame_info");
-    
-    var header = document.querySelector("header");
-    var headerHeight = header.offsetHeight;
-    
-    var previousCommands = [];
-    var previousCommandOffset = 0;
 
-    apiCall = function(method, opts, cb) {
+    function apiCall(method, opts, cb) {
         var req = new XMLHttpRequest();
-        req.open("POST", "/__better_errors/" + oid + "/" + method, true);
+        req.open("POST", "/__better_errors/" + OID + "/" + method, true);
         req.setRequestHeader("Content-Type", "application/json");
         req.send(JSON.stringify(opts));
         req.onreadystatechange = function() {
@@ -321,42 +315,106 @@
             replInput.focus();
         }
     }
-
-    function populateCommandPrompt(input, newOffset, bound) {
-        var index = previousCommands.length + newOffset;
-        var previousCommand;
-
-        if(index < previousCommands.length && index >= 0) {
-            // the new index is within the bounds of the 
-            // commands array, so grab the previously
-            // entered command.
-            previousCommandOffset = newOffset;
-            previousCommand = previousCommands[index];
-        }else{
-            // the new index isn't within the bounds
-            // of the array.
-            previousCommand = "";
-
-            if(index == bound) {
-                // set the offset just outside only
-                // if we're at the bounds of the array.
-                // this is so we only get one 'blank' 
-                // command and don't continue moving
-                // the offset when we shouldn't. 
-                previousCommandOffset = newOffset;
-            }
-        }
-        // now set the input's text to the previous command
-        // in the list. 
-        input.value = previousCommand; 
+    
+    function REPL(index) {
+        this.index = index;
         
-        INPUT = input;
-        if(input.setSelectionRange) {
-            // set cursor to end of input
-            var pos = previousCommand.length;
-            input.setSelectionRange(pos, pos);
-        }
+        this.previousCommands = [];
+        this.previousCommandOffset = 0;
     }
+    
+    REPL.prototype.install = function(containerElement) {
+        this.container = containerElement;
+    
+        this.promptElement  = this.container.querySelector(".prompt span");
+        this.inputElement   = this.container.querySelector("input");
+        this.outputElement  = this.container.querySelector("pre");
+    
+        this.inputElement.onkeydown = this.onKeyDown.bind(this);
+    
+        this.setPrompt(">>");
+    }
+    
+    REPL.prototype.setPrompt = function(prompt) {
+        this._prompt = prompt;
+        this.promptElement.innerHTML = escapeHTML(prompt);
+    };
+    
+    REPL.prototype.getInput = function() {
+        return this.inputElement.value;
+    };
+    
+    REPL.prototype.setInput = function(text) {
+        this.inputElement.value = text;
+        
+        if(this.inputElement.setSelectionRange) {
+            // set cursor to end of input
+            this.inputElement.setSelectionRange(text.length, text.length);
+        }
+    };
+    
+    REPL.prototype.writeRawOutput = function(output) {
+        this.outputElement.innerHTML += output;
+        this.outputElement.scrollTop = this.outputElement.scrollHeight;
+    };
+    
+    REPL.prototype.writeOutput = function(output) {
+        this.writeRawOutput(escapeHTML(output));
+    };
+    
+    REPL.prototype.sendInput = function(line) {
+        var self = this;
+        apiCall("eval", { "index": this.index, source: line }, function(response) {
+            if(response.error) {
+                self.writeOutput(response.error + "\n");
+            }
+            self.writeOutput(self._prompt + " ");
+            self.writeRawOutput(response.highlighted_input + "\n");
+            self.writeOutput(response.result);
+            self.setPrompt(response.prompt);
+        });
+    };
+    
+    REPL.prototype.onEnterKey = function() {
+        var text = this.getInput();
+        if(text != "" && text !== undefined) {
+            this.previousCommandOffset = this.previousCommands.push(text);
+        }
+        this.setInput("");
+        this.sendInput(text);
+    };
+    
+    REPL.prototype.onNavigateHistory = function(direction) {
+        this.previousCommandOffset += direction;
+        
+        if(this.previousCommandOffset < 0) {
+            this.previousCommandOffset = -1;
+            this.setInput("");
+            return;
+        }
+        
+        if(this.previousCommandOffset >= this.previousCommands.length) {
+            this.previousCommandOffset = this.previousCommands.length;
+            this.setInput("");
+            return;
+        }
+        
+        this.setInput(this.previousCommands[this.previousCommandOffset]);
+    };
+    
+    REPL.prototype.onKeyDown = function(ev) {
+        if(ev.keyCode == 13) {
+            this.onEnterKey();
+        } else if(ev.keyCode == 38) {
+            // the user pressed the up arrow.
+            this.onNavigateHistory(-1);
+            return false;
+        } else if(ev.keyCode == 40) {
+            // the user pressed the down arrow.
+            this.onNavigateHistory(1);
+            return false;
+        }
+    };
     
     for(var i = 0; i < frames.length; i++) {
         (function(index, el, frameInfo) {
@@ -369,43 +427,9 @@
                 
                 selectFrameInfo(el.attributes["data-index"].value);
             };
-            var replPre = frameInfo.querySelector(".repl pre");
-            var replInput = frameInfo.querySelector(".repl input");
-            var replPrompt = frameInfo.querySelector(".repl .prompt span");
-            if(replInput) {
-                replInput.onkeydown = function(ev) {
-                    if(ev.keyCode == 13) {
-                        // reset the command up/down arrow offset.
-                        previousCommandOffset = 0;
-
-                        var text = replInput.value;
-
-                        if(text != "" && text !== undefined) {
-                            // push this command on to the previous commands list.
-                            previousCommands.push(text);
-                        }
-
-                        replInput.value = "";
-                        apiCall("eval", { "index": index, source: text }, function(response) {
-                            replPre.innerHTML += replPrompt.innerHTML + " " + response.highlighted_input + "\n";
-                            if(response.error) {
-                                replPre.innerHTML += "<span class='error'>" + escapeHTML(response.error) + "</span>\n";
-                            } else {
-                                replPre.innerHTML += escapeHTML(response.result);
-                                replPrompt.innerHTML = escapeHTML(response.prompt);
-                            }
-                            replPre.scrollTop = replPre.scrollHeight;
-                        });
-                    } else if(ev.keyCode == 38) {
-                        // the user pressed the up arrow.
-                        populateCommandPrompt(replInput, previousCommandOffset - 1, -1);
-                        return false;
-                    } else if(ev.keyCode == 40) {
-                        // the user pressed the down arrow.
-                        populateCommandPrompt(replInput, previousCommandOffset + 1, previousCommands.length);
-                        return false;
-                    }
-                };
+            var repl = frameInfo.querySelector(".repl .console");
+            if(repl) {
+                new REPL(index).install(repl);
             }
         })(i, frames[i], frameInfos[i]);
     }

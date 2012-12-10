@@ -8,8 +8,11 @@ module BetterErrors
     end
     
     def call(env)
-      if env["PATH_INFO"] =~ %r{/__better_errors/(?<oid>\d+)/(?<method>\w+)}
+      case env["PATH_INFO"]
+      when %r{\A/__better_errors/(?<oid>\d+)/(?<method>\w+)\z}
         internal_call env, $~
+      when %r{\A/__better_errors/?\z}
+        show_error_page env
       else
         app_call env
       end
@@ -21,9 +24,13 @@ module BetterErrors
     rescue Exception => ex
       @error_page = @handler.new ex, env
       log_exception
+      show_error_page(env)
+    end
+    
+    def show_error_page(env)
       [500, { "Content-Type" => "text/html; charset=utf-8" }, [@error_page.render]]
     end
-  
+    
     def log_exception
       return unless BetterErrors.logger
       

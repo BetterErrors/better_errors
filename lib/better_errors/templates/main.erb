@@ -405,16 +405,19 @@
 
     /* REPL shell */
     .console {
-        padding: 10px;
+        padding: 0 1px 10px 1px;
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 2px;
     }
 
     .console pre {
+        padding: 10px 10px 0 10px;
         max-height: 200px;
-        overflow: auto;
+        overflow-x: none;
+        overflow-y: auto;
         margin-bottom: -3px;
         word-wrap: break-word;
+        white-space: pre-wrap;
     }
 
     /* .prompt > span + input */
@@ -431,6 +434,7 @@
     .console .prompt span {
         width: 1%;
         padding-right: 5px;
+        padding-left: 10px;
     }
 
     .console .prompt input {

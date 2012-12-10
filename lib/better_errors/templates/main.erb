@@ -594,6 +594,7 @@
             <% backtrace_frames.each_with_index do |frame, index| %>
                 <li
                     class="<%= frame.context %>"
+                    style="display: none"
                     data-context="<%= frame.context %>"
                     data-full-filename="<%= frame.filename %>"
                     data-filename="<%= frame.pretty_path %>"
@@ -860,7 +861,7 @@
         return false;
     };
     
-    allFramesButton.click();
+    applicationFramesButton.click();
 })();
 </script>
 </html>

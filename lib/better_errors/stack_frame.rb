@@ -1,11 +1,17 @@
 module BetterErrors
   class StackFrame
     def self.from_exception(exception)
-      exception.backtrace.each_with_index.map { |frame, idx|
+      list = exception.backtrace.each_with_index.map { |frame, idx|
         next unless frame =~ /\A(.*):(\d*):in `(.*)'\z/
         frame_binding = exception.__better_errors_bindings_stack[idx]
         StackFrame.new($1, $2.to_i, $3, frame_binding)
       }.compact
+
+      if exception.is_a?(SyntaxError) && exception.to_s =~ /\A(.*):(\d*):/
+          list.unshift StackFrame.new($1, $2.to_i, "")
+      end
+
+      list
     end
     
     attr_reader :filename, :line, :name, :frame_binding

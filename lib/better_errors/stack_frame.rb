@@ -53,6 +53,14 @@ module BetterErrors
         end
       end
     end
+
+    def class_name
+        (m = name.match(/^(.*?)([\.\#].*)$/)) && m[1]
+    end
+
+    def method_name
+        (m = name.match(/^(.*?)([\.\#].*)$/)) && m[2]
+    end
     
     def context
       if application?

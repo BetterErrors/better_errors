@@ -133,7 +133,6 @@
         font-size: 11pt;
     }
 
-
     header.exception h2,
     header.exception p {
         line-height: 1.4em;
@@ -234,13 +233,13 @@
         overflow: hidden;
         height: 1.5em;
 
-        white-space: pre;
+        white-space: normal;
         word-wrap: none;
         text-overflow: ellipsis;
     }
 
-    ul.frames .name {
-        font-weight: bold;
+    ul.frames .method {
+        color: #966;
     }
 
     ul.frames .location {
@@ -260,9 +259,14 @@
     }
 
     ul.frames li.selected .name,
+    ul.frames li.selected .method,
     ul.frames li.selected .location {
         color: white;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    ul.frames li.selected .location {
+        opacity: 0.6;
     }
 
     /* Iconography */
@@ -579,7 +583,7 @@
                     <span class='stroke'></span>
                     <i class="icon <%= frame.context %>"></i>
                     <div class="info">
-                    <div class="name"><%= frame.name %></div>
+                    <div class="name"><strong><%= frame.class_name || frame.name %></strong><span class='method'><%= frame.method_name %></span></div>
                     <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
                     </div>
                 </li>

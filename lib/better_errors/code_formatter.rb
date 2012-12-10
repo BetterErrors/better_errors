@@ -23,7 +23,7 @@ module BetterErrors
     end
     
     def source_unavailable
-      "<p>Source unavailable</p>"
+      "<p class='unavailable'>Source unavailable</p>"
     end
     
     def coderay_scanner

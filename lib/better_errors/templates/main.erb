@@ -407,7 +407,7 @@
         font-weight: 200;
     }
 
-    .code, .console {
+    .code, .console, .unavailable {
         background: #fff;
         padding: 5px;
 
@@ -421,6 +421,26 @@
     .code {
         padding: 10px 0;
         overflow: auto;
+    }
+
+    /* Source unavailable */
+    p.unavailable {
+        padding: 20px 0 40px 0;
+        text-align: center;
+        color: #b99;
+        font-weight: bold;
+    }
+
+    p.unavailable:before {
+        content: '\00d7';
+        display: block;
+
+        color: #daa;
+
+        text-align: center;
+        font-size: 40pt;
+        font-weight: normal;
+        margin-bottom: -10px;
     }
 
     @-webkit-keyframes highlight {

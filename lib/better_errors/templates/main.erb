@@ -387,7 +387,7 @@
 
                         replInput.value = "";
                         apiCall("eval", { "index": index, source: text }, function(response) {
-                            replPre.innerHTML += ">> " + response.highlighted_input + "\n";
+                            replPre.innerHTML += replPrompt.innerHTML + " " + response.highlighted_input + "\n";
                             if(response.error) {
                                 replPre.innerHTML += "<span class='error'>" + escapeHTML(response.error) + "</span>\n";
                             } else {

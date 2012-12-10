@@ -21,7 +21,8 @@ module BetterErrors
     
     def application?
       root = BetterErrors.application_root
-      starts_with? filename, root if root
+      # vendored bundle might overlap with application_root
+      !bundled? && starts_with?(filename, root) if root
     end
     
     def application_path
@@ -40,11 +41,21 @@ module BetterErrors
       end
     end
     
+    def bundled?
+      starts_with? filename, bundled_path if bundled_path
+    end
+    
+    def bundled_path
+      Bundler.bundle_path.to_s if defined? Bundler
+    end
+    
     def context
       if application?
         :application
       elsif gem?
         :gem
+      elsif bundled?
+        :bundled
       else
         :dunno
       end

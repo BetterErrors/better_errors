@@ -19,8 +19,10 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rake"
   
-  s.add_dependency "erubis"
-  s.add_dependency "coderay"
-  # optional dependency:
+  s.add_dependency "erubis", ">= 2.7.0"
+  s.add_dependency "coderay", ">= 1.0.0"
+
+  # optional dependencies:
   # s.add_dependency "binding_of_caller"
+  # s.add_dependency "pry"
 end

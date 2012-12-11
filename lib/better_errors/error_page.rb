@@ -26,6 +26,7 @@ module BetterErrors
     def do_variables(opts)
       index = opts["index"].to_i
       @frame = backtrace_frames[index]
+      @var_start_time = Time.now.to_f
       { html: render("variable_info") }
     end
     

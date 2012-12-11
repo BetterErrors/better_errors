@@ -1,4 +1,18 @@
 <div class="sub">
+    <h3>Request info</h3>
+    <div class='inset variables'>
+        <table class="var_table">
+            <% if rails_params %>
+                <tr><td class="name">Request parameters</td><td><pre><%== inspect_value rails_params %></pre></td></tr>
+            <% end %>
+            <% if rack_session %>
+                <tr><td class="name">Rack session</td><td><pre><%== inspect_value rack_session %></pre></td></tr>
+            <% end %>
+        </table>
+    </div>
+</div>
+
+<div class="sub">
     <h3>Local Variables</h3>
     <div class='inset variables'>
         <table class="var_table">

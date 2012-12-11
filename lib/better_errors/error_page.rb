@@ -50,6 +50,14 @@ module BetterErrors
     end
     
   private
+    def rack_session
+      env['rack.session']
+    end
+
+    def rails_params
+      env['action_dispatch.request.parameters']
+    end
+
     def uri_prefix
       env["SCRIPT_NAME"] || ""
     end

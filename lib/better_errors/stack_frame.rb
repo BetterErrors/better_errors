@@ -53,6 +53,18 @@ module BetterErrors
         end
       end
     end
+
+    def name_parts
+      @name_parts ||= name.match(/^(.*?)([\.\#].*)$/)
+    end
+
+    def class_name
+      name_parts && name_parts[1]
+    end
+
+    def method_name
+      name_parts && name_parts[2]
+    end
     
     def context
       if application?

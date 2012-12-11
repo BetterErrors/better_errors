@@ -66,5 +66,12 @@ module BetterErrors
       frames.first.filename.should == "my_file.rb"
       frames.first.line.should == 123
     end
+
+    it "has a Sublime path" do
+      filename = "/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb"
+      line = 123
+      frame = StackFrame.new(filename, line, "_")
+      frame.sublime_path.should eq("subl://open/?url=file://#{filename}&line=#{line}")
+    end
   end
 end

@@ -215,6 +215,14 @@
                     <th>Line</th>
                     <td><%= backtrace_frames.first.line %></td>
                 </tr>
+                <tr>
+                    <th></th>
+                    <td>
+                        <a href="<%= backtrace_frames.first.sublime_path %>">
+                            Open in Sublime Text 2
+                        </a>
+                    </td>
+                </tr>
             <% end %>
         </table>
     </header>

@@ -71,6 +71,10 @@ module BetterErrors
       else                filename
       end
     end
+
+    def sublime_path
+      "subl://open/?url=file://#{@filename}&line=#{@line}"
+    end
     
     def local_variables
       return {} unless frame_binding

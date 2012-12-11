@@ -245,15 +245,17 @@
                 <%== highlighted_code_block frame %>
                 
                 <% if BetterErrors.binding_of_caller_available? %>
-                    <div class="repl">
-                        <h3>REPL</h3>
-                        <div class="console">
-                            <pre></pre>
-                            <div class="prompt"><span>&gt;&gt;</span> <input/></div>
+                    <% if frame.frame_binding %>
+                        <div class="repl">
+                            <h3>REPL</h3>
+                            <div class="console">
+                                <pre></pre>
+                                <div class="prompt"><span>&gt;&gt;</span> <input/></div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="variable_info"></div>
+                        
+                        <div class="variable_info"></div>
+                    <% end %>
                 <% else %>
                     <h3>Advanced features unavailable</h3>
                     <p class="error">

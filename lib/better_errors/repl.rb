@@ -1,14 +1,16 @@
 module BetterErrors
   module REPL
     PROVIDERS = [
-        { impl:   "better_errors/repl/pry",
-          const:  :Pry },
         { impl:   "better_errors/repl/basic",
           const:  :Basic },
       ]
-    
+
     def self.provider
       @provider ||= const_get detect[:const]
+    end
+    
+    def self.provider=(prov)
+      @provider = prov
     end
     
     def self.detect

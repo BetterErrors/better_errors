@@ -49,6 +49,15 @@ get "/" do
 end
 ```
 
+## Open-in-Editor functionality
+
+File links will open in TextMate by default, using the `txmt` URL scheme.  You can supply a custom proc to generate the URL
+for your preferred editor :
+
+```ruby
+BetterErrors.editor = Proc.new{|file, line| "mvim://open/?url=file://#{URI.escape file}&line=#{line}"}
+```
+
 ## Compatibility
 
 * **Supported**

@@ -62,6 +62,10 @@ end
 
 * Calling `yield` from the REPL segfaults MRI 1.9.x.
 
+## Get in touch!
+
+If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!
+
 ## Contributing
 
 1. Fork it

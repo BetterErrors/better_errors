@@ -57,5 +57,14 @@ module BetterErrors
         frame.gem_path.should == "(gem) whatever-1.2.3/lib/whatever.rb"
       end
     end
+
+    it "should special case SyntaxErrors" do
+      syntax_error = SyntaxError.new "my_file.rb:123: you wrote bad ruby!"
+      syntax_error.stub!(:backtrace).and_return([])
+      frames = StackFrame.from_exception(syntax_error)
+      frames.count.should == 1
+      frames.first.filename.should == "my_file.rb"
+      frames.first.line.should == 123
+    end
   end
 end

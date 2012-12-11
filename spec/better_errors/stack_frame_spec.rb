@@ -115,8 +115,5 @@ module BetterErrors
         its(:editor_path) {should be_nil}
       end
     end
-
-    
-    
   end
 end

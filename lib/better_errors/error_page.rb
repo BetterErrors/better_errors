@@ -77,5 +77,11 @@ module BetterErrors
     def highlighted_code_block(frame)
       CodeFormatter.new(frame.filename, frame.line).html
     end
+
+    def inspect_value(obj)
+      CGI.escapeHTML(obj.inspect)
+    rescue NoMethodError
+      "<span class='unsupported'>(object doesn't support inspect)</span>"
+    end
   end
 end

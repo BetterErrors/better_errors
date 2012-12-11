@@ -3,7 +3,7 @@
     <div class='inset variables'>
         <table class="var_table">
             <% @frame.local_variables.each do |name, value| %>
-                <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
+                <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
             <% end %>
         </table>
     </div>
@@ -14,7 +14,7 @@
     <div class="inset variables">
         <table class="var_table">
             <% @frame.instance_variables.each do |name, value| %>
-                <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
+                <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
             <% end %>
         </table>
     </div>

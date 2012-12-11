@@ -50,6 +50,10 @@ module BetterErrors
     end
     
   private
+    def uri_prefix
+      env["SCRIPT_NAME"]
+    end
+  
     def exception_message
       if exception.is_a?(SyntaxError) && exception.message =~ /\A.*:\d*: (.*)$/
         $1

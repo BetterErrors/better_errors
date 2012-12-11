@@ -1,10 +1,18 @@
 module BetterErrors
   class StackFrame
     def self.from_exception(exception)
+      idx_offset = 0
       exception.backtrace.each_with_index.map { |frame, idx|
-        next unless frame =~ /\A(.*):(\d*):in `(.*)'\z/
-        frame_binding = exception.__better_errors_bindings_stack[idx]
-        StackFrame.new($1, $2.to_i, $3, frame_binding)
+        frame_binding = exception.__better_errors_bindings_stack[idx - idx_offset]
+        md = /\A(?<file>.*):(?<line>\d*):in `(?<name>.*)'\z/.match(frame)
+
+        # prevent mismatching frames in the backtrace with the binding stack
+        if frame_binding and frame_binding.eval("__FILE__") != md[:file]
+          idx_offset += 1
+          frame_binding = nil
+        end
+
+        StackFrame.new(md[:file], md[:line].to_i, md[:name], frame_binding)
       }.compact
     end
     

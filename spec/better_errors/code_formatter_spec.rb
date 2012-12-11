@@ -7,13 +7,13 @@ module BetterErrors
     let(:formatter) { CodeFormatter.new(filename, 8) }
     
     it "should pick an appropriate scanner" do
-      formatter.coderay_scanner.should == :ruby
+      expect(formatter.coderay_scanner).to eq(:ruby)
     end
     
     it "should show 5 lines of context" do
       formatter.line_range.should == (3..13)
       
-      formatter.context_lines.should == [
+      expect(formatter.context_lines).to eq([
           "three\n",
           "four\n",
           "five\n",
@@ -25,27 +25,27 @@ module BetterErrors
           "eleven\n",
           "twelve\n",
           "thirteen\n"
-        ]
+        ])
     end
     
     it "should highlight the erroring line" do
-      formatter.html.should =~ /highlight.*eight/
+      expect(formatter.html).to match(/highlight.*eight/)
     end
     
     it "should work when the line is right on the edge" do
       formatter = CodeFormatter.new(filename, 20)
-      formatter.line_range.should == (15..20)
-      formatter.html.should_not == formatter.source_unavailable
+      expect(formatter.line_range).to eq(15..20)
+      expect(formatter.html).to_not eq(formatter.source_unavailable)
     end
     
     it "should not barf when the lines don't make any sense" do
       formatter = CodeFormatter.new(filename, 999)
-      formatter.html.should == formatter.source_unavailable
+      expect(formatter.html).to eq(formatter.source_unavailable)
     end
     
     it "should not barf when the file doesn't exist" do
       formatter = CodeFormatter.new("fkdguhskd7e l", 1)
-      formatter.html.should == formatter.source_unavailable
+      expect(formatter.html).to eq(formatter.source_unavailable)
     end
   end
 end

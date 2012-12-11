@@ -19,15 +19,15 @@ module BetterErrors
     }
   
     it "should include the error message" do
-      response.should include("you divided by zero you silly goose!")
+      expect(response).to include("you divided by zero you silly goose!")
     end
   
     it "should include the request path" do
-      response.should include("/some/path")
+      expect(response).to include("/some/path")
     end
   
     it "should include the exception class" do
-      response.should include("ZeroDivisionError")
+      expect(response).to include("ZeroDivisionError")
     end
     
     context "variable inspection" do
@@ -35,18 +35,18 @@ module BetterErrors
       
       it "should show local variables" do
         html = error_page.do_variables("index" => 0)[:html]
-        html.should include("local_a")
-        html.should include(":value_for_local_a")
-        html.should include("local_b")
-        html.should include(":value_for_local_b")
+        expect(html).to include("local_a")
+        expect(html).to include(":value_for_local_a")
+        expect(html).to include("local_b")
+        expect(html).to include(":value_for_local_b")
       end
       
       it "should show instance variables" do
         html = error_page.do_variables("index" => 0)[:html]
-        html.should include("inst_c")
-        html.should include(":value_for_inst_c")
-        html.should include("inst_d")
-        html.should include(":value_for_inst_d")
+        expect(html).to include("inst_c")
+        expect(html).to include(":value_for_inst_c")
+        expect(html).to include("inst_d")
+        expect(html).to include(":value_for_inst_d")
       end
     end
     

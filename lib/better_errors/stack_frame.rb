@@ -54,12 +54,16 @@ module BetterErrors
       end
     end
 
+    def name_parts
+      @name_parts ||= name.match(/^(.*?)([\.\#].*)$/)
+    end
+
     def class_name
-        (m = name.match(/^(.*?)([\.\#].*)$/)) && m[1]
+      name_parts && name_parts[1]
     end
 
     def method_name
-        (m = name.match(/^(.*?)([\.\#].*)$/)) && m[2]
+      name_parts && name_parts[2]
     end
     
     def context

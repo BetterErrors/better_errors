@@ -79,6 +79,10 @@ module BetterErrors
       else                filename
       end
     end
+
+    def editor_path
+      "txmt://open/?url=file://#{URI.escape(@filename)}&line=#{@line}"  
+    end
     
     def local_variables
       return {} unless frame_binding

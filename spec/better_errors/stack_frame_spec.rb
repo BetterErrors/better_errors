@@ -94,5 +94,13 @@ module BetterErrors
       frames = StackFrame.from_exception(error)
       frames.first.filename.should == "crap:filename.rb"
     end
+
+    describe "#editor_path" do
+      let(:filename) { "/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb" }
+      let(:line_number) { 123 }
+      let(:frame) { StackFrame.new(filename, line_number, "_") }
+      subject { frame }
+      its(:editor_path) {should eq("txmt://open/?url=file://#{filename}&line=#{line_number}")}
+    end
   end
 end

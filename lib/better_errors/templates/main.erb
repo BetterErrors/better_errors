@@ -670,7 +670,9 @@
                                 <strong><%= frame.class_name %></strong><span class='method'><%= frame.method_name %></span>
                             </div>
                             <div class="location">
-                                <span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span>
+                                <a href="<%= frame.editor_path %>">    
+                                    <span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span>
+                                </a>
                             </div>
                         </div>
                     </li>
@@ -683,7 +685,9 @@
                 <header class="trace_info">
                     <div class="title">
                         <h2 class="name"><%= frame.name %></h2>
-                        <div class="location"><span class="filename"><%= frame.pretty_path %></span></div>
+                        <a href="<%= frame.editor_path %>">
+                            <div class="location"><span class="filename"><%= frame.pretty_path %></span></div>
+                        </a>
                     </div>
                     
                     <%== highlighted_code_block frame %>

@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_development_dependency "rake"
+  s.add_development_dependency "rspec", "~> 2.12.0"
+  s.add_development_dependency "binding_of_caller"
   
   s.add_dependency "erubis", ">= 2.7.0"
   s.add_dependency "coderay", ">= 1.0.0"

@@ -662,16 +662,7 @@
             </nav>
             <ul class="frames">
                 <% backtrace_frames.each_with_index do |frame, index| %>
-                    <li
-                        class="<%= frame.context %>"
-                        style="display: none"
-                        data-context="<%= frame.context %>"
-                        data-full-filename="<%= frame.filename %>"
-                        data-filename="<%= frame.pretty_path %>"
-                        data-line="<%= frame.line %>"
-                        data-name="<%= frame.name %>"
-                        data-index="<%= index %>"
-                    >
+                    <li class="<%= frame.context %>" style="display: none" data-context="<%= frame.context %>" data-index="<%= index %>">
                         <span class='stroke'></span>
                         <i class="icon <%= frame.context %>"></i>
                         <div class="info">

@@ -19,6 +19,10 @@
         text-align: left;
     }
 
+    textarea {
+        resize: none;
+    }
+
     body {
         font-size: 10pt;
     }
@@ -372,7 +376,7 @@
      * Monospace
      * --------------------------------------------------------------------- */
 
-    pre, code, .repl input, .repl .prompt span {
+    pre, code, .repl input, .repl .prompt span, textarea {
         font-family: menlo, lucida console, monospace;
         font-size: 8pt;
     }
@@ -574,15 +578,17 @@
         overflow-y: auto;
     }
 
+    .sub table {
+        table-layout: fixed;
+    }
+
     .sub table td {
         border-top: dotted 1px #ddd;
         padding: 7px 1px;
-        width: 90%;
     }
 
     .sub table td.name {
-        width: auto;
-        min-width: 150px;
+        width: 150px;
 
         font-weight: bold;
         font-size: 0.8em;
@@ -590,6 +596,13 @@
     }
 
     .sub table td pre {
+        max-height: 15em;
+        overflow-y: auto;
+    }
+
+    .sub table td pre {
+        width: 100%;
+
         word-wrap: break-word;
         white-space: normal;
     }
@@ -609,7 +622,7 @@
     .inset pre::-webkit-scrollbar-thumb,
     .console pre::-webkit-scrollbar-thumb,
     .code::-webkit-scrollbar-thumb {
-        background: #ddd;
+        background: #ccc;
         border-radius: 5px;
     }
 
@@ -621,6 +634,12 @@
     nav.sidebar:hover::-webkit-scrollbar-thumb {
         background-color: #999;
         background: -webkit-linear-gradient(left, #aaa, #999);
+    }
+
+    .console pre:hover::-webkit-scrollbar-thumb,
+    .inset pre:hover::-webkit-scrollbar-thumb,
+    .code:hover::-webkit-scrollbar-thumb {
+        background: #888;
     }
 
 

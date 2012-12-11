@@ -100,20 +100,7 @@ module BetterErrors
       let(:line_number) { 123 }
       let(:frame) { StackFrame.new(filename, line_number, "_") }
       subject { frame }
-
-      context "a system with Sublime Text 2 installed" do
-        before do
-          System.stub(:sublime_available?).and_return(true)
-        end
-        its(:editor_path) {should eq("subl://open/?url=file://#{filename}&line=#{line_number}")}
-      end
-
-      context "a system without Sublime Text 2 installed" do
-        before do
-          System.stub(:sublime_available?).and_return(false)
-        end
-        its(:editor_path) {should be_nil}
-      end
+      its(:editor_path) {should eq("txmt://open/?url=file://#{filename}&line=#{line_number}")}
     end
   end
 end

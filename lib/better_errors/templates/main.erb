@@ -209,17 +209,9 @@
             <% if backtrace_frames.any? %>
                 <tr>
                     <th>File</th>
-                    <td><%= backtrace_frames.first.filename %></td>
-                </tr>
-                <tr>
-                    <th>Line</th>
-                    <td><%= backtrace_frames.first.line %></td>
-                </tr>
-                <tr>
-                    <th></th>
                     <td>
                         <a href="<%= backtrace_frames.first.sublime_path %>">
-                            Open in Sublime Text 2
+                            <%= backtrace_frames.first.filename %>:<%= backtrace_frames.first.line %>
                         </a>
                     </td>
                 </tr>
@@ -242,14 +234,14 @@
                     data-index="<%= index %>"
                 >
                     <div class="name"><%= frame.name %></div>
-                    <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
+                    <div class="location"><span class="filename"><a href="<%= frame.sublime_path %>"><%= frame.pretty_path %>:<%= frame.line %></a></span></div>
                 </li>
             <% end %>
         </ul>
         <% backtrace_frames.each_with_index do |frame, index| %>
             <div class="frame_info" id="frame_info_<%= index %>" style="display:none;">
                 <h2 class="name"><%= frame.name %></h2>
-                <div class="location"><span class="filename"><%= frame.pretty_path %></span>, line <span class="line"><%= frame.line %></span></div>
+                <div class="location"><span class="filename"><a href="<%= frame.sublime_path %>"><%= frame.pretty_path %>:<%= frame.line %></a></span></div>
                 <%== highlighted_code_block frame %>
                 
                 <% if BetterErrors.binding_of_caller_available? %>

@@ -8,6 +8,7 @@ require "better_errors/stack_frame"
 require "better_errors/middleware"
 require "better_errors/code_formatter"
 require "better_errors/repl"
+require "better_errors/system"
 
 class << BetterErrors
   attr_accessor :application_root, :binding_of_caller_available, :logger

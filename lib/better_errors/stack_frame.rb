@@ -80,8 +80,10 @@ module BetterErrors
       end
     end
 
-    def sublime_path
-      "subl://open/?url=file://#{@filename}&line=#{@line}"
+    def editor_path
+      if System.sublime_available?
+        "subl://open/?url=file://#{@filename}&line=#{@line}"  
+      end
     end
     
     def local_variables

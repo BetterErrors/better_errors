@@ -95,11 +95,28 @@ module BetterErrors
       frames.first.filename.should == "crap:filename.rb"
     end
 
-    it "has a Sublime path" do
-      filename = "/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb"
-      line = 123
-      frame = StackFrame.new(filename, line, "_")
-      frame.sublime_path.should eq("subl://open/?url=file://#{filename}&line=#{line}")
+    describe "#editor_path" do
+      let(:filename) { "/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb" }
+      let(:line_number) { 123 }
+      let(:frame) { StackFrame.new(filename, line_number, "_") }
+      subject { frame }
+
+      context "a system with Sublime Text 2 installed" do
+        before do
+          System.stub(:sublime_available?).and_return(true)
+        end
+        its(:editor_path) {should eq("subl://open/?url=file://#{filename}&line=#{line_number}")}
+      end
+
+      context "a system without Sublime Text 2 installed" do
+        before do
+          System.stub(:sublime_available?).and_return(false)
+        end
+        its(:editor_path) {should be_nil}
+      end
     end
+
+    
+    
   end
 end

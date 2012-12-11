@@ -35,7 +35,7 @@ module BetterErrors
     
     def application?
       root = BetterErrors.application_root
-      starts_with? filename, root if root
+      filename.index(root) == 0 if root
     end
     
     def application_path
@@ -43,12 +43,12 @@ module BetterErrors
     end
 
     def gem?
-      Gem.path.any? { |path| starts_with? filename, path }
+      Gem.path.any? { |path| filename.index(path) == 0 }
     end
     
     def gem_path
       Gem.path.each do |path|
-        if starts_with? filename, path
+        if filename.index(path) == 0
           return filename.gsub("#{path}/gems/", "(gem) ")
         end
       end
@@ -115,10 +115,6 @@ module BetterErrors
         @class_name = "#{$1}#{recv.class}"
         @method_name = "##{method_name}"
       end
-    end
-  
-    def starts_with?(haystack, needle)
-      haystack[0, needle.length] == needle
     end
   end
 end

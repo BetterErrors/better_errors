@@ -75,7 +75,7 @@
         nav.sidebar,
         .frame_info {
             position: fixed;
-            top: 93px;
+            top: 95px;
             bottom: 0;
 
             box-sizing: border-box;
@@ -87,7 +87,7 @@
         nav.sidebar {
             width: 40%;
             left: 20px;
-            top: 113px;
+            top: 115px;
             bottom: 20px;
         }
 
@@ -115,7 +115,9 @@
     header.exception {
         padding: 18px 20px;
 
-        height: 57px;
+        height: 59px;
+        min-height: 59px;
+
         overflow: hidden;
 
         background-color: #20202a;
@@ -153,6 +155,20 @@
         color: white;
     }
 
+    header.exception:hover {
+        height: auto;
+        z-index: 2;
+    }
+
+    header.exception:hover h2,
+    header.exception:hover p {
+        padding-right: 20px;
+        overflow-y: auto;
+        word-wrap: break-word;
+        height: auto;
+        max-height: 7em;
+    }
+
     @media screen and (max-width: 1100px) {
         header.exception {
             height: auto;
@@ -160,10 +176,11 @@
 
         header.exception h2,
         header.exception p {
-            overflow: visible;
-            white-space: normal;
+            padding-right: 20px;
+            overflow-y: auto;
             word-wrap: break-word;
             height: auto;
+            max-height: 7em;
         }
     }
 

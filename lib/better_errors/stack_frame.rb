@@ -54,16 +54,12 @@ module BetterErrors
       end
     end
 
-    def name_parts
-      @name_parts ||= name.match(/^(.*?)([\.\#].*)$/)
-    end
-
     def class_name
-      name_parts && name_parts[1]
+      @class_name
     end
 
     def method_name
-      name_parts && name_parts[2]
+      @method_name || @name
     end
     
     def context
@@ -111,12 +107,14 @@ module BetterErrors
     def set_pretty_method_name
       name =~ /\A(block (\([^)]+\) )?in )?/
       recv = frame_binding.eval("self")
-      return unless method = frame_binding.eval("__method__")
-      @name = if recv.is_a? Module
-                "#{$1}#{recv}.#{method}"
-              else
-                "#{$1}#{recv.class}##{method}"
-              end
+      return unless method_name = frame_binding.eval("__method__")
+      if recv.is_a? Module
+        @class_name = "#{$1}#{recv}"
+        @method_name = ".#{method_name}"
+      else
+        @class_name = "#{$1}#{recv.class}"
+        @method_name = "##{method_name}"
+      end
     end
   
     def starts_with?(haystack, needle)

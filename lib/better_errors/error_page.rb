@@ -51,7 +51,7 @@ module BetterErrors
     
   private
     def uri_prefix
-      env["SCRIPT_NAME"]
+      env["SCRIPT_NAME"] || ""
     end
   
     def exception_message

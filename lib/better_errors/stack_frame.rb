@@ -82,7 +82,7 @@ module BetterErrors
 
     def editor_path
       if System.sublime_available?
-        "subl://open/?url=file://#{@filename}&line=#{@line}"  
+        "subl://open/?url=file://#{URI.escape(@filename)}&line=#{@line}"  
       end
     end
     

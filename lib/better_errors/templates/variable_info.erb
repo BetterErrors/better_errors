@@ -1,13 +1,21 @@
-<h3>Local Variables</h3>
-<table class="var_table">
-    <% @frame.local_variables.each do |name, value| %>
-        <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
-    <% end %>
-</table>
+<div class="sub">
+    <h3>Local Variables</h3>
+    <div class='inset variables'>
+        <table class="var_table">
+            <% @frame.local_variables.each do |name, value| %>
+                <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
+            <% end %>
+        </table>
+    </div>
+</div>
 
-<h3>Instance Variables</h3>
-<table class="var_table">
-    <% @frame.instance_variables.each do |name, value| %>
-        <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
-    <% end %>
-</table>
+<div class="sub">
+    <h3>Instance Variables</h3>
+    <div class="inset variables">
+        <table class="var_table">
+            <% @frame.instance_variables.each do |name, value| %>
+                <tr><td class="name"><%= name %></td><td><pre><%= value.inspect %></pre></td></tr>
+            <% end %>
+        </table>
+    </div>
+</div>

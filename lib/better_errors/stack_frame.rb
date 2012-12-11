@@ -4,7 +4,7 @@ module BetterErrors
       idx_offset = 0
       list = exception.backtrace.each_with_index.map do |frame, idx|
         frame_binding = exception.__better_errors_bindings_stack[idx - idx_offset]
-        md = /\A(?<file>.*):(?<line>\d*):in `(?<name>.*)'\z/.match(frame)
+        next unless md = /\A(?<file>.*?):(?<line>\d+)(:in `(?<name>.*)')?/.match(frame)
 
         # prevent mismatching frames in the backtrace with the binding stack
         if frame_binding and frame_binding.eval("__FILE__") != md[:file]
@@ -13,7 +13,7 @@ module BetterErrors
         end
 
         StackFrame.new(md[:file], md[:line].to_i, md[:name], frame_binding)
-      end
+      end.compact
 
       if exception.is_a?(SyntaxError) && exception.to_s =~ /\A(.*):(\d*):/
         list.unshift StackFrame.new($1, $2.to_i, "")
@@ -52,6 +52,14 @@ module BetterErrors
           return filename.gsub("#{path}/gems/", "(gem) ")
         end
       end
+    end
+
+    def class_name
+      @class_name
+    end
+
+    def method_name
+      @method_name || @name
     end
     
     def context
@@ -103,12 +111,14 @@ module BetterErrors
     def set_pretty_method_name
       name =~ /\A(block (\([^)]+\) )?in )?/
       recv = frame_binding.eval("self")
-      return unless method = frame_binding.eval("__method__")
-      @name = if recv.is_a? Module
-                "#{$1}#{recv}.#{method}"
-              else
-                "#{$1}#{recv.class}##{method}"
-              end
+      return unless method_name = frame_binding.eval("__method__")
+      if recv.is_a? Module
+        @class_name = "#{$1}#{recv}"
+        @method_name = ".#{method_name}"
+      else
+        @class_name = "#{$1}#{recv.class}"
+        @method_name = "##{method_name}"
+      end
     end
   
     def starts_with?(haystack, needle)

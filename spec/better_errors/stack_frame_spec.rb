@@ -66,6 +66,34 @@ module BetterErrors
       frames.first.filename.should == "my_file.rb"
       frames.first.line.should == 123
     end
+    
+    it "should not blow up if no method name is given" do
+      error = StandardError.new
+      
+      error.stub!(:backtrace).and_return(["foo.rb:123"])
+      frames = StackFrame.from_exception(error)
+      frames.first.filename.should == "foo.rb"
+      frames.first.line.should == 123
+      
+      error.stub!(:backtrace).and_return(["foo.rb:123: this is an error message"])
+      frames = StackFrame.from_exception(error)
+      frames.first.filename.should == "foo.rb"
+      frames.first.line.should == 123
+    end
+    
+    it "should ignore a backtrace line if its format doesn't make any sense at all" do
+      error = StandardError.new
+      error.stub!(:backtrace).and_return(["foo.rb:123:in `foo'", "C:in `find'", "bar.rb:123:in `bar'"])
+      frames = StackFrame.from_exception(error)
+      frames.count.should == 2
+    end
+    
+    it "should not blow up if a filename contains a colon" do
+      error = StandardError.new
+      error.stub!(:backtrace).and_return(["crap:filename.rb:123"])
+      frames = StackFrame.from_exception(error)
+      frames.first.filename.should == "crap:filename.rb"
+    end
 
     it "has a Sublime path" do
       filename = "/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb"

@@ -4,7 +4,7 @@ module BetterErrors
       idx_offset = 0
       list = exception.backtrace.each_with_index.map do |frame, idx|
         frame_binding = exception.__better_errors_bindings_stack[idx - idx_offset]
-        md = /\A(?<file>.*):(?<line>\d*):in `(?<name>.*)'\z/.match(frame)
+        md = /\A(?<file>.*):(?<line>\d*)(:in `(?<name>.*)')?\z/.match(frame)
 
         # prevent mismatching frames in the backtrace with the binding stack
         if frame_binding and frame_binding.eval("__FILE__") != md[:file]

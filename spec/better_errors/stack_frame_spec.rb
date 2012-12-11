@@ -66,5 +66,19 @@ module BetterErrors
       frames.first.filename.should == "my_file.rb"
       frames.first.line.should == 123
     end
+    
+    it "should not blow up if no method name is given" do
+      error = StandardError.new
+      
+      error.stub!(:backtrace).and_return(["foo.rb:123"])
+      frames = StackFrame.from_exception(error)
+      frames.first.filename.should == "foo.rb"
+      frames.first.line.should == 123
+      
+      error.stub!(:backtrace).and_return(["foo.rb:123: this is an error message"])
+      frames = StackFrame.from_exception(error)
+      frames.first.filename.should == "foo.rb"
+      frames.first.line.should == 123
+    end
   end
 end

@@ -2,7 +2,7 @@ require "spec_helper"
 
 module BetterErrors
   describe ErrorPage do
-    let(:exception) { raise ZeroDivisionError, "you divided by zero you silly goose!" rescue $! }
+    let!(:exception) { raise ZeroDivisionError, "you divided by zero you silly goose!" rescue $! }
   
     let(:error_page) { ErrorPage.new exception, { "REQUEST_PATH" => "/some/path" } }
     

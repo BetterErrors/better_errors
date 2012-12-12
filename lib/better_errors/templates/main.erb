@@ -697,41 +697,8 @@
         </nav>
 
         <% backtrace_frames.each_with_index do |frame, index| %>
-            <div class="frame_info" id="frame_info_<%= index %>" style="display:none;">
-                <header class="trace_info">
-                    <div class="title">
-                        <h2 class="name"><%= frame.name %></h2>
-                        <div class="location"><span class="filename"><a href="<%= editor_url(frame) %>"><%= frame.pretty_path %></a></span></div>
-                    </div>
-                    
-                    <%== highlighted_code_block frame %>
-                
-                    <% if BetterErrors.binding_of_caller_available? && frame.frame_binding %>
-                        <div class="repl">
-                            <div class="console">
-                                <pre></pre>
-                                <div class="prompt"><span>&gt;&gt;</span> <input/></div>
-                            </div>
-                        </div>
-                    <% end %>
-                </header>
-
-                <% if BetterErrors.binding_of_caller_available? && frame.frame_binding %>
-                    <div class="hint">
-                        This a live shell. Type in here.
-                    </div>
-
-                    <div class="variable_info"></div>
-                <% end %>
-                
-                <% unless BetterErrors.binding_of_caller_available? %>
-                    <div class="hint">
-                        <strong>Tip:</strong> add <code>gem "binding_of_caller"</code> to your Gemfile to enable the REPL and local/instance variable inspection.
-                    </div>
-                <% end %>
-            </div>
+            <div class="frame_info" id="frame_info_<%= index %>" style="display:none;"></div>
         <% end %>
-        <div style="clear:both"></div>
     </section>
 </body>
 <script>
@@ -868,31 +835,38 @@
         }
     };
     
-    function populateVariableInfo(index) {
+    function switchTo(el) {
+        if(previousFrameInfo) previousFrameInfo.style.display = "none";
+        previousFrameInfo = el;
+
+        el.style.display = "block";
+
+        var replInput = el.querySelector('.console input');
+        if (replInput) replInput.focus();
+    }
+
+    function selectFrameInfo(index) {
         var el = allFrameInfos[index];
-        var varInfo = el.querySelector(".variable_info");
-        if(varInfo && varInfo.innerHTML == "") {
+        if(el) {
+            if (el.loaded) {
+                return switchTo(el);
+            }
+
             apiCall("variables", { "index": index }, function(response) {
+                el.loaded = true;
                 if(response.error) {
-                    varInfo.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
+                    el.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
                 } else {
-                    varInfo.innerHTML = response.html;
+                    el.innerHTML = response.html;
+
+                    var repl = el.querySelector(".repl .console");
+                    if(repl) {
+                        new REPL(index).install(repl);
+                    }
+
+                    switchTo(el);
                 }
             });
-        }
-    }
-    
-    function selectFrameInfo(index) {
-        populateVariableInfo(index);
-        
-        if(previousFrameInfo) {
-            previousFrameInfo.style.display = "none";
-        }
-        previousFrameInfo = allFrameInfos[index];
-        previousFrameInfo.style.display = "block";
-        
-        if(REPL.all[index]) {
-            REPL.all[index].focus();
         }
     }
     
@@ -908,10 +882,6 @@
                 
                 selectFrameInfo(el.attributes["data-index"].value);
             };
-            var repl = allFrameInfos[i].querySelector(".repl .console");
-            if(repl) {
-                new REPL(i).install(repl);
-            }
         })(i);
     }
     

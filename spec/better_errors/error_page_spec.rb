@@ -4,7 +4,7 @@ module BetterErrors
   describe ErrorPage do
     let!(:exception) { raise ZeroDivisionError, "you divided by zero you silly goose!" rescue $! }
   
-    let(:error_page) { ErrorPage.new exception, { "REQUEST_PATH" => "/some/path" } }
+    let(:error_page) { ErrorPage.new exception, { "PATH_INFO" => "/some/path" } }
     
     let(:response) { error_page.render }
     

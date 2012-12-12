@@ -13,13 +13,15 @@ Better Errors replaces the standard Rails error page with a much better and more
 
 ## Installation
 
-Add this line to your application's Gemfile (under the **development** group):
+Add this to your Gemfile:
 
 ```ruby
 group :development do
   gem "better_errors"
 end
 ```
+
+**NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**
 
 If you would like to use Better Errors' **advanced features** (REPL, local/instance variable inspection, pretty stack frame names), you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem to your Gemfile:
 

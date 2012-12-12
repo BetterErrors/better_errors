@@ -52,6 +52,10 @@ module BetterErrors
     end
     
   private
+    def editor_url(frame)
+      BetterErrors.editor[frame.filename, frame.line]
+    end
+    
     def rack_session
       env['rack.session']
     end

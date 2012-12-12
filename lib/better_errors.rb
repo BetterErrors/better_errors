@@ -14,11 +14,6 @@ class << BetterErrors
   attr_accessor :application_root, :binding_of_caller_available, :logger, :editor
   
   alias_method :binding_of_caller_available?, :binding_of_caller_available
-
-  # generate a URL to open the user's editor with a specified file & line number
-  def editor_url(file, line)
-    editor.call(file, line)
-  end
   
   def editor
     # default to opening files in TextMate

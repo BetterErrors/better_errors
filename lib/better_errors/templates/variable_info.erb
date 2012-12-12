@@ -1,7 +1,7 @@
 <header class="trace_info">
     <div class="title">
         <h2 class="name"><%= @frame.name %></h2>
-        <div class="location"><span class="filename"><a href="<%= editor_url(frame) %>"><%= frame.pretty_path %></a></span></div>
+        <div class="location"><span class="filename"><a href="<%= editor_url(@frame) %>"><%= @frame.pretty_path %></a></span></div>
     </div>
     
     <%== highlighted_code_block @frame %>

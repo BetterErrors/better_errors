@@ -52,15 +52,25 @@ module BetterErrors
       end
     
       def send_input(str)
-        old_pry_config_color = ::Pry.config.color
-        ::Pry.config.color = false
-        @continued_expression = true
-        @fiber.resume "#{str}\n"
-        # TODO - indent with `pry_indent.current_prefix`
-        # TODO - use proper pry prompt
-        [@output.read_buffer, @continued_expression ? ".." : ">>"]
+        local ::Pry.config, color: false, pager: false do
+          @continued_expression = true
+          @fiber.resume "#{str}\n"
+          [@output.read_buffer, @continued_expression ? ".." : ">>"]
+        end
+      end
+      
+    private
+      def local(obj, attrs)
+        old_attrs = {}
+        attrs.each do |k, v|
+          old_attrs[k] = obj.send k
+          obj.send "#{k}=", v
+        end
+        yield
       ensure
-        ::Pry.config.color = old_pry_config_color
+        old_attrs.each do |k, v|
+          obj.send "#{k}=", v
+        end
       end
     end
   end

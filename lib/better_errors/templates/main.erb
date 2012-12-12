@@ -691,7 +691,7 @@
                 <header class="trace_info">
                     <div class="title">
                         <h2 class="name"><%= frame.name %></h2>
-                        <div class="location"><span class="filename"><%= frame.pretty_path %></span></div>
+                        <div class="location"><span class="filename"><a href="<%= BetterErrors.editor_url(frame.filename, frame.line) %>"><%= frame.pretty_path %></a></span></div>
                     </div>
                     
                     <%== highlighted_code_block frame %>

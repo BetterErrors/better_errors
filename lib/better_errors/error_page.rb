@@ -1,3 +1,4 @@
+require "cgi"
 require "json"
 
 module BetterErrors
@@ -80,7 +81,7 @@ module BetterErrors
     end
   
     def request_path
-      env["REQUEST_PATH"]
+      env["PATH_INFO"]
     end
     
     def highlighted_code_block(frame)

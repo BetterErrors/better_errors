@@ -19,9 +19,10 @@ class << BetterErrors
   def editor_url(file, line)
     editor.call(file, line)
   end
+  
   def editor
     # default to opening files in TextMate
-    @editor || Proc.new{|file, line| "txmt://open/?url=file://#{URI.escape file}&line=#{line}"}
+    @editor || proc { |file, line| "txmt://open/?url=file://#{URI.encode_www_form_component(file)}&line=#{line}" }
   end
 end
 

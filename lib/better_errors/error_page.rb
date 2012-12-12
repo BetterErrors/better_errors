@@ -1,3 +1,4 @@
+require "cgi"
 require "json"
 
 module BetterErrors

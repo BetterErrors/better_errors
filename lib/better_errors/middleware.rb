@@ -28,8 +28,16 @@ module BetterErrors
     end
     
     def show_error_page(env)
-      [500, { "Content-Type" => "text/html; charset=utf-8" }, [@error_page.render]]
+      content = if @error_page
+        @error_page.render
+      else
+        "<h1>No errors</h1><p>No errors have been recorded yet.</p><hr>" +
+        "<code>Better Errors v#{BetterErrors::VERSION}</code>"
+      end
+
+      [500, { "Content-Type" => "text/html; charset=utf-8" }, [content]]
     end
+
     
     def log_exception
       return unless BetterErrors.logger

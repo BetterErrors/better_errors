@@ -53,12 +53,17 @@ end
 
 ## Open-in-Editor functionality
 
-File links will open in TextMate by default, using the `txmt` URL scheme.  You can supply a custom proc to generate the URL
-for your preferred editor :
+File links will open in TextMate by default.  You can supply your preferred editor like this:
 
 ```ruby
-BetterErrors.editor = Proc.new{|file, line| "mvim://open/?url=file://#{URI.escape file}&line=#{line}"}
+if defined?(BetterErrors) && BetterErrors.respond_to?(:editor=)
+  BetterErrors.editor = :subl
+end
 ```
+
+Currently supported editors are: `:textmate`, `:sublime`, `:mvim`
+
+If you're in a team that uses different editors, you can supply the editor in a file that is not checked into your repository.
 
 ## Compatibility
 

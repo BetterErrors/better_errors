@@ -18,6 +18,15 @@ module BetterErrors
       app.call("PATH_INFO" => "/__better_errors/")
     end
 
+    context "when requesting the /__better_errors manually" do
+      let(:app) { Middleware.new(->env { ":)" }) }
+      
+      it "should show that no errors have been recorded" do
+        status, headers, body = app.call("PATH_INFO" => "/__better_errors")
+        body.join.should match /No errors have been recorded yet./
+      end
+    end
+    
     context "when handling an error" do
       let(:app) { Middleware.new(->env { raise "oh no :(" }) }
     

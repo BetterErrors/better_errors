@@ -21,23 +21,23 @@ module BetterErrors
 
       list
     end
-    
+
     attr_reader :filename, :line, :name, :frame_binding
-    
+
     def initialize(filename, line, name, frame_binding = nil)
       @filename       = filename
       @line           = line
       @name           = name
       @frame_binding  = frame_binding
-      
+
       set_pretty_method_name if frame_binding
     end
-    
+
     def application?
       root = BetterErrors.application_root
       filename.index(root) == 0 if root
     end
-    
+
     def application_path
       filename[(BetterErrors.application_root.length+1)..-1]
     end
@@ -45,7 +45,7 @@ module BetterErrors
     def gem?
       Gem.path.any? { |path| filename.index(path) == 0 }
     end
-    
+
     def gem_path
       Gem.path.each do |path|
         if filename.index(path) == 0
@@ -61,7 +61,7 @@ module BetterErrors
     def method_name
       @method_name || @name
     end
-    
+
     def context
       if gem?
         :gem
@@ -71,7 +71,9 @@ module BetterErrors
         :dunno
       end
     end
-    
+
+    # Return the current context path
+    #
     def pretty_path
       case context
       when :application;  application_path
@@ -79,7 +81,9 @@ module BetterErrors
       else                filename
       end
     end
-    
+
+    # Return availables local variables in current context
+    #
     def local_variables
       return {} unless frame_binding
       frame_binding.eval("local_variables").each_with_object({}) do |name, hash|
@@ -91,18 +95,20 @@ module BetterErrors
         end
       end
     end
-    
+
+    # Return availables instance variables in current context
+    #
     def instance_variables
       return {} unless frame_binding
       Hash[frame_binding.eval("instance_variables").map { |x|
         [x, frame_binding.eval(x.to_s)]
       }]
     end
-    
+
     def to_s
       "#{pretty_path}:#{line}:in `#{name}'"
     end
-    
+
   private
     def set_pretty_method_name
       name =~ /\A(block (\([^)]+\) )?in )?/

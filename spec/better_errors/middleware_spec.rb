@@ -2,11 +2,22 @@ require "spec_helper"
 
 module BetterErrors
   describe Middleware do
+    let(:app) { Middleware.new(->env { ":)" }) }
+
     it "should pass non-error responses through" do
-      app = Middleware.new(->env { ":)" })
       app.call({}).should == ":)"
     end
-    
+
+    it "should call the internal methods" do
+      app.should_receive :internal_call
+      app.call("PATH_INFO" => "/__better_errors/1/preform_awesomness")
+    end
+
+    it "should show the error page" do
+      app.should_receive :show_error_page
+      app.call("PATH_INFO" => "/__better_errors/")
+    end
+
     context "when handling an error" do
       let(:app) { Middleware.new(->env { raise "oh no :(" }) }
     

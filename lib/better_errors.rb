@@ -1,6 +1,7 @@
 require "pp"
 require "erubis"
 require "coderay"
+require "uri"
 
 require "better_errors/version"
 require "better_errors/error_page"

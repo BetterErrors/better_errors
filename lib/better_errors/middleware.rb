@@ -51,7 +51,7 @@ module BetterErrors
     end
   
     def internal_call(env, opts)
-      if opts[:oid].to_i != @error_page.object_id
+      if opts[:oid].to_i != @error_page.object_id.abs
         return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(error: "Session expired")]]
       end
       

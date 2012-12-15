@@ -864,6 +864,24 @@
                         new REPL(index).install(repl);
                     }
 
+                    window.setTimeout(function () {
+                        var variableNames = document.querySelectorAll(".sub table td.name");
+                        for (var i = 0; i < variableNames.length; i++) {
+                            variableNames[i].onclick = function() {
+                                var pre = this.parentNode.childNodes[1].childNodes[0];
+                                switch (pre.style.maxHeight) {
+                                case "":
+                                case "15em":
+                                    pre.style.maxHeight = "100%";
+                                    break;
+                                case "100%":
+                                    pre.style.maxHeight = "15em";
+                                    break;
+                                }
+                            };
+                        };
+                    }, 1000);
+
                     switchTo(el);
                 }
             });

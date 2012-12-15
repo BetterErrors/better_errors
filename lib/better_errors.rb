@@ -15,11 +15,6 @@ class << BetterErrors
   attr_accessor :application_root, :binding_of_caller_available, :logger, :editor
   
   alias_method :binding_of_caller_available?, :binding_of_caller_available
-  
-  def editor
-    # default to opening files in TextMate
-    @editor || proc { |file, line| "txmt://open/?url=file://#{URI.encode_www_form_component(file)}&line=#{line}" }
-  end
 end
 
 begin

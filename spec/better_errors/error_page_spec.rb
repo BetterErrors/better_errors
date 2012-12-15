@@ -56,5 +56,15 @@ module BetterErrors
       ])
       response.should include("Source unavailable")
     end
+
+    describe "#editor_url" do
+      let(:filename) { "/some/file/somewhere" }
+      let(:line) { "123" }
+      let(:frame) { mock(:filename => filename, :line => line) }
+
+      it "defaults to Textmate" do
+        error_page.send(:editor_url, frame).should eq("txmt://open/?url=file://#{URI.encode_www_form_component(filename)}&line=#{line}")
+      end
+    end
   end
 end

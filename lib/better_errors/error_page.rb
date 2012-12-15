@@ -53,7 +53,16 @@ module BetterErrors
     
   private
     def editor_url(frame)
-      BetterErrors.editor[frame.filename, frame.line]
+      file = URI.encode_www_form_component(frame.filename)
+      line = frame.line
+      return case BetterErrors.editor.to_s.downcase
+      when "sublime", "sublime text", "sublime text 2", "subl"
+        "subl://open/?url=file://#{file}&line=#{line}"
+      when "macvim", "mvim"
+        "mvim://open/?url=file://#{file}&line=#{line}"
+      else
+        "txmt://open/?url=file://#{file}&line=#{line}"
+      end
     end
     
     def rack_session

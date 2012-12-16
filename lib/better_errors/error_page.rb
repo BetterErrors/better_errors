@@ -2,6 +2,7 @@ require "cgi"
 require "json"
 
 module BetterErrors
+  # @private
   class ErrorPage
     def self.template_path(template_name)
       File.expand_path("../templates/#{template_name}.erb", __FILE__)

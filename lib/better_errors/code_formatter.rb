@@ -1,4 +1,5 @@
 module BetterErrors
+  # @private
   class CodeFormatter
     FILE_TYPES = {
       ".rb"   => :ruby,

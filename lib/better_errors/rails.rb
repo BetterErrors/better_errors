@@ -1,4 +1,5 @@
 module BetterErrors
+  # @private
   class Railtie < Rails::Railtie
     initializer "better_errors.configure_rails_initialization" do
       unless Rails.env.production?

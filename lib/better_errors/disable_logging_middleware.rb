@@ -1,4 +1,5 @@
 module BetterErrors
+  # @private
   class DisableLoggingMiddleware
     def initialize(app)
       @app = app

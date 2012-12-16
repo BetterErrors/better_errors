@@ -11,16 +11,80 @@ require "better_errors/disable_logging_middleware"
 require "better_errors/code_formatter"
 require "better_errors/repl"
 
-class << BetterErrors
-  attr_accessor :application_root, :binding_of_caller_available, :logger, :editor
+module BetterErrors
+  class << self
+    # The path to the root of the application. Better Errors uses this property
+    # to determine if a file in a backtrace should be considered an application
+    # frame. If you are using Better Errors with Rails, you do not need to set
+    # this attribute manually.
+    # 
+    # @return [String]
+    attr_accessor :application_root
+    
+    # The logger to use when logging exception details and backtraces. If you
+    # are using Better Errors with Rails, you do not need to set this attribute
+    # manually. If this attribute is `nil`, nothing will be logged.
+    # 
+    # @return [Logger, nil]
+    attr_accessor :logger
+
+    # @private
+    attr_accessor :binding_of_caller_available
+    
+    # @private
+    alias_method :binding_of_caller_available?, :binding_of_caller_available
+  end
   
-  alias_method :binding_of_caller_available?, :binding_of_caller_available
-  
-  def editor
+  # Returns a proc, which when called with a filename and line number argument,
+  # returns a URL to open the filename and line in the selected editor.
+  # 
+  # Generates TextMate URLs by default.
+  # 
+  #   BetterErrors.editor["/some/file", 123]
+  #     # => txmt://open?url=file:///some/file&line=123
+  # 
+  # @return [Proc]
+  def self.editor
     @editor
   end
   
-  def editor=(editor)
+  # Configures how Better Errors generates open-in-editor URLs.
+  # 
+  # @overload BetterErrors.editor=(sym)
+  #   Uses one of the preset editor configurations. Valid symbols are:
+  #
+  #   * `:textmate`, `:txmt`, `:tm`
+  #   * `:sublime`, `:subl`, `:st`
+  #   * `:macvim`
+  # 
+  #   @param [Symbol] sym
+  # 
+  # @overload BetterErrors.editor=(str)
+  #   Uses `str` as the format string for generating open-in-editor URLs.
+  # 
+  #   Use `%{file}` and `%{line}` as placeholders for the actual values.
+  # 
+  #   @example
+  #     BetterErrors.editor = "my-editor://open?url=%{file}&line=%{line}"
+  # 
+  #   @param [String] str
+  # 
+  # @overload BetterErrors.editor=(proc)
+  #   Uses `proc` to generate open-in-editor URLs. The proc will be called
+  #   with `file` and `line` parameters when a URL needs to be generated.
+  # 
+  #   Your proc should take care to escape `file` appropriately with
+  #   `URI.encode_www_form_component` (please note that `URI.escape` is **not**
+  #   a suitable substitute.)
+  # 
+  #   @example
+  #     BetterErrors.editor = proc { |file, line|
+  #       "my-editor://open?url=#{URI.encode_www_form_component file}&line=#{line}"
+  #     }
+  #   
+  #   @param [Proc] proc
+  # 
+  def self.editor=(editor)
     case editor
     when :textmate, :txmt, :tm
       self.editor = "txmt://open?url=file://%{file}&line=%{line}"

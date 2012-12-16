@@ -1,4 +1,5 @@
 module BetterErrors
+  # @private
   module REPL
     PROVIDERS = [
         { impl:   "better_errors/repl/basic",

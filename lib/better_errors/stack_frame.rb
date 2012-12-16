@@ -1,4 +1,5 @@
 module BetterErrors
+  # @private
   class StackFrame
     def self.from_exception(exception)
       idx_offset = 0

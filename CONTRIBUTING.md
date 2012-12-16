@@ -6,4 +6,4 @@ Please make sure to follow these guidelines when contributing code to Better Err
 
 * Whitespace at the end of lines of code is not OK, but empty lines with indentation is fine. Please do not remove these when sending in changes.
 
-* Don't change things that are unrelated to your main changes unnecessarily. Send another pull request for these unrelated changes - don't try to sneak them in.
+* Don't change things that are unrelated to your main changes unnecessarily. Send another pull request for these changes - don't try to sneak them in.

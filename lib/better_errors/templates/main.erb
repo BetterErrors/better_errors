@@ -422,16 +422,6 @@
         font-weight: bold;
         font-size: 10pt;
     }
-    
-    .trace_info .title .location a {
-        color:inherit;
-        text-decoration:none;
-        border-bottom:1px solid #aaaaaa;
-    }
-    
-    .trace_info .title .location a:hover {
-        border-color:#666666;
-    }
 
     .trace_info .title .name {
         float: right;
@@ -503,7 +493,7 @@
 
     .console pre {
         padding: 10px 10px 0 10px;
-        max-height: 400px;
+        max-height: 200px;
         overflow-x: none;
         overflow-y: auto;
         margin-bottom: -3px;
@@ -604,8 +594,6 @@
         font-weight: bold;
         font-size: 0.8em;
         padding-right: 20px;
-
-        word-wrap: break-word;
     }
 
     .sub table td pre {
@@ -618,12 +606,6 @@
 
         word-wrap: break-word;
         white-space: normal;
-    }
-
-    /* "(object doesn't support inspect)" */
-    .sub .unsupported {
-      font-family: sans-serif;
-      color: #777;
     }
 
     /* ---------------------------------------------------------------------
@@ -672,7 +654,7 @@
         </header>
     </div>
 
-    <section class="backtrace">
+    <div class="backtrace">
         <nav class="sidebar">
             <nav class="tabs">
                 <a href="#" id="application_frames">Application Frames</a>
@@ -680,7 +662,16 @@
             </nav>
             <ul class="frames">
                 <% backtrace_frames.each_with_index do |frame, index| %>
-                    <li class="<%= frame.context %>" style="display: none" data-context="<%= frame.context %>" data-index="<%= index %>">
+                    <li
+                        class="<%= frame.context %>"
+                        style="display: block"
+                        data-context="<%= frame.context %>"
+                        data-full-filename="<%= frame.filename %>"
+                        data-filename="<%= frame.pretty_path %>"
+                        data-line="<%= frame.line %>"
+                        data-name="<%= frame.name %>"
+                        data-index="<%= index %>"
+                    >
                         <span class='stroke'></span>
                         <i class="icon <%= frame.context %>"></i>
                         <div class="info">
@@ -697,8 +688,41 @@
         </nav>
 
         <% backtrace_frames.each_with_index do |frame, index| %>
-            <div class="frame_info" id="frame_info_<%= index %>" style="display:none;"></div>
+            <div class="frame_info" id="frame_info_<%= index %>" style="display:<% if index == 0%>block<% else %>none<%end%>;">
+                <header class="trace_info">
+                    <div class="title">
+                        <h2 class="name"><%= frame.name %></h2>
+                        <div class="location"><span class="filename"><%= frame.pretty_path %></span></div>
+                    </div>
+                    
+                    <%== highlighted_code_block frame %>
+                
+                    <% if BetterErrors.binding_of_caller_available? && frame.frame_binding %>
+                        <div class="repl">
+                            <div class="console">
+                                <pre></pre>
+                                <div class="prompt"><span>&gt;&gt;</span> <input/></div>
+                            </div>
+                        </div>
+                    <% end %>
+                </header>
+
+                <% if BetterErrors.binding_of_caller_available? && frame.frame_binding %>
+                    <div class="hint">
+                        This a live shell. Type in here.
+                    </div>
+
+                    <div class="variable_info"></div>
+                <% end %>
+                
+                <% unless BetterErrors.binding_of_caller_available? %>
+                    <div class="hint">
+                        <strong>Tip:</strong> add <code>gem "binding_of_caller"</code> to your Gemfile to enable the REPL and local/instance variable inspection.
+                    </div>
+                <% end %>
+            </div>
         <% end %>
+        <div style="clear:both"></div>
     </section>
 </body>
 <script>
@@ -712,7 +736,7 @@
 
     function apiCall(method, opts, cb) {
         var req = new XMLHttpRequest();
-        req.open("POST", <%== uri_prefix.gsub("<", "&lt;").inspect %> + "/__better_errors/" + OID + "/" + method, true);
+        req.open("POST", "/__better_errors/" + OID + "/" + method, true);
         req.setRequestHeader("Content-Type", "application/json");
         req.send(JSON.stringify(opts));
         req.onreadystatechange = function() {
@@ -835,38 +859,31 @@
         }
     };
     
-    function switchTo(el) {
-        if(previousFrameInfo) previousFrameInfo.style.display = "none";
-        previousFrameInfo = el;
-
-        el.style.display = "block";
-
-        var replInput = el.querySelector('.console input');
-        if (replInput) replInput.focus();
-    }
-
-    function selectFrameInfo(index) {
+    function populateVariableInfo(index) {
         var el = allFrameInfos[index];
-        if(el) {
-            if (el.loaded) {
-                return switchTo(el);
-            }
-
+        var varInfo = el.querySelector(".variable_info");
+        if(varInfo && varInfo.innerHTML == "") {
             apiCall("variables", { "index": index }, function(response) {
-                el.loaded = true;
                 if(response.error) {
-                    el.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
+                    varInfo.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
                 } else {
-                    el.innerHTML = response.html;
-
-                    var repl = el.querySelector(".repl .console");
-                    if(repl) {
-                        new REPL(index).install(repl);
-                    }
-
-                    switchTo(el);
+                    varInfo.innerHTML = response.html;
                 }
             });
+        }
+    }
+    
+    function selectFrameInfo(index) {
+        populateVariableInfo(index);
+        
+        if(previousFrameInfo) {
+            previousFrameInfo.style.display = "none";
+        }
+        previousFrameInfo = allFrameInfos[index];
+        previousFrameInfo.style.display = "block";
+        
+        if(REPL.all[index]) {
+            REPL.all[index].focus();
         }
     }
     
@@ -882,6 +899,10 @@
                 
                 selectFrameInfo(el.attributes["data-index"].value);
             };
+            var repl = allFrameInfos[i].querySelector(".repl .console");
+            if(repl) {
+                new REPL(i).install(repl);
+            }
         })(i);
     }
     
@@ -889,7 +910,7 @@
     (
       document.querySelector(".frames li.application") ||
       document.querySelector(".frames li")
-    ).onclick();
+    ).click();
     
     var applicationFramesButton = document.getElementById("application_frames");
     var allFramesButton = document.getElementById("all_frames");
@@ -916,7 +937,7 @@
         return false;
     };
     
-    applicationFramesButton.onclick();
+    applicationFramesButton.click();
 })();
 </script>
 </html>

@@ -56,6 +56,29 @@ module BetterErrors
         
         frame.gem_path.should == "(gem) whatever-1.2.3/lib/whatever.rb"
       end
+      
+      it "should prioritize gem path over application path" do
+        BetterErrors.stub!(:application_root).and_return("/abc/xyz")
+        Gem.stub!(:path).and_return(["/abc/xyz/vendor"])
+        frame = StackFrame.new("/abc/xyz/vendor/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
+        
+        frame.gem_path.should == "(gem) whatever-1.2.3/lib/whatever.rb"
+      end
+    end
+    
+    context "#pretty_path" do
+      it "should return #application_path for application paths" do
+        BetterErrors.stub!(:application_root).and_return("/abc/xyz")
+        frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
+        frame.pretty_path.should == frame.application_path
+      end
+      
+      it "should return #gem_path for gem paths" do
+        Gem.stub!(:path).and_return(["/abc/xyz"])
+        frame = StackFrame.new("/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
+        
+        frame.pretty_path.should == frame.gem_path
+      end
     end
 
     it "should special case SyntaxErrors" do

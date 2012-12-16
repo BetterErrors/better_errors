@@ -422,13 +422,13 @@
         font-weight: bold;
         font-size: 10pt;
     }
-    
+
     .trace_info .title .location a {
         color:inherit;
         text-decoration:none;
         border-bottom:1px solid #aaaaaa;
     }
-    
+
     .trace_info .title .location a:hover {
         border-color:#666666;
     }
@@ -704,7 +704,7 @@
 <script>
 (function() {
     var OID = <%== object_id.to_s.inspect %>;
-    
+
     var previousFrame = null;
     var previousFrameInfo = null;
     var allFrames = document.querySelectorAll("ul.frames li");
@@ -722,65 +722,65 @@
             }
         };
     }
-    
+
     function escapeHTML(html) {
         return html.replace(/&/, "&amp;").replace(/</g, "&lt;");
     }
-    
+
     function REPL(index) {
         this.index = index;
-        
+
         this.previousCommands = [];
         this.previousCommandOffset = 0;
     }
-    
+
     REPL.all = [];
-    
+
     REPL.prototype.install = function(containerElement) {
         this.container = containerElement;
-    
+
         this.promptElement  = this.container.querySelector(".prompt span");
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
-    
+
         this.inputElement.onkeydown = this.onKeyDown.bind(this);
-    
+
         this.setPrompt(">>");
-        
+
         REPL.all[this.index] = this;
     }
-    
+
     REPL.prototype.focus = function() {
         this.inputElement.focus();
     };
-    
+
     REPL.prototype.setPrompt = function(prompt) {
         this._prompt = prompt;
         this.promptElement.innerHTML = escapeHTML(prompt);
     };
-    
+
     REPL.prototype.getInput = function() {
         return this.inputElement.value;
     };
-    
+
     REPL.prototype.setInput = function(text) {
         this.inputElement.value = text;
-        
+
         if(this.inputElement.setSelectionRange) {
             // set cursor to end of input
             this.inputElement.setSelectionRange(text.length, text.length);
         }
     };
-    
+
     REPL.prototype.writeRawOutput = function(output) {
         this.outputElement.innerHTML += output;
         this.outputElement.scrollTop = this.outputElement.scrollHeight;
     };
-    
+
     REPL.prototype.writeOutput = function(output) {
         this.writeRawOutput(escapeHTML(output));
     };
-    
+
     REPL.prototype.sendInput = function(line) {
         var self = this;
         apiCall("eval", { "index": this.index, source: line }, function(response) {
@@ -793,7 +793,7 @@
             self.setPrompt(response.prompt);
         });
     };
-    
+
     REPL.prototype.onEnterKey = function() {
         var text = this.getInput();
         if(text != "" && text !== undefined) {
@@ -802,25 +802,25 @@
         this.setInput("");
         this.sendInput(text);
     };
-    
+
     REPL.prototype.onNavigateHistory = function(direction) {
         this.previousCommandOffset += direction;
-        
+
         if(this.previousCommandOffset < 0) {
             this.previousCommandOffset = -1;
             this.setInput("");
             return;
         }
-        
+
         if(this.previousCommandOffset >= this.previousCommands.length) {
             this.previousCommandOffset = this.previousCommands.length;
             this.setInput("");
             return;
         }
-        
+
         this.setInput(this.previousCommands[this.previousCommandOffset]);
     };
-    
+
     REPL.prototype.onKeyDown = function(ev) {
         if(ev.keyCode == 13) {
             this.onEnterKey();
@@ -834,7 +834,7 @@
             return false;
         }
     };
-    
+
     function switchTo(el) {
         if(previousFrameInfo) previousFrameInfo.style.display = "none";
         previousFrameInfo = el;
@@ -845,6 +845,19 @@
         if (replInput) replInput.focus();
     }
 
+    function toggleHeight(event) {
+        var pre = this.parentNode.childNodes[1].childNodes[0];
+        switch (pre.style.maxHeight) {
+        case "":
+        case "15em":
+           pre.style.maxHeight = "100%";
+           break;
+        case "100%":
+           pre.style.maxHeight = "15em";
+           break;
+        }
+    };
+
     function selectFrameInfo(index) {
         var el = allFrameInfos[index];
         if(el) {
@@ -853,8 +866,12 @@
             }
 
             apiCall("variables", { "index": index }, function(response) {
+                var variableNames = el.querySelectorAll(".sub table td.name");
+                for (var i = 0; i < variableNames.length; i++) {
+                    variableNames[i].removeEventListener("click", toggleHeight);
+                }
                 el.loaded = true;
-                if(response.error) {
+                if (response.error) {
                     el.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
                 } else {
                     el.innerHTML = response.html;
@@ -864,30 +881,17 @@
                         new REPL(index).install(repl);
                     }
 
-                    window.setTimeout(function () {
-                        var variableNames = document.querySelectorAll(".sub table td.name");
-                        for (var i = 0; i < variableNames.length; i++) {
-                            variableNames[i].onclick = function() {
-                                var pre = this.parentNode.childNodes[1].childNodes[0];
-                                switch (pre.style.maxHeight) {
-                                case "":
-                                case "15em":
-                                    pre.style.maxHeight = "100%";
-                                    break;
-                                case "100%":
-                                    pre.style.maxHeight = "15em";
-                                    break;
-                                }
-                            };
-                        };
-                    }, 1000);
+                    variableNames = el.querySelectorAll(".sub table td.name");
+                    for (var i = 0; i < variableNames.length; i++) {
+                        variableNames[i].addEventListener("click", toggleHeight);
+                    }
 
                     switchTo(el);
                 }
             });
         }
     }
-    
+
     for(var i = 0; i < allFrames.length; i++) {
         (function(i, el) {
             var el = allFrames[i];
@@ -897,21 +901,21 @@
                 }
                 el.className = "selected";
                 previousFrame = el;
-                
+
                 selectFrameInfo(el.attributes["data-index"].value);
             };
         })(i);
     }
-    
+
     // Click the first application frame
     (
       document.querySelector(".frames li.application") ||
       document.querySelector(".frames li")
     ).onclick();
-    
+
     var applicationFramesButton = document.getElementById("application_frames");
     var allFramesButton = document.getElementById("all_frames");
-    
+
     applicationFramesButton.onclick = function() {
         allFramesButton.className = "";
         applicationFramesButton.className = "selected";
@@ -924,7 +928,7 @@
         }
         return false;
     };
-    
+
     allFramesButton.onclick = function() {
         applicationFramesButton.className = "";
         allFramesButton.className = "selected";
@@ -933,7 +937,7 @@
         }
         return false;
     };
-    
+
     applicationFramesButton.onclick();
 })();
 </script>

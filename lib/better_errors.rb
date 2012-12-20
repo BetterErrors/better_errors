@@ -106,7 +106,6 @@ module BetterErrors
 end
 
 begin
-  $:.unshift "/Users/charlie/code/binding_of_caller/lib"
   require "binding_of_caller"
   BetterErrors.binding_of_caller_available = true
 rescue LoadError => e

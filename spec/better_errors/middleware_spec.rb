@@ -18,6 +18,11 @@ module BetterErrors
       app.call("PATH_INFO" => "/__better_errors/")
     end
 
+    it "should not show the error page to a non-local address" do
+      app.should_not_receive :better_errors_call
+      app.call("REMOTE_ADDR" => "1.2.3.4")
+    end
+
     context "when requesting the /__better_errors manually" do
       let(:app) { Middleware.new(->env { ":)" }) }
       

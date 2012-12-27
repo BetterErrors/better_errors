@@ -1,4 +1,5 @@
 require "json"
+require "ipaddr"
 
 module BetterErrors
   # Better Errors' error handling middleware. Including this in your middleware
@@ -36,18 +37,37 @@ module BetterErrors
     # @param [Hash] env
     # @return [Array]
     def call(env)
+      if local_request? env
+        better_errors_call env
+      else
+        @app.call env
+      end
+    end
+    
+  private
+    IPV4_LOCAL = IPAddr.new("127.0.0.0/8")
+    IPV6_LOCAL = IPAddr.new("::1/128")
+
+    def local_request?(env)
+      # REMOTE_ADDR is not in the rack spec, so some application servers do
+      # not provide it.
+      return true unless env["REMOTE_ADDR"]
+      ip = IPAddr.new env["REMOTE_ADDR"]
+      IPV4_LOCAL.include? ip or IPV6_LOCAL.include? ip
+    end
+
+    def better_errors_call(env)
       case env["PATH_INFO"]
       when %r{\A/__better_errors/(?<oid>-?\d+)/(?<method>\w+)\z}
         internal_call env, $~
       when %r{\A/__better_errors/?\z}
         show_error_page env
       else
-        app_call env
+        protected_app_call env
       end
     end
-    
-  private
-    def app_call(env)
+
+    def protected_app_call(env)
       @app.call env
     rescue Exception => ex
       @error_page = @handler.new ex, env

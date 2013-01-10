@@ -43,8 +43,10 @@ Here's an example using Sinatra:
 require "sinatra"
 require "better_errors"
 
-use BetterErrors::Middleware
-BetterErrors.application_root = File.expand_path("..", __FILE__)
+configure :development do
+  use BetterErrors::Middleware
+  BetterErrors.application_root = File.expand_path("..", __FILE__)
+end
 
 get "/" do
   raise "oops"

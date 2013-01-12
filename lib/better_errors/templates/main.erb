@@ -680,7 +680,7 @@
             </nav>
             <ul class="frames">
                 <% backtrace_frames.each_with_index do |frame, index| %>
-                    <li class="<%= frame.context %>" style="display: none" data-context="<%= frame.context %>" data-index="<%= index %>">
+                    <li class="<%= frame.context %>" data-context="<%= frame.context %>" data-index="<%= index %>">
                         <span class='stroke'></span>
                         <i class="icon <%= frame.context %>"></i>
                         <div class="info">
@@ -890,7 +890,7 @@
       document.querySelector(".frames li.application") ||
       document.querySelector(".frames li")
     ).onclick();
-    
+
     var applicationFramesButton = document.getElementById("application_frames");
     var allFramesButton = document.getElementById("all_frames");
     

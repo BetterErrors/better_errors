@@ -2,19 +2,19 @@ module BetterErrors
   # @private
   class StackFrame
     def self.from_exception(exception)
-      idx_offset = 0
-      list = exception.backtrace.each_with_index.map do |frame, idx|
-        frame_binding = exception.__better_errors_bindings_stack[idx - idx_offset]
-        next unless md = /\A(?<file>.*?):(?<line>\d+)(:in `(?<name>.*)')?/.match(frame)
-
-        # prevent mismatching frames in the backtrace with the binding stack
-        if frame_binding and frame_binding.eval("__FILE__") != md[:file]
-          idx_offset += 1
-          frame_binding = nil
-        end
-
-        StackFrame.new(md[:file], md[:line].to_i, md[:name], frame_binding)
-      end.compact
+      if exception.__better_errors_bindings_stack.any?
+        list = exception.__better_errors_bindings_stack.map { |binding|
+          file = binding.eval "__FILE__"
+          line = binding.eval "__LINE__"
+          name = binding.frame_description
+          StackFrame.new(file, line, name, binding)
+        }
+      else
+        list = (exception.backtrace || []).map { |frame|
+          next unless md = /\A(?<file>.*?):(?<line>\d+)(:in `(?<name>.*)')?/.match(frame)
+          StackFrame.new(md[:file], md[:line].to_i, md[:name])
+        }.compact
+      end
 
       if exception.is_a?(SyntaxError) && exception.to_s =~ /\A(.*):(\d*):/
         list.unshift StackFrame.new($1, $2.to_i, "")

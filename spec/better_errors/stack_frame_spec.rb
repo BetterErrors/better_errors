@@ -82,16 +82,15 @@ module BetterErrors
     end
 
     it "should special case SyntaxErrors" do
-      syntax_error = SyntaxError.new "my_file.rb:123: you wrote bad ruby!"
-      syntax_error.stub!(:backtrace).and_return([])
+      syntax_error = SyntaxError.allocate
+      Exception.instance_method(:initialize).bind(syntax_error).call("my_file.rb:123: you wrote bad ruby!")
       frames = StackFrame.from_exception(syntax_error)
-      frames.count.should == 1
       frames.first.filename.should == "my_file.rb"
       frames.first.line.should == 123
     end
     
     it "should not blow up if no method name is given" do
-      error = StandardError.new
+      error = StandardError.allocate
       
       error.stub!(:backtrace).and_return(["foo.rb:123"])
       frames = StackFrame.from_exception(error)
@@ -105,14 +104,14 @@ module BetterErrors
     end
     
     it "should ignore a backtrace line if its format doesn't make any sense at all" do
-      error = StandardError.new
+      error = StandardError.allocate
       error.stub!(:backtrace).and_return(["foo.rb:123:in `foo'", "C:in `find'", "bar.rb:123:in `bar'"])
       frames = StackFrame.from_exception(error)
       frames.count.should == 2
     end
     
     it "should not blow up if a filename contains a colon" do
-      error = StandardError.new
+      error = StandardError.allocate
       error.stub!(:backtrace).and_return(["crap:filename.rb:123"])
       frames = StackFrame.from_exception(error)
       frames.first.filename.should == "crap:filename.rb"

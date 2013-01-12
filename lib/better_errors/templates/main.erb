@@ -680,7 +680,7 @@
             </nav>
             <ul class="frames">
                 <% backtrace_frames.each_with_index do |frame, index| %>
-                    <li class="<%= frame.context %>" style="display: none" data-context="<%= frame.context %>" data-index="<%= index %>">
+                    <li class="<%= frame.context %>" style="display: block" data-context="<%= frame.context %>" data-index="<%= index %>">
                         <span class='stroke'></span>
                         <i class="icon <%= frame.context %>"></i>
                         <div class="info">
@@ -697,7 +697,7 @@
         </nav>
 
         <% backtrace_frames.each_with_index do |frame, index| %>
-            <div class="frame_info" id="frame_info_<%= index %>" style="display:none;"></div>
+            <div class="frame_info" id="frame_info_<%= index %>" style="display:<% if index == 0%>block<% else %>none<%end%>;"></div>
         <% end %>
     </section>
 </body>

@@ -55,6 +55,10 @@ module BetterErrors
     def application_frames
       backtrace_frames.select { |frame| frame.context == :application }
     end
+
+    def first_frame
+      backtrace_frames.detect { |frame| frame.context == :application } || backtrace_frames.first
+    end
     
   private
     def editor_url(frame)
@@ -93,8 +97,8 @@ module BetterErrors
       env["PATH_INFO"]
     end
     
-    def highlighted_code_block(frame)
-      CodeFormatter.new(frame.filename, frame.line).html
+    def highlighted_code_block(frame, format=:html)
+      CodeFormatter.new(frame.filename, frame.line).send format
     end
 
     def inspect_value(obj)

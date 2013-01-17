@@ -1,7 +1,15 @@
 <%= exception.class %> at <%= request_path %>
 <%= "=" * (exception.class.to_s.size + request_path.to_s.size + 4) %>
 
-<%= exception_message %>
+> <%= exception_message %>
+<% if backtrace_frames.any? %>
+
+Code
+----
+
+``` ruby
+<%== highlighted_code_block(first_frame, :text) %>
+```
 
 App backtrace
 -------------
@@ -12,3 +20,5 @@ Full backtrace
 --------------
 
 <%= backtrace_frames.map { |s| " - #{s}" }.join("\n") %>
+
+<% end %>

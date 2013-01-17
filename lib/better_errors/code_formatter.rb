@@ -18,9 +18,15 @@ module BetterErrors
     end
     
     def html
-      %{<div class="code">#{formatted_lines.join}</div>}
+      %{<div class="code">#{html_formatted_lines.join}</div>}
     rescue Errno::ENOENT, Errno::EINVAL
       source_unavailable
+    end
+
+    def text
+      text_formatted_lines.join
+    rescue Errno::ENOENT, Errno::EINVAL
+      "# Source is not available"
     end
     
     def source_unavailable
@@ -32,10 +38,22 @@ module BetterErrors
       FILE_TYPES[ext] || :text
     end
     
-    def formatted_lines
-      line_range.zip(highlighted_lines).map do |current_line, str|
-        class_name = current_line == line ? "highlight" : ""
+    def html_formatted_lines
+      each_line_of highlighted_lines do |highlight, current_line, str|
+        class_name = highlight ? "highlight" : ""
         sprintf '<pre class="%s">%5d %s</pre>', class_name, current_line, str
+      end
+    end
+
+    def text_formatted_lines
+      each_line_of context_lines do |highlight, current_line, str|
+        sprintf '%s %3d   %s', (highlight ? '>' : ' '), current_line, str
+      end
+    end
+
+    def each_line_of(lines, &blk)
+      line_range.zip(lines).map do |current_line, str|
+        yield (current_line == line), current_line, str
       end
     end
     

@@ -665,6 +665,12 @@
     </style>
 </head>
 <body>
+    <script>
+      // If Rails's Turbolinks is used, the Better Errors page is probably
+      // rendered in the host app's layout. Redirect before the page is rendered
+      if (window.Turbolinks) window.location.href = '/__better_errors';
+    </script>
+
     <div class='top'>
         <header class="exception">
             <h2><strong><%= exception.class %></strong> <span>at <%= request_path %></span></h2>
@@ -703,6 +709,7 @@
 </body>
 <script>
 (function() {
+
     var OID = <%== object_id.to_s.inspect %>;
     
     var previousFrame = null;

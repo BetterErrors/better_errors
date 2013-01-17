@@ -1,0 +1,14 @@
+<%= exception.class %> at <%= request_path %>
+<%= "=" * (exception.class.to_s.size + request_path.to_s.size + 4) %>
+
+<%= exception_message %>
+
+App backtrace
+-------------
+
+<%= application_frames.map { |s| " - #{s}" }.join("\n") %>
+
+Full backtrace
+--------------
+
+<%= backtrace_frames.map { |s| " - #{s}" }.join("\n") %>

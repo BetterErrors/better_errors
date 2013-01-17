@@ -51,6 +51,10 @@ module BetterErrors
     def backtrace_frames
       @backtrace_frames ||= StackFrame.from_exception(exception)
     end
+
+    def application_frames
+      backtrace_frames.select { |frame| frame.context == :application }
+    end
     
   private
     def editor_url(frame)

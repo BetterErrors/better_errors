@@ -74,18 +74,25 @@ module BetterErrors
       log_exception
       show_error_page(env)
     end
-    
+
     def show_error_page(env)
-      content = if @error_page
-        @error_page.render
+      type, content = if @error_page
+        if text?(env)
+          [ 'plain', @error_page.render('text') ]
+        else
+          [ 'html', @error_page.render ]
+        end
       else
-        "<h1>No errors</h1><p>No errors have been recorded yet.</p><hr>" +
-        "<code>Better Errors v#{BetterErrors::VERSION}</code>"
+        [ 'html', no_errors_page ]
       end
 
-      [500, { "Content-Type" => "text/html; charset=utf-8" }, [content]]
+      [500, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
     end
 
+    def text?(env)
+      env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
+      !env["HTTP_ACCEPT"].to_s.include?('html')
+    end
     
     def log_exception
       return unless BetterErrors.logger
@@ -105,6 +112,11 @@ module BetterErrors
       
       response = @error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
       [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
+    end
+
+    def no_errors_page
+      "<h1>No errors</h1><p>No errors have been recorded yet.</p><hr>" +
+      "<code>Better Errors v#{BetterErrors::VERSION}</code>"
     end
   end
 end

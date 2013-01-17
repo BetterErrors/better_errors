@@ -44,7 +44,20 @@ module BetterErrors
       it "should return UTF-8 error pages" do
         status, headers, body = app.call({})
         
-        headers["Content-Type"].should == "text/html; charset=utf-8"
+        headers["Content-Type"].should match /charset=utf-8/
+      end
+
+      it "should return text pages by default" do
+        status, headers, body = app.call({})
+        
+        headers["Content-Type"].should match /text\/plain/
+      end
+      
+      it "should return HTML pages by default" do
+        # Chrome's 'Accept' header looks similar this.
+        status, headers, body = app.call("HTTP_ACCEPT" => "text/html,application/xhtml+xml;q=0.9,*/*")
+        
+        headers["Content-Type"].should match /text\/html/
       end
       
       it "should log the exception" do

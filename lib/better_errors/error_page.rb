@@ -101,6 +101,10 @@ module BetterErrors
       CodeFormatter.new(frame.filename, frame.line).send format
     end
 
+    def text_heading(char, str)
+      str + "\n" + char*str.size
+    end
+
     def inspect_value(obj)
       CGI.escapeHTML(obj.inspect)
     rescue NoMethodError

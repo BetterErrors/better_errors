@@ -1,9 +1,9 @@
-<%= text_heading("=", "%s at %s" % [exception.class, request_path]) %>
+<%== text_heading("=", "%s at %s" % [exception.class, request_path]) %>
 
-> <%= exception_message %>
+> <%== exception_message %>
 <% if backtrace_frames.any? %>
 
-<%= text_heading("-", "%s, line %i" % [first_frame.pretty_path, first_frame.line]) %>
+<%== text_heading("-", "%s, line %i" % [first_frame.pretty_path, first_frame.line]) %>
 
 ``` ruby
 <%== highlighted_code_block(first_frame, :text) %>```
@@ -11,11 +11,11 @@
 App backtrace
 -------------
 
-<%= application_frames.map { |s| " - #{s}" }.join("\n") %>
+<%== application_frames.map { |s| " - #{s}" }.join("\n") %>
 
 Full backtrace
 --------------
 
-<%= backtrace_frames.map { |s| " - #{s}" }.join("\n") %>
+<%== backtrace_frames.map { |s| " - #{s}" }.join("\n") %>
 
 <% end %>

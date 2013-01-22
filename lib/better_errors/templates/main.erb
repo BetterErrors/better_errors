@@ -672,7 +672,18 @@
       host app.
     %>
     <script>
-      if (window.Turbolinks) document.head.innerHTML = "";
+      if (window.Turbolinks) {
+          for(var i=0; i < document.styleSheets.length; i++) {
+              if(document.styleSheets[i].href)
+                  document.styleSheets[i].disabled = true;
+          }
+          document.addEventListener("page:restore", function restoreCSS(e) {
+              for(var i=0; i < document.styleSheets.length; i++) {
+                  document.styleSheets[i].disabled = false;
+              }
+              document.removeEventListener("page:restore", restoreCSS, false);
+          });
+      }
     </script>
 
     <div class='top'>

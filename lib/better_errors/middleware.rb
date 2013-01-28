@@ -58,9 +58,9 @@ module BetterErrors
 
     def better_errors_call(env)
       case env["PATH_INFO"]
-      when %r{\A/__better_errors/(?<oid>-?\d+)/(?<method>\w+)\z}
+      when %r{\A.*/__better_errors/(?<oid>-?\d+)/(?<method>\w+)\z}
         internal_call env, $~
-      when %r{\A/__better_errors/?\z}
+      when %r{\A.*/__better_errors/?\z}
         show_error_page env
       else
         protected_app_call env

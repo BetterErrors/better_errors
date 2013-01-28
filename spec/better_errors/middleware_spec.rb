@@ -13,9 +13,19 @@ module BetterErrors
       app.call("PATH_INFO" => "/__better_errors/1/preform_awesomness")
     end
 
+    it "should call the internal methods on any subfolder path" do
+      app.should_receive :internal_call
+      app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors/1/preform_awesomness")
+    end
+
     it "should show the error page" do
       app.should_receive :show_error_page
       app.call("PATH_INFO" => "/__better_errors/")
+    end
+
+    it "should show the error page on any subfolder path" do
+      app.should_receive :show_error_page
+      app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors/")
     end
 
     it "should not show the error page to a non-local address" do
@@ -28,6 +38,11 @@ module BetterErrors
       
       it "should show that no errors have been recorded" do
         status, headers, body = app.call("PATH_INFO" => "/__better_errors")
+        body.join.should match /No errors have been recorded yet./
+      end
+
+      it "should show that no errors have been recorded on any subfolder path" do
+        status, headers, body = app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors")
         body.join.should match /No errors have been recorded yet./
       end
     end

@@ -2,6 +2,7 @@ require "spec_helper"
 
 module BetterErrors
   describe StackFrame do
+
     context "#application?" do
       it "should be true for application filenames" do
         BetterErrors.stub!(:application_root).and_return("/abc/xyz")
@@ -102,7 +103,66 @@ module BetterErrors
       frames.first.filename.should == "foo.rb"
       frames.first.line.should == 123
     end
-    
+
+    if RUBY_PLATFORM == 'java'
+      require 'java'
+
+      context "#from_exception called with java native exception" do
+        # Following specs covers various ways of catching
+        # native java exceptions, across JRuby versions 1.6.8-1.7.2.
+
+        if JRUBY_VERSION.match('1.7')
+          Java::JavaLang::NumberFormatException.__persistent__ = true # https://github.com/jruby/jruby/wiki/Persistence
+        end
+
+        it "should not fail when rescued via Exception" do
+          begin
+            java.lang.Integer.parseInt("")
+          rescue Exception => e
+            StackFrame.from_exception(e)
+          end
+        end
+
+        it "should not fail for ruby-raised java exception when rescued via Exception" do
+          begin
+            raise java.lang.Exception.new('oops')
+          rescue Exception => e # wont work for NativeException, nor for StandardError
+            StackFrame.from_exception(e)
+          end
+        end
+
+        it "should not fail when rescued via NativeException" do
+          begin
+            java.lang.Integer.parseInt("")
+          rescue NativeException => e
+            StackFrame.from_exception(e)
+          end
+        end
+
+        # Can't catch native errors via Ruby's StandardError on JRuby 1.7.0.
+        # See http://jira.codehaus.org/browse/JRUBY-6978
+        unless JRUBY_VERSION.match('1.7.0')
+
+          it "should not fail when rescued via implicit StandardError" do
+            begin
+              java.lang.Integer.parseInt("")
+            rescue => e
+              StackFrame.from_exception(e)
+            end
+          end
+
+          it "should not fail when rescued via StandardError" do
+            begin
+              java.lang.Integer.parseInt("")
+            rescue StandardError
+              StackFrame.from_exception($!)
+            end
+          end
+
+        end
+      end
+    end
+
     it "should ignore a backtrace line if its format doesn't make any sense at all" do
       error = StandardError.allocate
       error.stub!(:backtrace).and_return(["foo.rb:123:in `foo'", "C:in `find'", "bar.rb:123:in `bar'"])

@@ -11,10 +11,9 @@ module BetterErrors
     let(:empty_binding) {
       local_a = :value_for_local_a
       local_b = :value_for_local_b
-      
       @inst_c = :value_for_inst_c
       @inst_d = :value_for_inst_d
-      
+
       binding
     }
   

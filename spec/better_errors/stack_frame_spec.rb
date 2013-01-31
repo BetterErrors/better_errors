@@ -115,47 +115,34 @@ module BetterErrors
           Java::JavaLang::NumberFormatException.__persistent__ = true # https://github.com/jruby/jruby/wiki/Persistence
         end
 
-        it "should not fail when rescued via Exception" do
-          begin
-            java.lang.Integer.parseInt("")
-          rescue Exception => e
-            StackFrame.from_exception(e)
-          end
-        end
-
-        it "should not fail for ruby-raised java exception when rescued via Exception" do
+        it "should not fail when rescued exception is Java::JavaLang::Exception" do
           begin
             raise java.lang.Exception.new('oops')
           rescue Exception => e # wont work for NativeException, nor for StandardError
+            e.class.should == Java::JavaLang::Exception
             StackFrame.from_exception(e)
           end
         end
 
-        it "should not fail when rescued via NativeException" do
+        it "should not fail when rescued exception is NativeException" do
           begin
             java.lang.Integer.parseInt("")
           rescue NativeException => e
+            e.class.should == NativeException
             StackFrame.from_exception(e)
           end
         end
 
         # Can't catch native errors via Ruby's StandardError on JRuby 1.7.0.
         # See http://jira.codehaus.org/browse/JRUBY-6978
-        unless JRUBY_VERSION.match('1.7.0')
+        unless ( JRUBY_VERSION.match('1.7.0') || JRUBY_VERSION.match('1.6.8') )
 
-          it "should not fail when rescued via implicit StandardError" do
+          it "should not fail when rescued exception is Java::JavaLang::NumberFormatException" do
             begin
               java.lang.Integer.parseInt("")
             rescue => e
+              e.class.should == Java::JavaLang::NumberFormatException
               StackFrame.from_exception(e)
-            end
-          end
-
-          it "should not fail when rescued via StandardError" do
-            begin
-              java.lang.Integer.parseInt("")
-            rescue StandardError
-              StackFrame.from_exception($!)
             end
           end
 

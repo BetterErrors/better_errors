@@ -32,6 +32,24 @@ module BetterErrors
       end
     end
     
+    if RUBY_PLATFORM == 'java'
+      require 'java'
+      context "when handling native java errors" do
+        it "should return status 500 for errors raised from ruby" do
+          app = Middleware.new(->env { raise java.lang.Exception.new('oops') })
+
+          status, headers, body = app.call({})
+          status.should == 500
+        end
+
+        it "should return status 500 for errors raised from java" do
+          app2 = Middleware.new(->env { java.lang.Integer.parseInt("") })
+          status, headers, body = app2.call({})
+          status.should == 500
+        end
+      end
+    end
+
     context "when handling an error" do
       let(:app) { Middleware.new(->env { raise "oh no :(" }) }
     

@@ -27,6 +27,19 @@ module BetterErrors
     # @return [Logger, nil]
     attr_accessor :logger
 
+    # If this attribute is set, the editor link is prefixed with this path
+    #  instead of the path to the project on the machine it is running.
+    #
+    # @example
+    #   if BetterErrors.project_base_path is set to
+    #   '/Users/supercoder9000/Development/myrailsapp' and an error occours in
+    #   the application controller then the editor link will look like something
+    #   this:
+    #   my-editor://open?url=/Users/supercoder9000/Development/myrailsapp/app/controllers/application_controller.rb
+    #
+    # @return [String, nil]
+    attr_accessor :project_base_path
+
     # @private
     attr_accessor :binding_of_caller_available
     

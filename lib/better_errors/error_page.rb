@@ -62,7 +62,12 @@ module BetterErrors
     
   private
     def editor_url(frame)
-      BetterErrors.editor[frame.filename, frame.line]
+      if ENV['BETTER_ERRORS_FILENAME_PREFIX']
+        filename = ENV['BETTER_ERRORS_FILENAME_PREFIX'] + frame.pretty_path
+      else
+        filename = frame.filename
+      end
+      BetterErrors.editor[filename, frame.line]
     end
     
     def rack_session

@@ -4,3 +4,4 @@ Gemfile.lock
 coverage
 .yardoc
 doc
+.idea

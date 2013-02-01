@@ -2,6 +2,10 @@
 
 Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails in any Rack app as Rack middleware.
 
+This Fork auf Better Errors introduces the possibility to prefix the target file that will be linked on the error page.
+This is useful if you are using a vagrant box for your rails app and the path on your box differ from the path in your local repository.
+Simply set the OS environment variable BETTER_ERRORS_FILENAME_PREFIX (starts and ends with a slash, e.g. '/Users/kobe/Development/railsapp/').
+
 ![image](http://i.imgur.com/zYOXF.png)
 
 ## Features

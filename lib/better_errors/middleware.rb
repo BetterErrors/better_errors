@@ -68,27 +68,11 @@ module BetterErrors
     end
 
     def protected_app_call(env)
-      protected_java_app_call(env) do
-        @app.call env
-      end
+      @app.call env
     rescue Exception => ex
       @error_page = @handler.new ex, env
       log_exception
       show_error_page(env)
-    end
-
-    def protected_java_app_call(env)
-      if RUBY_PLATFORM == 'java'
-        begin
-          yield
-        rescue NativeException => ex
-          @error_page = @handler.new ex, env
-          log_exception
-          show_error_page(env)
-        end
-      else
-        yield
-      end
     end
 
     def show_error_page(env)

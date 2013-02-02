@@ -19,12 +19,3 @@ class Exception
     @__better_errors_bindings_stack || []
   end
 end
-
-if RUBY_PLATFORM == 'java' # support JRuby
-  require 'java'
-  class Java::JavaLang::Exception
-    def __better_errors_bindings_stack
-      []
-    end
-  end
-end

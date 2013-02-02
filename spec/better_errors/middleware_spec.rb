@@ -34,7 +34,7 @@ module BetterErrors
     
     if RUBY_PLATFORM == 'java'
       require 'java'
-      context "when handling native java errors" do
+      context "when handling native java exceptions" do
         it "should return status 500 for errors raised from ruby" do
           app = Middleware.new(->env { raise java.lang.Exception.new('oops') })
 
@@ -42,8 +42,20 @@ module BetterErrors
           status.should == 500
         end
 
-        it "should return status 500 for errors raised from java" do
+        it "should return status 500 for native errors raised from java" do
           app2 = Middleware.new(->env { java.lang.Integer.parseInt("") })
+          status, headers, body = app2.call({})
+          status.should == 500
+        end
+
+        it "should return status 500 for native errors re-raised in ruby" do
+          app2 = Middleware.new(->env {
+            begin
+              java.lang.Integer.parseInt("")
+            rescue NativeException => e
+              raise e
+            end
+          })
           status, headers, body = app2.call({})
           status.should == 500
         end

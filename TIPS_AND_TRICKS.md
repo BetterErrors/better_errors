@@ -1,7 +1,8 @@
 # Tips And Tricks
 
 ### View Last Error
-Navigate to http://localhost:3000/**__better_errors** to view last error. Very useful when debugging ajax queries.
+Navigate to http://localhost:3000/__better_errors to view last error.
+Very useful when debugging AJAX queries!
 
 ### Adjusting the project base path for the editor link (e.g. if your rails app is running in a VM)
 Add this code to your development environment initializer (in rails it is config/environments/development.rb)

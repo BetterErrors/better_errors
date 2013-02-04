@@ -1,14 +1,16 @@
 # Tips And Tricks
 
-### Adjusting the project base path for the editor link (e.g. if your rails app is running in a VM)
+### View Last Error
+Navigate to http://localhost:3000/**__better_errors** to view last error. Very useful when debugging ajax queries.
 
+### Adjusting the project base path for the editor link (e.g. if your rails app is running in a VM)
 Add this code to your development environment initializer (in rails it is config/environments/development.rb)
 ```ruby
 if defined? BetterErrors
-BetterErrors.editor = Proc.new{|full_path,line|
-  full_path = full_path.sub(Rails.root.to_s, your_local_path)
-  "my-editor://open?url=file://#{full_path}&line=#{line}"
-}
+  BetterErrors.editor = Proc.new{|full_path,line|
+    full_path = full_path.sub(Rails.root.to_s, your_local_path)
+    "my-editor://open?url=file://#{full_path}&line=#{line}"
+  }
 end
 ```
 In this case ```your_local_path``` is the project base path with which your editor is working.

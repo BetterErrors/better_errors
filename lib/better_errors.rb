@@ -101,6 +101,14 @@ module BetterErrors
       end
     end
   end
+
+  # Enables experimental Pry support in the inline REPL
+  #
+  # If you encounter problems while using Pry, *please* file a bug report at
+  # https://github.com/charliesome/better_errors/issues
+  def self.use_pry!
+    REPL::PROVIDERS.unshift const: :Pry, impl: "better_errors/repl/pry"
+  end
   
   BetterErrors.editor = :textmate
 end

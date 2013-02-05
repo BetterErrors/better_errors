@@ -33,30 +33,32 @@ module BetterErrors
       formatter.line_range.should == (15..20)
     end
 
-    context "when formatting as html" do
+    describe CodeFormatter::HTML do
       it "should highlight the erroring line" do
-        formatter.html.should =~ /highlight.*eight/
+        formatter = CodeFormatter::HTML.new(filename, 8)
+        formatter.output.should =~ /highlight.*eight/
       end
 
       it "should work when the line is right on the edge" do
-        formatter = CodeFormatter.new(filename, 20)
-        formatter.html.should_not == formatter.html_source_unavailable
+        formatter = CodeFormatter::HTML.new(filename, 20)
+        formatter.output.should_not == formatter.source_unavailable
       end
       
       it "should not barf when the lines don't make any sense" do
-        formatter = CodeFormatter.new(filename, 999)
-        formatter.html.should == formatter.html_source_unavailable
+        formatter = CodeFormatter::HTML.new(filename, 999)
+        formatter.output.should == formatter.source_unavailable
       end
       
       it "should not barf when the file doesn't exist" do
-        formatter = CodeFormatter.new("fkdguhskd7e l", 1)
-        formatter.html.should == formatter.html_source_unavailable
+        formatter = CodeFormatter::HTML.new("fkdguhskd7e l", 1)
+        formatter.output.should == formatter.source_unavailable
       end
     end
 
-    context "when formatting as text" do
+    describe CodeFormatter::Text do
       it "should highlight the erroring line" do
-        formatter.text.should == <<-TEXT.gsub(/^        /, "")
+        formatter = CodeFormatter::Text.new(filename, 8)
+        formatter.output.should == <<-TEXT.gsub(/^        /, "")
             3   three
             4   four
             5   five
@@ -72,18 +74,18 @@ module BetterErrors
       end
 
       it "should work when the line is right on the edge" do
-        formatter = CodeFormatter.new(filename, 20)
-        formatter.text.should_not == formatter.text_source_unavailable
+        formatter = CodeFormatter::Text.new(filename, 20)
+        formatter.output.should_not == formatter.source_unavailable
       end
 
       it "should not barf when the lines don't make any sense" do
-        formatter = CodeFormatter.new(filename, 999)
-        formatter.text.should == formatter.text_source_unavailable
+        formatter = CodeFormatter::Text.new(filename, 999)
+        formatter.output.should == formatter.source_unavailable
       end
       
       it "should not barf when the file doesn't exist" do
-        formatter = CodeFormatter.new("fkdguhskd7e l", 1)
-        formatter.text.should == formatter.text_source_unavailable
+        formatter = CodeFormatter::Text.new("fkdguhskd7e l", 1)
+        formatter.output.should == formatter.source_unavailable
       end
     end
   end

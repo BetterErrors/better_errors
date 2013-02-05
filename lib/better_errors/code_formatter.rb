@@ -1,6 +1,9 @@
 module BetterErrors
   # @private
   class CodeFormatter
+    require "better_errors/code_formatter/html"
+    require "better_errors/code_formatter/text"
+
     FILE_TYPES = {
       ".rb"   => :ruby,
       ""      => :ruby,
@@ -16,43 +19,20 @@ module BetterErrors
       @line     = line
       @context  = context
     end
-    
-    def html
-      %{<div class="code">#{html_formatted_lines.join}</div>}
+
+    def output
+      formatted_code
     rescue Errno::ENOENT, Errno::EINVAL
-      html_source_unavailable
+      source_unavailable
     end
 
-    def text
-      text_formatted_lines.join
-    rescue Errno::ENOENT, Errno::EINVAL
-      text_source_unavailable
-    end
-    
-    def html_source_unavailable
-      "<p class='unavailable'>Source is not available</p>"
-    end
-    
-    def text_source_unavailable
-      "# Source is not available"
+    def formatted_code
+      formatted_lines.join
     end
     
     def coderay_scanner
       ext = File.extname(filename)
       FILE_TYPES[ext] || :text
-    end
-    
-    def html_formatted_lines
-      each_line_of highlighted_lines do |highlight, current_line, str|
-        class_name = highlight ? "highlight" : ""
-        sprintf '<pre class="%s">%5d %s</pre>', class_name, current_line, str
-      end
-    end
-
-    def text_formatted_lines
-      each_line_of context_lines do |highlight, current_line, str|
-        sprintf '%s %3d   %s', (highlight ? '>' : ' '), current_line, str
-      end
     end
 
     def each_line_of(lines, &blk)

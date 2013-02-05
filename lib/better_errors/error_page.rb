@@ -97,8 +97,12 @@ module BetterErrors
       env["PATH_INFO"]
     end
     
-    def highlighted_code_block(frame, format=:html)
-      CodeFormatter.new(frame.filename, frame.line).send format
+    def html_formatted_code_block(frame)
+      CodeFormatter::HTML.new(frame.filename, frame.line).output
+    end
+    
+    def text_formatted_code_block(frame)
+      CodeFormatter::Text.new(frame.filename, frame.line).output
     end
 
     def text_heading(char, str)

@@ -1,5 +1,6 @@
 require "spec_helper"
 require "better_errors/repl/basic"
+require "better_errors/repl/shared_examples"
 
 module BetterErrors
   module REPL
@@ -10,23 +11,8 @@ module BetterErrors
       }
       
       let(:repl) { Basic.new fresh_binding }
-      
-      it "should evaluate ruby code in a given context" do
-        repl.send_input("local_a = 456")
-        fresh_binding.eval("local_a").should == 456
-      end
-      
-      it "should return a tuple of output and the new prompt" do
-        output, prompt = repl.send_input("1 + 2")
-        output.should == "=> 3\n"
-        prompt.should == ">>"
-      end
-      
-      it "should not barf if the code throws an exception" do
-        output, prompt = repl.send_input("raise Exception")
-        output.should == "!! #<Exception: Exception>\n"
-        prompt.should == ">>"
-      end
+
+      it_behaves_like "a good repl should"
     end
   end
 end

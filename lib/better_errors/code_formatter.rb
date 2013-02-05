@@ -20,17 +20,21 @@ module BetterErrors
     def html
       %{<div class="code">#{html_formatted_lines.join}</div>}
     rescue Errno::ENOENT, Errno::EINVAL
-      source_unavailable
+      html_source_unavailable
     end
 
     def text
       text_formatted_lines.join
     rescue Errno::ENOENT, Errno::EINVAL
-      "# Source is not available"
+      text_source_unavailable
     end
     
-    def source_unavailable
-      "<p class='unavailable'>Source unavailable</p>"
+    def html_source_unavailable
+      "<p class='unavailable'>Source is not available</p>"
+    end
+    
+    def text_source_unavailable
+      "# Source is not available"
     end
     
     def coderay_scanner

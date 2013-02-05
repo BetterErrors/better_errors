@@ -46,10 +46,6 @@ module BetterErrors
         end
         @fiber.resume
       end
-      
-      def pry_indent
-        @pry.instance_variable_get(:@indent)
-      end
     
       def send_input(str)
         local ::Pry.config, color: false, pager: false do

@@ -105,12 +105,8 @@ module BetterErrors
       str + "\n" + char*str.size
     end
 
-    def escape_value(value)
-      CGI.escapeHTML(value)
-    end
-
     def inspect_value(obj)
-      escape_value(obj.inspect)
+      CGI.escapeHTML(obj.inspect)
     rescue NoMethodError
       "<span class='unsupported'>(object doesn't support inspect)</span>"
     rescue Exception
@@ -118,7 +114,7 @@ module BetterErrors
     end
 
     def pretty_hash_json(object)
-      escape_value(JSON.pretty_generate(purify_hash(object)))
+      JSON.pretty_generate(purify_hash(object))
     end
 
     # Converts a hash-like object to a real hashes.

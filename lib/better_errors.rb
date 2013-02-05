@@ -11,6 +11,9 @@ require "better_errors/code_formatter"
 require "better_errors/repl"
 
 module BetterErrors
+  GLOBAL_RC_FILE = "~/.berc"
+  LOCAL_RC_FILE = "./.berc"
+
   class << self
     # The path to the root of the application. Better Errors uses this property
     # to determine if a file in a backtrace should be considered an application
@@ -110,6 +113,13 @@ begin
   BetterErrors.binding_of_caller_available = true
 rescue LoadError => e
   BetterErrors.binding_of_caller_available = false
+end
+
+begin
+  eval File.read(File.expand_path(BetterErrors::GLOBAL_RC_FILE))
+  eval File.read(File.expand_path(BetterErrors::LOCAL_RC_FILE))
+rescue Errno::ENOENT
+  # rc file not found
 end
 
 require "better_errors/core_ext/exception"

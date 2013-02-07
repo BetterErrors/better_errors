@@ -37,7 +37,7 @@ module BetterErrors
     # @param [Hash] env
     # @return [Array]
     def call(env)
-      if local_request? env
+      if local_request? env or BetterErrors.allow_remote
         better_errors_call env
       else
         @app.call env

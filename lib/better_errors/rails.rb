@@ -2,7 +2,7 @@ module BetterErrors
   # @private
   class Railtie < Rails::Railtie
     initializer "better_errors.configure_rails_initialization" do
-      unless Rails.env.production?
+      if use_better_errors?
         insert_middleware
         BetterErrors.logger = Rails.logger
         BetterErrors.application_root = Rails.root.to_s
@@ -15,6 +15,10 @@ module BetterErrors
       else
         Rails.application.middleware.use BetterErrors::Middleware
       end
+    end
+
+    def use_better_errors?
+      !Rails.env.production? and Rails.application.config.consider_all_requests_local
     end
   end
 end

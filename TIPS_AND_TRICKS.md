@@ -10,7 +10,7 @@ Better Errors saves the most recent error page displayed at `/__better_errors`.
 
 This can be handy if you aren't able to see the error page served up when the exception occurred, eg. if the errored request was an AJAX or curl request.
 
-### Adjusting the project base path for the editor link (e.g. if your rails app is running in a VM)
+### Adjusting the project base path for the editor link
 
 If your Rails app is running from a shared folder in a VM, the path to your source files from Rails' perspective could be different to the path seen by your editor.
 

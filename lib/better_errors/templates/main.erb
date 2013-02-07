@@ -4,7 +4,6 @@
     <title><%= exception.class %> at <%= request_path %></title>
 </head>
 <body>
-
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>
     <style>
     /* Basic reset */
@@ -664,6 +663,16 @@
         background: #888;
     }
     </style>
+
+    <%# IE8 compatibility crap %>
+    <script>
+    (function() {
+        var elements = ["section", "nav", "header", "footer", "audio"];
+        for (var i = 0; i < elements.length; i++) {
+            document.createElement(element);
+        }
+    })();
+    </script>
 
     <%#
       If Rails's Turbolinks is used, the Better Errors page is probably

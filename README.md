@@ -62,10 +62,6 @@ end
 * **Coming soon**
   * MRI 2.0.0 - the official API for grabbing caller bindings is slated for MRI 2.0.0, but it has not been implemented yet
 
-## Known issues
-
-* Calling `yield` from the REPL segfaults MRI 1.9.x.
-
 ## Get in touch!
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!

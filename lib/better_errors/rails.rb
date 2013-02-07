@@ -11,14 +11,18 @@ module BetterErrors
 
     def insert_middleware
       if defined? ActionDispatch::DebugExceptions
-        Rails.application.middleware.insert_after ActionDispatch::DebugExceptions, BetterErrors::Middleware
+        app.middleware.insert_after ActionDispatch::DebugExceptions, BetterErrors::Middleware
       else
-        Rails.application.middleware.use BetterErrors::Middleware
+        app.middleware.use BetterErrors::Middleware
       end
     end
 
     def use_better_errors?
-      !Rails.env.production? and Rails.application.config.consider_all_requests_local
+      !Rails.env.production? and app.config.consider_all_requests_local
+    end
+
+    def app
+      Rails.application
     end
   end
 end

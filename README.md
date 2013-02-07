@@ -11,17 +11,6 @@ Better Errors replaces the standard Rails error page with a much better and more
 * Local and instance variable inspection
 * Live REPL on every stack frame
 
-## Support Bettter Errors
-
-Do you love Better Errors and wish to support development and maintenance? We're flattered!
-
-* Tip [charliesome](https://www.gittip.com/charliesome/)
-    > Creator/developer/maintainer of Better Errors
-* Tip [rstacruz](https://www.gittip.com/rstacruz/)
-    > [rstacruz](https://github.com/rstacruz) is the brilliant designer responsible for the gorgeous error page
-* Tip [banister](https://www.gittip.com/banister/)
-    > Better Errors' advanced features (ie. REPL, variable inspection) simply would not be possible without [banister](https://github.com/banister)'s amazing [binding_of_caller](https://github.com/banister/binding_of_caller) gem
-
 ## Installation
 
 Add this to your Gemfile:

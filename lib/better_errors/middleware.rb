@@ -51,7 +51,7 @@ module BetterErrors
     def local_request?(env)
       # REMOTE_ADDR is not in the rack spec, so some application servers do
       # not provide it.
-      return true unless env["REMOTE_ADDR"]
+      return true unless env.has_key? "REMOTE_ADDR" and env["REMOTE_ADDR"].present?
       ip = IPAddr.new env["REMOTE_ADDR"]
       IPV4_LOCAL.include? ip or IPV6_LOCAL.include? ip
     end

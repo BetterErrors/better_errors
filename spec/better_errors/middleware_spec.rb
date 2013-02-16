@@ -23,6 +23,12 @@ module BetterErrors
       app.call("REMOTE_ADDR" => "1.2.3.4")
     end
 
+    it "should show to a whitelisted IP" do
+      BetterErrors::Middleware.allow_ip! '77.55.33.11'
+      app.should_receive :better_errors_call
+      app.call("REMOTE_ADDR" => "77.55.33.11")
+    end
+
     context "when requesting the /__better_errors manually" do
       let(:app) { Middleware.new(->env { ":)" }) }
 

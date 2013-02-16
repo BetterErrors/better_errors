@@ -21,8 +21,6 @@ group :development do
 end
 ```
 
-**NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**
-
 If you would like to use Better Errors' **advanced features** (REPL, local/instance variable inspection, pretty stack frame names), you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem by [@banisterfiend](http://twitter.com/banisterfiend) to your Gemfile:
 
 ```ruby
@@ -30,6 +28,23 @@ gem "binding_of_caller"
 ```
 
 This is an optional dependency however, and Better Errors will work without it.
+
+## Security
+
+**NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**
+
+You will notice that the only machine that gets the Better Errors page is localhost. If you are developing on a remote host (or a virtually remote host, such as a Vagrant box). Obviously, the REPL is not something you want to expose to the public, but there are also other pieces of sensitive information available in the backtrace (this giant info display comes at a price).
+
+To poke selective holes in this security mechanism, you can add a line like this to your startup (for example, on Rails it would be `config/environments/development.rb`)
+
+    BetterErrors::Middleware.allow_ip! ENV['TRUSTED_IP'] if ENV['TRUSTED_IP']
+
+    # Then run rails like:
+    TRUSTED_IP=66.68.96.220 rails s
+
+Note that it is actually implemented as a `Set`, so you can add more than one.
+
+Tip: You can find your apparent IP by hitting the old error page's "Show env dump" and looking at "REMOTE_ADDR".
 
 ## Usage
 

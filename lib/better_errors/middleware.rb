@@ -5,13 +5,13 @@ module BetterErrors
   # Better Errors' error handling middleware. Including this in your middleware
   # stack will show a Better Errors error page for exceptions raised below this
   # middleware.
-  # 
-  # If you are using Ruby on Rails, you do not need to manually insert this 
+  #
+  # If you are using Ruby on Rails, you do not need to manually insert this
   # middleware into your middleware stack.
-  # 
+  #
   # @example Sinatra
   #   require "better_errors"
-  # 
+  #
   #   if development?
   #     use BetterErrors::Middleware
   #   end
@@ -21,19 +21,19 @@ module BetterErrors
   #   if ENV["RACK_ENV"] == "development"
   #     use BetterErrors::Middleware
   #   end
-  # 
+  #
   class Middleware
     # A new instance of BetterErrors::Middleware
-    # 
+    #
     # @param app      The Rack app/middleware to wrap with Better Errors
     # @param handler  The error handler to use.
     def initialize(app, handler = ErrorPage)
       @app      = app
       @handler  = handler
     end
-    
+
     # Calls the Better Errors middleware
-    # 
+    #
     # @param [Hash] env
     # @return [Array]
     def call(env)
@@ -43,7 +43,7 @@ module BetterErrors
         @app.call env
       end
     end
-    
+
   private
     IPV4_LOCAL = IPAddr.new("127.0.0.0/8")
     IPV6_LOCAL = IPAddr.new("::1/128")
@@ -93,18 +93,18 @@ module BetterErrors
       env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
       !env["HTTP_ACCEPT"].to_s.include?('html')
     end
-    
+
     def log_exception
       return unless BetterErrors.logger
-      
+
       message = "\n#{@error_page.exception.class} - #{@error_page.exception.message}:\n"
       @error_page.backtrace_frames.each do |frame|
         message << "  #{frame}\n"
       end
-      
+
       BetterErrors.logger.fatal message
     end
-  
+
     def internal_call(env, opts)
       if opts[:oid].to_i != @error_page.object_id
         return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(error: "Session expired")]]

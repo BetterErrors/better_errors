@@ -91,6 +91,8 @@ module BetterErrors
       self.editor = "subl://open?url=file://%{file}&line=%{line}"
     when :macvim, :mvim
       self.editor = proc { |file, line| "mvim://open?url=file://#{file}&line=#{line}" }
+    when :emacs
+      self.editor = "emacs://open?url=file://%{file}&line=%{line}"
     when String
       self.editor = proc { |file, line| editor % { file: URI.encode_www_form_component(file), line: line } }
     else

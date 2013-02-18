@@ -110,7 +110,7 @@ module BetterErrors
     REPL::PROVIDERS.unshift const: :Pry, impl: "better_errors/repl/pry"
   end
   
-  BetterErrors.editor = :textmate
+  BetterErrors.editor = (ENV['EDITOR'] && ENV['EDITOR'].to_sym) || :textmate
 end
 
 begin

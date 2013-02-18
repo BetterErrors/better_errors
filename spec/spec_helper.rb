@@ -1,3 +1,5 @@
+ENV['EDITOR'] = 'textmate'
+
 require "simplecov"
 SimpleCov.start
 

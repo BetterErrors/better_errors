@@ -111,7 +111,17 @@ module BetterErrors
   def self.use_pry!
     REPL::PROVIDERS.unshift const: :Pry, impl: "better_errors/repl/pry"
   end
-  
+
+  # Allows displaying better errors to remote ip addresses (useful for
+  # Vagrant and remote setups)
+  def self.allow_remote
+    @allow_remote
+  end
+
+  def self.allow_remote=(allow_remote=false)
+    @allow_remote = allow_remote
+  end
+
   BetterErrors.editor = :textmate
 end
 

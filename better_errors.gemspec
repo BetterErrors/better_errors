@@ -25,7 +25,6 @@ Gem::Specification.new do |s|
     simplecov
     yard
     redcarpet
-    json
   ).each do |e| s.add_development_dependency e end
 
   s.add_dependency "erubis", ">= 2.6.6"

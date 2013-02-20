@@ -17,14 +17,16 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "rake"
   s.add_development_dependency "rspec", "~> 2.12.0"
-  s.add_development_dependency "binding_of_caller"
-  s.add_development_dependency "pry"
-  s.add_development_dependency "simplecov"
-  s.add_development_dependency "yard"
-  s.add_development_dependency "redcarpet"
-  
+  %w(
+    rake
+    binding_of_caller
+    pry
+    simplecov
+    yard
+    redcarpet
+  ).each do |e| s.add_development_dependency e end
+
   s.add_dependency "erubis", ">= 2.6.6"
   s.add_dependency "coderay", ">= 1.0.0"
 

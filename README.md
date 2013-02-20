@@ -9,7 +9,8 @@ Better Errors replaces the standard Rails error page with a much better and more
 * Full stack trace
 * Source code inspection for all stack frames (with highlighting)
 * Local and instance variable inspection
-* Live REPL on every stack frame
+
+* Live REPL (read, eval, print loop) on every stack frame
 
 ## Installation
 
@@ -21,8 +22,6 @@ group :development do
 end
 ```
 
-**NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**
-
 If you would like to use Better Errors' **advanced features** (REPL, local/instance variable inspection, pretty stack frame names), you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem by [@banisterfiend](http://twitter.com/banisterfiend) to your Gemfile:
 
 ```ruby
@@ -30,6 +29,24 @@ gem "binding_of_caller"
 ```
 
 This is an optional dependency however, and Better Errors will work without it.
+
+## Security
+
+**NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**
+
+Obviously, a REPL is not something you want to expose to the public. In addition, the other sensitive info might exist within full volume of information provided by Better Errors. To contain this,
+the default setup is to serve Ancient Errors to everyone but localhost (and this includes virtually remote hosts, such as a [Vagrant](http://www.vagrantup.com/) box).
+
+To poke selective holes in this security mechanism, you can add a line like this to your startup (for example, on Rails it would be `config/environments/development.rb`)
+
+    BetterErrors::Middleware.allow_ip! ENV['TRUSTED_IP'] if ENV['TRUSTED_IP']
+
+    # Then run rails like:
+    TRUSTED_IP=66.68.96.220 rails s
+
+Note that it is actually implemented as a `Set`, so you can add more than one.
+
+Tip: You can find your apparent IP by hitting the old error page's "Show env dump" and looking at "REMOTE_ADDR".
 
 ## Usage
 

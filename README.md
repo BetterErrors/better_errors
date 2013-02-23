@@ -33,18 +33,23 @@ This is an optional dependency however, and Better Errors will work without it.
 
 **NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**
 
-You will notice that the only machine that gets the Better Errors page is localhost, which means you get Ancient Errors if you are developing on a remote host (or a virtually remote host, such as a Vagrant box). Obviously, the REPL is not something you want to expose to the public, but there are also other pieces of sensitive information available in the backtrace (this giant info display comes at a price).
+You will notice that the only machine that gets the Better Errors page is localhost, which means you get the default error page if you are developing on a remote host (or a virtually remote host, such as a Vagrant box). Obviously, the REPL is not something you want to expose to the public, but there may also be other pieces of sensitive information available in the backtrace.
 
 To poke selective holes in this security mechanism, you can add a line like this to your startup (for example, on Rails it would be `config/environments/development.rb`)
 
-    BetterErrors::Middleware.allow_ip! ENV['TRUSTED_IP'] if ENV['TRUSTED_IP']
+```ruby
+BetterErrors::Middleware.allow_ip! ENV['TRUSTED_IP'] if ENV['TRUSTED_IP']
+```
 
-    # Then run rails like:
-    TRUSTED_IP=66.68.96.220 rails s
+Then run Rails like this:
 
-Note that it is actually implemented as a `Set`, so you can add more than one.
+```shell
+TRUSTED_IP=66.68.96.220 rails s
+```
 
-Tip: You can find your apparent IP by hitting the old error page's "Show env dump" and looking at "REMOTE_ADDR".
+Note that the `allow_ip!` is actually backed by a `Set`, so you can add more than one IP address or subnet.
+
+**Tip:** You can find your apparent IP by hitting the old error page's "Show env dump" and looking at "REMOTE_ADDR".
 
 ## Usage
 

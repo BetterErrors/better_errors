@@ -24,6 +24,20 @@ module BetterErrors
   #   end
   #
   class Middleware
+    # The set of IP addresses that are allowed to access Better Errors.
+    #
+    # Set to `{ "127.0.0.1/8", "::1/128" }` by default.
+    ALLOWED_IPS = Set.new
+
+    # Adds an address to the set of IP addresses allowed to access Better
+    # Errors.
+    def self.allow_ip!(addr)
+      ALLOWED_IPS << IPAddr.new(addr)
+    end
+
+    allow_ip! "127.0.0.0/8"
+    allow_ip! "::1/128"
+
     # A new instance of BetterErrors::Middleware
     #
     # @param app      The Rack app/middleware to wrap with Better Errors
@@ -45,13 +59,6 @@ module BetterErrors
       end
     end
 
-    def self.allow_ip!(addr)
-      ALLOWED_IPS << addr
-    end
-    ALLOWED_IPS = Set.new
-    allow_ip! '127.0.0.0/8'
-    allow_ip! '::1/128'
-
   private
 
     def allow_ip?(env)
@@ -59,7 +66,7 @@ module BetterErrors
       # not provide it.
       return true unless env["REMOTE_ADDR"]
       ip = IPAddr.new env["REMOTE_ADDR"]
-      ALLOWED_IPS.find { |e| IPAddr.new(e).include? ip }
+      ALLOWED_IPS.any? { |subnet| subnet.include? ip }
     end
 
     def better_errors_call(env)

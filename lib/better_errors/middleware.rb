@@ -61,11 +61,20 @@ module BetterErrors
 
   private
 
+    # Allows manual setting of the remote address. Valuable when your
+    # development stack is not setting REMOTE_ADDR properly.
+    #
+    # @parse [Hash] env
+    # @return [String]
+    def remote_addr(env)
+      ENV["REMOTE_ADDR"] || env["REMOTE_ADDR"]
+    end
+
     def allow_ip?(env)
       # REMOTE_ADDR is not in the rack spec, so some application servers do
       # not provide it.
-      return true unless env["REMOTE_ADDR"]
-      ip = IPAddr.new env["REMOTE_ADDR"]
+      return true unless remote_addr(env)
+      ip = IPAddr.new remote_addr(env)
       ALLOWED_IPS.any? { |subnet| subnet.include? ip }
     end
 

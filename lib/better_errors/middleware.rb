@@ -36,7 +36,7 @@ module BetterErrors
     end
 
     allow_ip! "127.0.0.0/8"
-    allow_ip! "::1/128"
+    allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
 
     # A new instance of BetterErrors::Middleware
     #

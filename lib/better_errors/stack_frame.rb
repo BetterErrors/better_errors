@@ -94,8 +94,9 @@ module BetterErrors
     end
     
     def instance_variables
+      visible_instance_variables = frame_binding.eval("instance_variables") - BetterErrors::ErrorPage.ignored_instance_variables
       return {} unless frame_binding
-      Hash[frame_binding.eval("instance_variables").map { |x|
+      Hash[visible_instance_variables.map { |x|
         [x, frame_binding.eval(x.to_s)]
       }]
     end

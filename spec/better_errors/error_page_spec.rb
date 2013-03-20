@@ -48,6 +48,15 @@ module BetterErrors
         html.should include("inst_d")
         html.should include(":value_for_inst_d")
       end
+
+      it "should show filter instance variables" do
+        BetterErrors::ErrorPage.stub(:ignored_instance_variables).and_return([ :@inst_d ])
+        html = error_page.do_variables("index" => 0)[:html]
+        html.should include("inst_c")
+        html.should include(":value_for_inst_c")
+        html.should_not include('<td class="name">@inst_d</td>')
+        html.should_not include("<pre>:value_for_inst_d</pre>")
+      end
     end
     
     it "should not die if the source file is not a real filename" do

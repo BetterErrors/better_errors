@@ -50,7 +50,7 @@ module BetterErrors
       end
 
       it "should show filter instance variables" do
-        BetterErrors::ErrorPage.stub(:ignored_instance_variables).and_return([ :@inst_d ])
+        BetterErrors.stub(:ignored_instance_variables).and_return([ :@inst_d ])
         html = error_page.do_variables("index" => 0)[:html]
         html.should include("inst_c")
         html.should include(":value_for_inst_c")

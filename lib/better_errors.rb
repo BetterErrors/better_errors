@@ -32,8 +32,13 @@ module BetterErrors
     
     # @private
     alias_method :binding_of_caller_available?, :binding_of_caller_available
+
+    # The ignored instance variables.
+    # @return [Array]
+    attr_accessor :ignored_instance_variables
   end
-  
+  @ignored_instance_variables = []
+
   # Returns a proc, which when called with a filename and line number argument,
   # returns a URL to open the filename and line in the selected editor.
   # 

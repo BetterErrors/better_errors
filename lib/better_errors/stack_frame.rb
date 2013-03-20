@@ -101,7 +101,7 @@ module BetterErrors
     end
 
     def visible_instance_variables
-      frame_binding.eval("instance_variables") - BetterErrors::ErrorPage.ignored_instance_variables
+      frame_binding.eval("instance_variables") - BetterErrors.ignored_instance_variables
     end
 
     def to_s

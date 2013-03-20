@@ -4,16 +4,6 @@ require "json"
 module BetterErrors
   # @private
   class ErrorPage
-    @@ignored_instance_variables = []
-
-    def self.ignored_instance_variables
-      @@ignored_instance_variables
-    end
-
-    def self.ignored_instance_variables=(ignored_instance_variables)
-      @@ignored_instance_variables = ignored_instance_variables
-    end
-
     def self.template_path(template_name)
       File.expand_path("../templates/#{template_name}.erb", __FILE__)
     end

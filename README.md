@@ -80,6 +80,8 @@ end
   * JRuby (1.9 mode) - *advanced features unsupported*
   * Rubinius (1.9 mode) - *advanced features unsupported*
 
+[![Build Status](https://travis-ci.org/charliesome/better_errors.png)](https://travis-ci.org/charliesome/better_errors)
+
 ## Get in touch!
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!

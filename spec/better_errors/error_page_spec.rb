@@ -58,12 +58,16 @@ module BetterErrors
         html.should_not include("<pre>:value_for_inst_d</pre>")
       end
     end
-    
+
     it "should not die if the source file is not a real filename" do
       exception.stub!(:backtrace).and_return([
         "<internal:prelude>:10:in `spawn_rack_application'"
       ])
       response.should include("Source unavailable")
+    end
+
+    it "should include the plain text output in a special element just in case" do
+      response.should match(/<pre class="raw">.+ZeroDivisionError/m)
     end
   end
 end

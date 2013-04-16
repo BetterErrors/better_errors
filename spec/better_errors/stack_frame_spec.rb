@@ -54,7 +54,7 @@ module BetterErrors
         Gem.stub!(:path).and_return(["/abc/xyz"])
         frame = StackFrame.new("/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
         
-        frame.gem_path.should == "(gem) whatever-1.2.3/lib/whatever.rb"
+        frame.gem_path.should == "whatever (1.2.3) lib/whatever.rb"
       end
       
       it "should prioritize gem path over application path" do
@@ -62,7 +62,7 @@ module BetterErrors
         Gem.stub!(:path).and_return(["/abc/xyz/vendor"])
         frame = StackFrame.new("/abc/xyz/vendor/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
         
-        frame.gem_path.should == "(gem) whatever-1.2.3/lib/whatever.rb"
+        frame.gem_path.should == "whatever (1.2.3) lib/whatever.rb"
       end
     end
     

@@ -50,7 +50,7 @@ module BetterErrors
     def gem_path
       Gem.path.each do |path|
         if filename.index(path) == 0
-          return filename.gsub("#{path}/gems/", "(gem) ")
+          return filename.gsub(%r{#{path}/gems/([^/]+)-([\w.]+)/}, '\1 (\2) ')
         end
       end
     end

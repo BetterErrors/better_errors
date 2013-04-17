@@ -65,8 +65,16 @@ module BetterErrors
       # REMOTE_ADDR is not in the rack spec, so some application servers do
       # not provide it.
       return true unless env["REMOTE_ADDR"] || env["HTTP_X_FORWARDED_FOR"]
-      ip = IPAddr.new( env["HTTP_X_FORWARDED_FOR"] ? env["HTTP_X_FORWARDED_FOR"].split(',').grep(/\d\./).first : env["REMOTE_ADDR"])
-      ALLOWED_IPS.any? { |subnet| subnet.include? ip }
+
+      ips = []
+      ips << IPAddr.new(env["HTTP_X_FORWARDED_FOR"].split(',').grep(/\d\./).first) if env["HTTP_X_FORWARDED_FOR"]
+      ips << IPAddr.new(env["REMOTE_ADDR"]) if env["REMOTE_ADDR"]
+
+      ips.each do |ip|
+        return false unless ALLOWED_IPS.any? { |subnet| subnet.include? ip}
+      end
+
+      return true
     end
 
     def better_errors_call(env)

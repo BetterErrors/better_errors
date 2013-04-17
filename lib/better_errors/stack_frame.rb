@@ -48,10 +48,10 @@ module BetterErrors
     end
     
     def gem_path
-      Gem.path.each do |path|
-        if filename.index(path) == 0
-          return filename.gsub(%r{#{path}/gems/([^/]+)-([\w.]+)/}, '\1 (\2) ')
-        end
+      if path = Gem.path.detect { |path| filename.index(path) == 0 }
+        gem_name_and_version, path = filename.sub("#{path}/gems/", "").split("/", 2)
+        /(?<gem_name>.+)-(?<gem_version>[\w.]+)/ =~ gem_name_and_version
+        "#{gem_name} (#{gem_version}) #{path}"
       end
     end
 

@@ -55,7 +55,19 @@ Note that the `allow_ip!` is actually backed by a `Set`, so you can add more tha
 
 ## Usage
 
-If you're using Rails, there's nothing else you need to do.
+If you're using Rails, there's nothing else you need to do, unless your
+app is run locally with at a sub-uri ( for instance
+http://localhost:3000/foo/:controller/:action).
+
+```ruby
+module YourApp
+  class Application < Rails::Application
+    # ...
+    config.better_errors.uri_prefix = "/foo"
+    # ...
+  end
+end
+```
 
 If you're not using Rails, you need to insert `BetterErrors::Middleware` into your middleware stack, and optionally set `BetterErrors.application_root` if you'd like Better Errors to abbreviate filenames within your application.
 
@@ -68,13 +80,13 @@ require "better_errors"
 configure :development do
   use BetterErrors::Middleware
   BetterErrors.application_root = File.expand_path("..", __FILE__)
+  # BetterErrors.uri_prefix = "/foo" # Uncomment if your app runs locally at a sub-uri
 end
 
 get "/" do
   raise "oops"
 end
 ```
-
 ## Compatibility
 
 * **Supported**

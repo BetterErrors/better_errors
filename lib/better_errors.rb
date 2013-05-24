@@ -108,6 +108,18 @@ module BetterErrors
       end
     end
   end
+      
+  # The path the local application is available at. Defaults to "/"
+  # @return [String, nil] 
+  def self.uri_prefix
+    @uri_prefix
+  end
+
+  # Sets the uri_prefix. This is called from the Railtie or can be called directly
+  # in the case of Sinatra or Rack apps.
+  def self.uri_prefix=(uri_prefix)
+    @uri_prefix = uri_prefix.match(/^\//) ? uri_prefix : "/#{uri_prefix}"
+  end
 
   # Enables experimental Pry support in the inline REPL
   #

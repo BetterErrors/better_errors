@@ -29,7 +29,7 @@ gem "binding_of_caller"
 
 This is an optional dependency however, and Better Errors will work without it.
 
-## Security, VirtualBox
+## Security
 
 **NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**
 
@@ -51,7 +51,7 @@ Note that the `allow_ip!` is actually backed by a `Set`, so you can add more tha
 
 **Tip:** You can find your apparent IP by hitting the old error page's "Show env dump" and looking at "REMOTE_ADDR".
 
-**VirtualBox:** If you are using VirtualBox and are accessing the guestOS from your hostOS's browser, you will need to use the above  ***allow_ip!*** to see the error page.
+**VirtualBox:** If you are using VirtualBox and are accessing the guest from your host's browser, you will need to use `allow_ip!` to see the error page.
 
 ## Usage
 

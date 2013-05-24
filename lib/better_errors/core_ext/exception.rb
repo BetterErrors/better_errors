@@ -1,8 +1,8 @@
 class Exception
-  original_initialize = instance_method(:initialize)
+  original_set_backtrace = instance_method(:set_backtrace)
   
   if BetterErrors.binding_of_caller_available?
-    define_method :initialize do |*args|
+    define_method :set_backtrace do |*args|
       unless Thread.current[:__better_errors_exception_lock]
         Thread.current[:__better_errors_exception_lock] = true
         begin
@@ -11,7 +11,7 @@ class Exception
           Thread.current[:__better_errors_exception_lock] = false
         end
       end
-      original_initialize.bind(self).call(*args)
+      original_set_backtrace.bind(self).call(*args)
     end
   end
   

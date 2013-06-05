@@ -93,7 +93,7 @@ worker. That worker won't have the necessary context in memory, and you'll see
 a `Session Expired` message.
 
 If this is the case for you, consider turing the number of workers to one (1)
-in `development`. Another option would be to use `Webrick`, `Mongrel`, `Thin`,
+in `development`. Another option would be to use Webrick, Mongrel, Thin,
 or another single-process server as your `rails server`, when you are trying
 to troubleshoot an issue in development.
 

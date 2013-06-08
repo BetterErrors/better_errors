@@ -79,8 +79,8 @@ end
 
 * **Supported**
   * MRI 1.9.2, 1.9.3, 2.0.0
+  * Rubinius (1.9 mode) - *advanced features supported with binding_of_caller >= 0.7.2*
   * JRuby (1.9 mode) - *advanced features unsupported*
-  * Rubinius (1.9 mode) - *advanced features unsupported*
 
 [![Build Status](https://travis-ci.org/charliesome/better_errors.png)](https://travis-ci.org/charliesome/better_errors)
 

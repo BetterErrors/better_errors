@@ -3,6 +3,7 @@ require "spec_helper"
 module BetterErrors
   describe Middleware do
     let(:app) { Middleware.new(->env { ":)" }) }
+    let(:exception) { RuntimeError.new("oh no :(") }
 
     it "should pass non-error responses through" do
       app.call({}).should == ":)"
@@ -54,12 +55,22 @@ module BetterErrors
     end
 
     context "when handling an error" do
-      let(:app) { Middleware.new(->env { raise "oh no :(" }) }
+      let(:app) { Middleware.new(->env { raise exception }) }
 
       it "should return status 500" do
         status, headers, body = app.call({})
 
         status.should == 500
+      end
+
+      it "should return ExceptionWrapper's status_code" do
+        ad_ew = double("ActionDispatch::ExceptionWrapper")
+        ad_ew.stub('new').with({}, exception ){ double("ExceptionWrapper", status_code: 404) }
+        stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
+
+        status, headers, body = app.call({})
+
+        status.should == 404
       end
 
       it "should return UTF-8 error pages" do

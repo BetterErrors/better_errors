@@ -85,10 +85,10 @@ module BetterErrors
     rescue Exception => ex
       @error_page = @handler.new ex, env
       log_exception
-      show_error_page(env)
+      show_error_page(env, ex)
     end
 
-    def show_error_page(env)
+    def show_error_page(env, exception=nil)
       type, content = if @error_page
         if text?(env)
           [ 'plain', @error_page.render('text') ]
@@ -99,7 +99,12 @@ module BetterErrors
         [ 'html', no_errors_page ]
       end
 
-      [500, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+      status_code = 500
+      if defined? ActionDispatch::ExceptionWrapper
+        status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
+      end
+
+      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
     end
 
     def text?(env)

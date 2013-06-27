@@ -110,9 +110,15 @@ module BetterErrors
     
   private
     def set_pretty_method_name
+      begin
+        method_name = frame_binding.instance_eval("__method__")
+      rescue NameError
+        return
+      end
+
       name =~ /\A(block (\([^)]+\) )?in )?/
-      recv = frame_binding.eval("self")
-      return unless method_name = frame_binding.eval("__method__")
+      recv = frame_binding.instance_eval("self")
+
       if recv.is_a? Module
         @class_name = "#{$1}#{recv}"
         @method_name = ".#{method_name}"

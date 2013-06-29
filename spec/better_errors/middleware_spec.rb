@@ -5,36 +5,36 @@ module BetterErrors
     let(:app) { Middleware.new(->env { ":)" }) }
     let(:exception) { RuntimeError.new("oh no :(") }
 
-    it "should pass non-error responses through" do
+    it "passes non-error responses through" do
       app.call({}).should == ":)"
     end
 
-    it "should call the internal methods" do
+    it "calls the internal methods" do
       app.should_receive :internal_call
       app.call("PATH_INFO" => "/__better_errors/1/preform_awesomness")
     end
 
-    it "should call the internal methods on any subfolder path" do
+    it "calls the internal methods on any subfolder path" do
       app.should_receive :internal_call
       app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors/1/preform_awesomness")
     end
 
-    it "should show the error page" do
+    it "shows the error page" do
       app.should_receive :show_error_page
       app.call("PATH_INFO" => "/__better_errors/")
     end
 
-    it "should show the error page on any subfolder path" do
+    it "shows the error page on any subfolder path" do
       app.should_receive :show_error_page
       app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors/")
     end
 
-    it "should not show the error page to a non-local address" do
+    it "doesn't show the error page to a non-local address" do
       app.should_not_receive :better_errors_call
       app.call("REMOTE_ADDR" => "1.2.3.4")
     end
 
-    it "should show to a whitelisted IP" do
+    it "shows to a whitelisted IP" do
       BetterErrors::Middleware.allow_ip! '77.55.33.11'
       app.should_receive :better_errors_call
       app.call("REMOTE_ADDR" => "77.55.33.11")
@@ -43,12 +43,12 @@ module BetterErrors
     context "when requesting the /__better_errors manually" do
       let(:app) { Middleware.new(->env { ":)" }) }
 
-      it "should show that no errors have been recorded" do
+      it "shows that no errors have been recorded" do
         status, headers, body = app.call("PATH_INFO" => "/__better_errors")
         body.join.should match /No errors have been recorded yet./
       end
 
-      it "should show that no errors have been recorded on any subfolder path" do
+      it "shows that no errors have been recorded on any subfolder path" do
         status, headers, body = app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors")
         body.join.should match /No errors have been recorded yet./
       end
@@ -57,13 +57,13 @@ module BetterErrors
     context "when handling an error" do
       let(:app) { Middleware.new(->env { raise exception }) }
 
-      it "should return status 500" do
+      it "returns status 500" do
         status, headers, body = app.call({})
 
         status.should == 500
       end
 
-      it "should return ExceptionWrapper's status_code" do
+      it "returns ExceptionWrapper's status_code" do
         ad_ew = double("ActionDispatch::ExceptionWrapper")
         ad_ew.stub('new').with({}, exception ){ double("ExceptionWrapper", status_code: 404) }
         stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
@@ -73,26 +73,26 @@ module BetterErrors
         status.should == 404
       end
 
-      it "should return UTF-8 error pages" do
+      it "returns UTF-8 error pages" do
         status, headers, body = app.call({})
 
         headers["Content-Type"].should match /charset=utf-8/
       end
 
-      it "should return text pages by default" do
+      it "returns text pages by default" do
         status, headers, body = app.call({})
 
         headers["Content-Type"].should match /text\/plain/
       end
 
-      it "should return HTML pages by default" do
+      it "returns HTML pages by default" do
         # Chrome's 'Accept' header looks similar this.
         status, headers, body = app.call("HTTP_ACCEPT" => "text/html,application/xhtml+xml;q=0.9,*/*")
 
         headers["Content-Type"].should match /text\/html/
       end
 
-      it "should log the exception" do
+      it "logs the exception" do
         logger = Object.new
         logger.should_receive :fatal
         BetterErrors.stub!(:logger).and_return(logger)

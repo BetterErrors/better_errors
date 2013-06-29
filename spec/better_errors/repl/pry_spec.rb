@@ -15,7 +15,7 @@ module BetterErrors
 
       it_behaves_like "a good repl should"
 
-      it "should do line continuation" do
+      it "does line continuation" do
         output, prompt = repl.send_input ""
         output.should == "=> nil\n"
         prompt.should == ">>"

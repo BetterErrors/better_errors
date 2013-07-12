@@ -697,9 +697,7 @@
     <div class='top'>
         <header class="exception">
             <h2><strong><%= exception.class %></strong> <span>at <%= request_path %></span></h2>
-            <p><a href="https://www.google.com/#q=rails <%= exception_message.gsub(/(\/[a-zA-Z0-9_.-]+)+/, '') %>" target="_blank">
-              <%= exception_message %>
-            </a></p>
+            <p><a href="https://www.google.com/#q=rails <%= exception_message.gsub(/(\/[a-zA-Z0-9_.-]+)+/, '') %>" target="_blank"><%= exception_message %></a></p>
         </header>
     </div>
 

@@ -82,7 +82,7 @@ end
   * JRuby (1.9 mode) - *advanced features unsupported*
   * Rubinius (1.9 mode) - *advanced features unsupported*
 
-[![Build Status](https://travis-ci.org/charliesome/better_errors.png)](https://travis-ci.org/charliesome/better_errors)
+[![Build Status](https://travis-ci.org/charliesome/better_errors.png)](https://travis-ci.org/charliesome/better_errors) [![Code Climate](https://codeclimate.com/github/charliesome/better_errors.png)](https://codeclimate.com/github/charliesome/better_errors)
 
 ### Unicorn, Puma, and other multi-worker servers
 

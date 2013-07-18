@@ -29,10 +29,17 @@ module BetterErrors
     # Set to `{ "127.0.0.1/8", "::1/128" }` by default.
     ALLOWED_IPS = Set.new
 
+    @@allow_wildcards = false
+
     # Adds an address to the set of IP addresses allowed to access Better
     # Errors.
     def self.allow_ip!(addr)
       ALLOWED_IPS << IPAddr.new(addr)
+    end
+
+    # Sets a boolean allowing all connections access to Better Errors
+    def self.allow_all_connections!
+      @@allow_wildcards = true
     end
 
     allow_ip! "127.0.0.0/8"
@@ -65,6 +72,7 @@ module BetterErrors
       # REMOTE_ADDR is not in the rack spec, so some application servers do
       # not provide it.
       return true unless env["REMOTE_ADDR"]
+      return true if @@allow_wildcards
       ip = IPAddr.new env["REMOTE_ADDR"]
       ALLOWED_IPS.any? { |subnet| subnet.include? ip }
     end

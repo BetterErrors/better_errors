@@ -75,6 +75,18 @@ get "/" do
 end
 ```
 
+If you need to debug AJAX requests, you can use the following url /__better_errors
+
+The following code snippet will bring up a popup window with the last AJAX error automatically if you are using
+jQuery, add the following to your project javascript code (ie. application.js)
+
+```javascript
+$(document)
+.on("ajaxError", function(e, request, textStatus, errorThrown) {
+   window.open("/__better_errors", "error");
+});
+```
+
 ## Compatibility
 
 * **Supported**

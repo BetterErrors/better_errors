@@ -8,4 +8,4 @@ gem "binding_of_caller", platforms: :ruby
 gem "pry"
 gem "simplecov"
 gem "yard"
-gem "redcarpet"
+gem "kramdown"

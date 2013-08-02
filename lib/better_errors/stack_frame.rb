@@ -110,14 +110,18 @@ module BetterErrors
     
   private
     def set_pretty_method_name
+      return if RUBY_VERSION < "2.0.0"
+
       name =~ /\A(block (\([^)]+\) )?in )?/
-      recv = frame_binding.eval("self")
-      return unless method_name = frame_binding.eval("__method__")
-      if recv.is_a? Module
+      recv = frame_binding.instance_eval("self")
+
+      return unless method_name = frame_binding.instance_eval("::Kernel.__method__")
+
+      if Kernel.instance_method(:is_a?).bind(recv).call Module
         @class_name = "#{$1}#{recv}"
         @method_name = ".#{method_name}"
       else
-        @class_name = "#{$1}#{recv.class}"
+        @class_name = "#{$1}#{Kernel.instance_method(:class).bind(recv).call}"
         @method_name = "##{method_name}"
       end
     end

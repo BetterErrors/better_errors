@@ -13,8 +13,6 @@ module BetterErrors
 
       let(:repl) { Pry.new fresh_binding }
 
-      it_behaves_like "a good repl should"
-
       it "does line continuation" do
         output, prompt = repl.send_input ""
         output.should == "=> nil\n"
@@ -28,6 +26,8 @@ module BetterErrors
         output.should == "=> nil\n"
         prompt.should == ">>"
       end
+
+      include_examples "repl shared examples"
     end
   end
 end

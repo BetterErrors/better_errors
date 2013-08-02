@@ -1,6 +1,6 @@
 module BetterErrors
   module REPL
-    shared_examples "a good repl should" do
+    shared_examples "repl shared examples" do
       it "evaluates ruby code in a given context" do
         repl.send_input("local_a = 456")
         fresh_binding.eval("local_a").should == 456

@@ -18,14 +18,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.required_ruby_version = ">= 1.9.2"
-
-  s.add_development_dependency "rake"
-  s.add_development_dependency "rspec", "~> 2.14.1"
-  s.add_development_dependency "binding_of_caller"
-  s.add_development_dependency "pry"
-  s.add_development_dependency "simplecov"
-  s.add_development_dependency "yard"
-  s.add_development_dependency "redcarpet"
   
   s.add_dependency "erubis", ">= 2.6.6"
   s.add_dependency "coderay", ">= 1.0.0"

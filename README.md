@@ -10,6 +10,7 @@ Better Errors replaces the standard Rails error page with a much better and more
 * Source code inspection for all stack frames (with highlighting)
 * Local and instance variable inspection
 * Live REPL on every stack frame
+* Automatic ActionDispatch support for error response codes
 
 ## Installation
 

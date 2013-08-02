@@ -37,5 +37,37 @@ describe BetterErrors do
         subject.editor[].should start_with "txmt://"
       end
     end
+
+    ["emacsclient", "/usr/local/bin/emacsclient"].each do |editor|
+      it "uses emacs:// scheme when EDITOR=#{editor}" do
+        ENV["EDITOR"] = editor
+        subject.editor = subject.default_editor
+        subject.editor[].should start_with "emacs://"
+      end
+    end
+
+    ["mvim -f", "/usr/local/bin/mvim -f"].each do |editor|
+      it "uses mvim:// scheme when EDITOR=#{editor}" do
+        ENV["EDITOR"] = editor
+        subject.editor = subject.default_editor
+        subject.editor[].should start_with "mvim://"
+      end
+    end
+
+    ["subl -w", "/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"].each do |editor|
+      it "uses mvim:// scheme when EDITOR=#{editor}" do
+        ENV["EDITOR"] = editor
+        subject.editor = subject.default_editor
+        subject.editor[].should start_with "subl://"
+      end
+    end
+
+    ["mate -w", "/usr/bin/mate -w"].each do |editor|
+      it "uses txmt:// scheme when EDITOR=#{editor}" do
+        ENV["EDITOR"] = editor
+        subject.editor = subject.default_editor
+        subject.editor[].should start_with "txmt://"
+      end
+    end
   end
 end

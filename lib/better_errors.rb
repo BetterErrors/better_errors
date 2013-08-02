@@ -116,7 +116,20 @@ module BetterErrors
   def self.use_pry!
     REPL::PROVIDERS.unshift const: :Pry, impl: "better_errors/repl/pry"
   end
-  
+
+  def self.default_editor
+    case ENV["EDITOR"]
+    when /emacs/i
+      :emacs
+    when /vim/i
+      :macvim
+    when /subl/i
+      :sublime
+    else
+      :textmate
+    end
+  end
+
   BetterErrors.editor = :textmate
 end
 

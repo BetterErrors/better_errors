@@ -44,6 +44,10 @@ module BetterErrors
       expect { app.call("REMOTE_ADDR" => " ") }.to_not raise_error
     end
 
+    it "doesn't blow up when given an IP address with a zone index" do
+      expect { app.call("REMOTE_ADDR" => "0:0:0:0:0:0:0:1%0" ) }.to_not raise_error
+    end
+
     context "when requesting the /__better_errors manually" do
       let(:app) { Middleware.new(->env { ":)" }) }
 

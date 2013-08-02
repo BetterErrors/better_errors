@@ -116,5 +116,14 @@ module BetterErrors
       frames = StackFrame.from_exception(error)
       frames.first.filename.should == "crap:filename.rb"
     end
+
+    it "should not blow up with a BasicObject as frame binding" do
+      frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index", BasicObject.new)
+      if RUBY_VERSION >= "2.0.0"
+        frame.class_name.should == 'BasicObject'
+      else
+        frame.class_name.should be_nil
+      end
+    end
   end
 end

@@ -33,12 +33,19 @@ module BetterErrors
     context "variable inspection" do
       let(:exception) { empty_binding.eval("raise") rescue $! }
       
-      it "shows local variables" do
-        html = error_page.do_variables("index" => 0)[:html]
-        html.should include("local_a")
-        html.should include(":value_for_local_a")
-        html.should include("local_b")
-        html.should include(":value_for_local_b")
+      if BetterErrors.binding_of_caller_available?
+        it "shows local variables" do
+          html = error_page.do_variables("index" => 0)[:html]
+          html.should include("local_a")
+          html.should include(":value_for_local_a")
+          html.should include("local_b")
+          html.should include(":value_for_local_b")
+        end
+      else
+        it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
+          html = error_page.do_variables("index" => 0)[:html]
+          html.should include(%{gem "binding_of_caller"})
+        end
       end
       
       it "shows instance variables" do

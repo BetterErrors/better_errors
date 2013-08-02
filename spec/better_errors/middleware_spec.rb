@@ -40,6 +40,10 @@ module BetterErrors
       app.call("REMOTE_ADDR" => "77.55.33.11")
     end
 
+    it "doesn't blow up when given a blank REMOTE_ADDR" do
+      expect { app.call("REMOTE_ADDR" => " ") }.to_not raise_error
+    end
+
     context "when requesting the /__better_errors manually" do
       let(:app) { Middleware.new(->env { ":)" }) }
 

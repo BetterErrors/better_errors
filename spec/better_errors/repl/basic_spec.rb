@@ -12,7 +12,7 @@ module BetterErrors
       
       let(:repl) { Basic.new fresh_binding }
 
-      include_examples "repl shared examples"
+      it_behaves_like "a REPL provider"
     end
   end
 end

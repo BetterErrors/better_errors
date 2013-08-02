@@ -1,4 +1,4 @@
-Copyright (c) 2012 Charlie Somerville
+Copyright (c) 2013 Charlie Somerville
 
 MIT License
 

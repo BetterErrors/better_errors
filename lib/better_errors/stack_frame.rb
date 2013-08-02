@@ -2,7 +2,7 @@ module BetterErrors
   # @private
   class StackFrame
     def self.from_exception(exception)
-      if exception.__better_errors_bindings_stack.any?
+      if has_binding_stack?(exception)
         list = exception.__better_errors_bindings_stack.map { |binding|
           file = binding.eval "__FILE__"
           line = binding.eval "__LINE__"
@@ -21,6 +21,10 @@ module BetterErrors
       end
 
       list
+    end
+
+    def self.has_binding_stack?(exception)
+      exception.respond_to?(:__better_errors_bindings_stack) && exception.__better_errors_bindings_stack.any?
     end
     
     attr_reader :filename, :line, :name, :frame_binding

@@ -125,5 +125,11 @@ module BetterErrors
         frame.class_name.should be_nil
       end
     end
+
+    if RUBY_ENGINE == "java"
+      it "doesn't blow up on a native Java exception" do
+        expect { StackFrame.from_exception(java.lang.Exception.new) }.to_not raise_error
+      end
+    end
   end
 end

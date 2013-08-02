@@ -130,7 +130,7 @@ module BetterErrors
     end
   end
 
-  BetterErrors.editor = :textmate
+  BetterErrors.editor = default_editor
 end
 
 begin

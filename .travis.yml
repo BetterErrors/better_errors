@@ -1,3 +1,4 @@
 language: ruby
 rvm:
   - 2.0.0
+  - jruby-1.7.4

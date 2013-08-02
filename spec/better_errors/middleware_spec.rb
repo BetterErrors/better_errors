@@ -99,7 +99,7 @@ module BetterErrors
       it "logs the exception" do
         logger = Object.new
         logger.should_receive :fatal
-        BetterErrors.stub!(:logger).and_return(logger)
+        BetterErrors.stub(:logger).and_return(logger)
 
         app.call({})
       end

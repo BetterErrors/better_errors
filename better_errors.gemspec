@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.9.2"
 
   s.add_development_dependency "rake"
-  s.add_development_dependency "rspec", "~> 2.12.0"
+  s.add_development_dependency "rspec", "~> 2.14.1"
   s.add_development_dependency "binding_of_caller"
   s.add_development_dependency "pry"
   s.add_development_dependency "simplecov"

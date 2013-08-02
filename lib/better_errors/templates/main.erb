@@ -5,7 +5,7 @@
 </head>
 <body>
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>
-    <style>
+   <style>
     /* Basic reset */
     * {
         margin: 0;
@@ -156,10 +156,11 @@
         color: #d55;
     }
 
-    header.exception p {
+    header.exception p a {
         font-weight: 200;
         font-size: 20pt;
         color: white;
+        text-decoration: none;
     }
 
     header.exception:hover {
@@ -663,7 +664,6 @@
         background: #888;
     }
     </style>
-
     <%# IE8 compatibility crap %>
     <script>
     (function() {
@@ -697,7 +697,7 @@
     <div class='top'>
         <header class="exception">
             <h2><strong><%= exception.class %></strong> <span>at <%= request_path %></span></h2>
-            <p><%= exception_message %></p>
+            <p><a href="https://www.google.com/#q=rails <%= exception_message.gsub(/(\/[a-zA-Z0-9_.-]+)+/, '') %>" target="_blank"><%= exception_message %></a></p>
         </header>
     </div>
 

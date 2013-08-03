@@ -15,9 +15,9 @@ module BetterErrors
     end
     
     def self.detect
-      PROVIDERS.find do |prov|
+      PROVIDERS.find { |prov|
         test_provider prov
-      end
+      }
     end
     
     def self.test_provider(provider)

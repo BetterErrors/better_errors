@@ -36,9 +36,9 @@ module BetterErrors
     end
 
     def each_line_of(lines, &blk)
-      line_range.zip(lines).map do |current_line, str|
+      line_range.zip(lines).map { |current_line, str|
         yield (current_line == line), current_line, str
-      end
+      }
     end
     
     def highlighted_lines

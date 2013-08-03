@@ -126,10 +126,10 @@ module BetterErrors
   #
   # @return [Symbol]
   def self.default_editor
-    preset = POSSIBLE_EDITOR_PRESETS.detect do |config|
+    preset = POSSIBLE_EDITOR_PRESETS.detect { |config|
       ENV["EDITOR"] =~ config[:sniff]
-    end
-    (preset && preset[:symbols].first) || :textmate
+    }
+    preset ? preset[:symbols].first : :textmate
   end
 
   BetterErrors.editor = default_editor

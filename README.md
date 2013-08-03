@@ -1,5 +1,7 @@
 # Better Errors
 
+[![Build Status](https://travis-ci.org/charliesome/better_errors.png)](https://travis-ci.org/charliesome/better_errors) [![Code Climate](https://codeclimate.com/github/charliesome/better_errors.png)](https://codeclimate.com/github/charliesome/better_errors)
+
 Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails in any Rack app as Rack middleware.
 
 ![image](http://i.imgur.com/zYOXF.png)
@@ -74,15 +76,6 @@ get "/" do
   raise "oops"
 end
 ```
-
-## Compatibility
-
-* **Supported**
-  * MRI 1.9.2, 1.9.3, 2.0.0
-  * JRuby (1.9 mode) - *advanced features unsupported*
-  * Rubinius (1.9 mode) - *advanced features unsupported*
-
-[![Build Status](https://travis-ci.org/charliesome/better_errors.png)](https://travis-ci.org/charliesome/better_errors) [![Code Climate](https://codeclimate.com/github/charliesome/better_errors.png)](https://codeclimate.com/github/charliesome/better_errors)
 
 ### Unicorn, Puma, and other multi-worker servers
 

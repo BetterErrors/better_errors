@@ -6,7 +6,7 @@ module BetterErrors
     end
 
     def formatted_lines
-      each_line_of highlighted_lines { |highlight, current_line, str|
+      each_line_of(highlighted_lines) { |highlight, current_line, str|
         class_name = highlight ? "highlight" : ""
         sprintf '<pre class="%s">%5d %s</pre>', class_name, current_line, str
       }

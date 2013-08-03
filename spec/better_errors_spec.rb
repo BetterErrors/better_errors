@@ -10,7 +10,7 @@ describe BetterErrors do
       subject.editor["&.rb", 0].should == "txmt://open?url=file://%26.rb&line=0"
     end
 
-    [:emacs].each do |editor|
+    [:emacs, :emacsclient].each do |editor|
       it "uses emacs:// scheme when set to #{editor.inspect}" do
         subject.editor = editor
         subject.editor[].should start_with "emacs://"

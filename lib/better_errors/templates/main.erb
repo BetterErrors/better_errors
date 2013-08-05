@@ -41,6 +41,14 @@
         background: #f0f0f5;
     }
 
+    .clearfix::after{
+        clear: both;
+        content: ".";
+        display: block;
+        height: 0;
+        visibility: hidden;
+    }
+
     /* ---------------------------------------------------------------------
      * Basic layout
      * --------------------------------------------------------------------- */
@@ -379,7 +387,7 @@
      * Monospace
      * --------------------------------------------------------------------- */
 
-    pre, code, .repl input, .repl .prompt span, textarea {
+    pre, code, .repl input, .repl .prompt span, textarea, .code_linenums {
         font-family: menlo, lucida console, monospace;
         font-size: 8pt;
     }
@@ -394,6 +402,11 @@
         border-radius: 3px;
         margin-bottom: 2px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.03), 1px 1px 0 rgba(0, 0, 0, 0.05), -1px 1px 0 rgba(0, 0, 0, 0.05), 0 0 0 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .code_block{
+        background: #f1f1f1;
+        border-left: 1px solid #ccc;
     }
 
     /* Titlebar */
@@ -447,13 +460,31 @@
         box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
 
+    .code_linenums{
+        background:#f1f1f1;
+        padding-top:10px;
+        padding-bottom:9px;
+        float:left;
+    }
+    
+    .code_linenums span{
+        display:block;
+        padding:0 12px;
+    }
+
     .code {
         margin-bottom: -1px;
+        border-top-left-radius:2px;
     }
 
     .code {
         padding: 10px 0;
         overflow: auto;
+    }
+
+    .code pre{
+        padding-left:12px;
+        min-height:16px;
     }
 
     /* Source unavailable */
@@ -489,7 +520,7 @@
         100% { background: rgba(220, 30, 30, 0.1); }
     }
 
-    .code .highlight {
+    .code .highlight, .code_linenums .highlight {
         background: rgba(220, 30, 30, 0.1);
         -webkit-animation: highlight 400ms linear 1;
         -moz-animation: highlight 400ms linear 1;

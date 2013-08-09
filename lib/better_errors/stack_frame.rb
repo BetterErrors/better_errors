@@ -89,7 +89,11 @@ module BetterErrors
       return {} unless frame_binding
       frame_binding.eval("local_variables").each_with_object({}) do |name, hash|
         begin
-          hash[name] = frame_binding.eval(name.to_s)
+          if defined?(frame_binding.local_variable_get)
+            hash[name] = frame_binding.local_variable_get(name)
+          else
+            hash[name] = frame_binding.eval(name.to_s)
+          end
         rescue NameError => e
           # local_variables sometimes returns broken variables.
           # https://bugs.ruby-lang.org/issues/7536

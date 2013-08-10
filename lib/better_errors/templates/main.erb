@@ -801,7 +801,10 @@
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
     
-        this.inputElement.onkeydown = this.onKeyDown.bind(this);
+        var self = this;
+        this.inputElement.onkeydown = function(ev) {
+            self.onKeyDown(ev);
+        };
     
         this.setPrompt(">>");
         

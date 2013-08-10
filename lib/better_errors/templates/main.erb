@@ -792,6 +792,45 @@
         this.previousCommandOffset = 0;
     }
     
+    // Support for browsers without Function.prototype.bind (QtWebkit 4.8 based
+    // browsers like Konqueror 4.10 or rekonq 0.9.10)
+    if(!Function.prototype.bind) {
+      Function.prototype.bind = function(context) {
+        var slice = Array.prototype.slice;
+        function update(array, args) {
+          var arrayLength = array.length, length = args.length;
+          while (length--) array[arrayLength + length] = args[length];
+          return array;
+        }
+        function merge(array, args) {
+          array = slice.call(array, 0);
+          return update(array, args);
+        }
+
+        if (arguments.length < 2 && typeof arguments[0] === 'undefined')
+          return this;
+
+        if (typeof this !== 'function')
+          throw new TypeError("The object is not callable.");
+
+        var nop = function() {};
+        var __method = this, args = slice.call(arguments, 1);
+
+        var bound = function() {
+          var a = merge(args, arguments), c = context;
+          // Ignore the supplied context when the bound function is called with
+          // the "new" keyword.
+          var c = this instanceof bound ? this : context;
+          return __method.apply(c, a);
+        };
+
+        nop.prototype = this.prototype;
+        bound.prototype = new nop();
+
+        return bound;
+      }
+    }
+
     REPL.all = [];
     
     REPL.prototype.install = function(containerElement) {

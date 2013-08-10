@@ -121,9 +121,9 @@ module BetterErrors
       return if RUBY_VERSION < "2.0.0"
 
       name =~ /\A(block (\([^)]+\) )?in )?/
-      recv = frame_binding.instance_eval("self")
+      recv = frame_binding.eval("self")
 
-      return unless method_name = frame_binding.instance_eval("::Kernel.__method__")
+      return unless method_name = frame_binding.eval("::Kernel.__method__")
 
       if Kernel.instance_method(:is_a?).bind(recv).call Module
         @class_name = "#{$1}#{recv}"

@@ -117,11 +117,35 @@ module BetterErrors
       frames.first.filename.should == "crap:filename.rb"
     end
 
-    it "should not blow up with a BasicObject as frame binding" do
-      frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index", BasicObject.new)
+    it "doesn't blow up with a BasicObject as frame binding" do
+      obj = BasicObject.new
+      def obj.my_binding
+        ::Kernel.binding
+      end
+      frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index", obj.my_binding)
       if RUBY_VERSION >= "2.0.0"
         frame.class_name.should == 'BasicObject'
       else
+        frame.class_name.should be_nil
+      end
+    end
+
+    it "sets method names properly" do
+      obj = "string"
+      def obj.my_method
+        begin
+          raise "foo"
+        rescue => err
+          err
+        end
+      end
+
+      frame = StackFrame.from_exception(obj.my_method).first
+      if RUBY_VERSION >= "2.0.0"
+        frame.method_name.should == "#my_method"
+        frame.class_name.should == "String"
+      else
+        frame.method_name.should == "my_method"
         frame.class_name.should be_nil
       end
     end

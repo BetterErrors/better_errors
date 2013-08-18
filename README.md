@@ -78,12 +78,12 @@ end
 ### Unicorn, Puma, and other multi-worker servers
 
 Better Errors works by leaving a lot of context in server process memory. If
-you're using a web server that runs muliple "workers" it's likely that a second
+you're using a web server that runs multiple "workers" it's likely that a second
 request (as happens when you click on a stack frame) will hit a different
 worker. That worker won't have the necessary context in memory, and you'll see
 a `Session Expired` message.
 
-If this is the case for you, consider turing the number of workers to one (1)
+If this is the case for you, consider turning the number of workers to one (1)
 in `development`. Another option would be to use Webrick, Mongrel, Thin,
 or another single-process server as your `rails server`, when you are trying
 to troubleshoot an issue in development.

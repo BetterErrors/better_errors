@@ -1,3 +1,5 @@
+require "set"
+
 module BetterErrors
   # @private
   class StackFrame
@@ -16,11 +18,29 @@ module BetterErrors
         }.compact
       end
 
-      if exception.is_a?(SyntaxError) && exception.to_s =~ /\A(.*):(\d*):/
+      if syntax_error?(exception) && exception.backtrace.first =~ /\A(.*):(\d+)/
         list.unshift StackFrame.new($1, $2.to_i, "")
       end
 
       list
+    end
+
+    def self.syntax_error_classes
+      # Better Errors may be loaded before some of the gems that provide these
+      # classes, so we lazily set up the set of syntax error classes at runtime
+      # after everything has hopefully had a chance to load.
+      #
+      @syntax_error_classes ||= begin
+        class_names = %w[
+          Haml::SyntaxError
+        ]
+
+        Set.new(class_names.map { |klass| eval(klass) rescue nil }.compact)
+      end
+    end
+
+    def self.syntax_error?(exception)
+      exception.is_a?(SyntaxError) || syntax_error_classes.include?(exception.class)
     end
 
     def self.has_binding_stack?(exception)

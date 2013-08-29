@@ -18,8 +18,10 @@ module BetterErrors
         }.compact
       end
 
-      if syntax_error?(exception) && exception.backtrace.first =~ /\A(.*):(\d+)/
-        list.unshift StackFrame.new($1, $2.to_i, "")
+      if syntax_error?(exception)
+        if trace = exception.backtrace and trace.first =~ /\A(.*):(\d+)/
+          list.unshift StackFrame.new($1, $2.to_i, "")
+        end
       end
 
       list

@@ -82,8 +82,10 @@ module BetterErrors
     end
 
     it "special cases SyntaxErrors" do
-      syntax_error = SyntaxError.allocate
-      Exception.instance_method(:initialize).bind(syntax_error).call("my_file.rb:123: you wrote bad ruby!")
+      begin
+        eval(%{ raise SyntaxError, "you wrote bad ruby!" }, nil, "my_file.rb", 123)
+      rescue SyntaxError => syntax_error
+      end
       frames = StackFrame.from_exception(syntax_error)
       frames.first.filename.should == "my_file.rb"
       frames.first.line.should == 123

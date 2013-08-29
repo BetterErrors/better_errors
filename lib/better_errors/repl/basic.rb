@@ -6,7 +6,7 @@ module BetterErrors
       end
     
       def send_input(str)
-        [execute(str), ">>"]
+        [execute(str), ">>", ""]
       end
     
     private

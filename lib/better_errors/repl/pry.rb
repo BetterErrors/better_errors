@@ -40,19 +40,24 @@ module BetterErrors
         @output = Output.new
         @pry = ::Pry.new input: @input, output: @output
         @pry.hooks.clear_all
-        @continued_expression = false
-        @pry.hooks.add_hook :after_read, "better_errors hacky hook" do
-          @continued_expression = false
-        end
         @fiber.resume
       end
     
       def send_input(str)
         local ::Pry.config, color: false, pager: false do
-          @continued_expression = true
           @fiber.resume "#{str}\n"
-          [@output.read_buffer, @continued_expression ? ".." : ">>"]
+          [@output.read_buffer, *prompt]
         end
+      end
+
+      def prompt
+        if indent = @pry.instance_variable_get(:@indent) and !indent.indent_level.empty?
+          ["..", indent.indent_level]
+        else
+          [">>", ""]
+        end
+      rescue
+        [">>", ""]
       end
       
     private

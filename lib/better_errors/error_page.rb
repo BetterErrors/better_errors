@@ -40,11 +40,12 @@ module BetterErrors
         return { error: "REPL unavailable in this stack frame" }
       end
       
-      result, prompt =
+      result, prompt, prefilled_input =
         (@repls[index] ||= REPL.provider.new(binding)).send_input(code)
       
       { result: result,
         prompt: prompt,
+        prefilled_input: prefilled_input,
         highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil) }
     end
 

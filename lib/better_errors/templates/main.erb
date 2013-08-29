@@ -852,6 +852,7 @@
             self.writeRawOutput(response.highlighted_input + "\n");
             self.writeOutput(response.result);
             self.setPrompt(response.prompt);
+            self.setInput(response.prefilled_input);
         });
     };
     

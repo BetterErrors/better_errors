@@ -14,17 +14,20 @@ module BetterErrors
       let(:repl) { Pry.new fresh_binding }
 
       it "does line continuation" do
-        output, prompt = repl.send_input ""
+        output, prompt, filled = repl.send_input ""
         output.should == "=> nil\n"
         prompt.should == ">>"
+        filled.should == ""
 
-        output, prompt = repl.send_input "def f(x)"
+        output, prompt, filled = repl.send_input "def f(x)"
         output.should == ""
         prompt.should == ".."
+        filled.should == "  "
 
-        output, prompt = repl.send_input "end"
+        output, prompt, filled = repl.send_input "end"
         output.should == "=> nil\n"
         prompt.should == ">>"
+        filled.should == ""
       end
 
       it_behaves_like "a REPL provider"

@@ -252,6 +252,12 @@
         text-shadow: 0 0 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4);
     }
 
+    nav.tabs a.disabled {
+        text-decoration: line-through;
+        text-shadow: none;
+        cursor: default;
+    }
+
     /* ---------------------------------------------------------------------
      * Sidebar
      * --------------------------------------------------------------------- */
@@ -953,24 +959,40 @@
       document.querySelector(".frames li")
     ).onclick();
 
+    // This is the second query performed for frames; maybe the 'allFrames' list
+    // currently used and this list can be better used to avoid the repetition:
+    var applicationFramesCount = document.querySelectorAll(
+        "ul.frames li[data-context=application]"
+    ).length;
+
+    var applicationFramesButtonIsInstalled = false;
     var applicationFramesButton = document.getElementById("application_frames");
     var allFramesButton = document.getElementById("all_frames");
     
-    applicationFramesButton.onclick = function() {
-        allFramesButton.className = "";
-        applicationFramesButton.className = "selected";
-        for(var i = 0; i < allFrames.length; i++) {
-            if(allFrames[i].attributes["data-context"].value == "application") {
-                allFrames[i].style.display = "block";
-            } else {
-                allFrames[i].style.display = "none";
+    // The application frames button only needs to be bound if
+    // there are actually any application frames to look at.
+    var installApplicationFramesButton = function() {
+        applicationFramesButton.onclick = function() {
+            allFramesButton.className = "";
+            applicationFramesButton.className = "selected";
+            for(var i = 0; i < allFrames.length; i++) {
+                if(allFrames[i].attributes["data-context"].value == "application") {
+                    allFrames[i].style.display = "block";
+                } else {
+                    allFrames[i].style.display = "none";
+                }
             }
-        }
-        return false;
-    };
+            return false;
+        };
+        
+        applicationFramesButtonIsInstalled = true;
+    }
     
     allFramesButton.onclick = function() {
-        applicationFramesButton.className = "";
+        if(applicationFramesButtonIsInstalled) {
+            applicationFramesButton.className = "";
+        }
+
         allFramesButton.className = "selected";
         for(var i = 0; i < allFrames.length; i++) {
             allFrames[i].style.display = "block";
@@ -978,7 +1000,16 @@
         return false;
     };
     
-    applicationFramesButton.onclick();
+    // If there are no application frames, select the 'All Frames'
+    // tab by default.
+    if(applicationFramesCount > 0) {
+        installApplicationFramesButton();
+        applicationFramesButton.onclick();
+    } else {
+        applicationFramesButton.className = "disabled";
+        applicationFramesButton.title = "No application frames available";
+        allFramesButton.onclick();
+    }
 })();
 </script>
 </html>

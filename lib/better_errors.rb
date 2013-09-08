@@ -134,11 +134,10 @@ module BetterErrors
   BetterErrors.editor = default_editor
 end
 
-if Gem::Dependency.new("binding_of_caller", "0.7.2").matching_specs.any?
-  gem "binding_of_caller", "0.7.2"
+begin
   require "binding_of_caller"
   BetterErrors.binding_of_caller_available = true
-else
+rescue LoadError => e
   BetterErrors.binding_of_caller_available = false
 end
 

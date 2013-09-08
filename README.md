@@ -21,6 +21,14 @@ group :development do
 end
 ```
 
+If you would like to use Better Errors' **advanced features** (REPL, local/instance variable inspection, pretty stack frame names), you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem by [@banisterfiend](http://twitter.com/banisterfiend) to your Gemfile:
+
+```ruby
+gem "binding_of_caller"
+```
+
+This is an optional dependency however, and Better Errors will work without it.
+
 ## Security
 
 **NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**

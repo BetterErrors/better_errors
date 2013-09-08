@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split($/)
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
-  s.extensions    = ["ext/mkrf_conf.rb"]
 
   s.required_ruby_version = ">= 1.9.2"
   

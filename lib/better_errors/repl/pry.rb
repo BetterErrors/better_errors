@@ -39,7 +39,7 @@ module BetterErrors
         @input = Input.new
         @output = Output.new
         @pry = ::Pry.new input: @input, output: @output
-        @pry.hooks.clear_all
+        @pry.hooks.clear_all if defined?(@pry.hooks.clear_all)
         @fiber.resume
       end
     

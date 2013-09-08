@@ -21,8 +21,6 @@ group :development do
 end
 ```
 
-This is an optional dependency however, and Better Errors will work without it.
-
 ## Security
 
 **NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**

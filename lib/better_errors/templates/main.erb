@@ -892,12 +892,12 @@
     REPL.prototype.onKeyDown = function(ev) {
         if(ev.keyCode == 13) {
             this.onEnterKey();
-        } else if(ev.keyCode == 38) {
-            // the user pressed the up arrow.
+        } else if(ev.keyCode == 38 || (ev.ctrlKey && ev.keyCode == 80)) {
+            // the user pressed the up arrow or Ctrl-P
             this.onNavigateHistory(-1);
             return false;
-        } else if(ev.keyCode == 40) {
-            // the user pressed the down arrow.
+        } else if(ev.keyCode == 40 || (ev.ctrlKey && ev.keyCode == 78)) {
+            // the user pressed the down arrow or Ctrl-N
             this.onNavigateHistory(1);
             return false;
         }

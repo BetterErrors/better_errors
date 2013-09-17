@@ -797,7 +797,7 @@
         var previousCommands = JSON.parse(localStorage.getItem("previousCommands"));
         if(previousCommands === null) {
           localStorage.setItem("previousCommands", JSON.stringify([]));
-          previousCommands = []
+          previousCommands = [];
         }
 
         this.previousCommandOffset = previousCommands.length;
@@ -872,6 +872,9 @@
         if(text != "" && text !== undefined) {
             var previousCommands = JSON.parse(localStorage.getItem("previousCommands"));
             this.previousCommandOffset = previousCommands.push(text);
+            if(previousCommands.length > 100) {
+              previousCommands.splice(0, 1);
+            }
             localStorage.setItem("previousCommands", JSON.stringify(previousCommands));
         }
         this.setInput("");

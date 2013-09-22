@@ -794,8 +794,13 @@
     function REPL(index) {
         this.index = index;
         
-        this.previousCommands = [];
-        this.previousCommandOffset = 0;
+        var previousCommands = JSON.parse(localStorage.getItem("better_errors_previous_commands"));
+        if(previousCommands === null) {
+          localStorage.setItem("better_errors_previous_commands", JSON.stringify([]));
+          previousCommands = [];
+        }
+
+        this.previousCommandOffset = previousCommands.length;
     }
     
     REPL.all = [];
@@ -865,7 +870,12 @@
     REPL.prototype.onEnterKey = function() {
         var text = this.getInput();
         if(text != "" && text !== undefined) {
-            this.previousCommandOffset = this.previousCommands.push(text);
+            var previousCommands = JSON.parse(localStorage.getItem("better_errors_previous_commands"));
+            this.previousCommandOffset = previousCommands.push(text);
+            if(previousCommands.length > 100) {
+              previousCommands.splice(0, 1);
+            }
+            localStorage.setItem("better_errors_previous_commands", JSON.stringify(previousCommands));
         }
         this.setInput("");
         this.sendInput(text);
@@ -873,6 +883,7 @@
     
     REPL.prototype.onNavigateHistory = function(direction) {
         this.previousCommandOffset += direction;
+        var previousCommands = JSON.parse(localStorage.getItem("better_errors_previous_commands"));
         
         if(this.previousCommandOffset < 0) {
             this.previousCommandOffset = -1;
@@ -880,13 +891,13 @@
             return;
         }
         
-        if(this.previousCommandOffset >= this.previousCommands.length) {
-            this.previousCommandOffset = this.previousCommands.length;
+        if(this.previousCommandOffset >= previousCommands.length) {
+            this.previousCommandOffset = previousCommands.length;
             this.setInput("");
             return;
         }
         
-        this.setInput(this.previousCommands[this.previousCommandOffset]);
+        this.setInput(previousCommands[this.previousCommandOffset]);
     };
     
     REPL.prototype.onKeyDown = function(ev) {

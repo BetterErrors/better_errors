@@ -794,9 +794,9 @@
     function REPL(index) {
         this.index = index;
         
-        var previousCommands = JSON.parse(localStorage.getItem("previousCommands"));
+        var previousCommands = JSON.parse(localStorage.getItem("better_errors_previous_commands"));
         if(previousCommands === null) {
-          localStorage.setItem("previousCommands", JSON.stringify([]));
+          localStorage.setItem("better_errors_previous_commands", JSON.stringify([]));
           previousCommands = [];
         }
 
@@ -870,12 +870,12 @@
     REPL.prototype.onEnterKey = function() {
         var text = this.getInput();
         if(text != "" && text !== undefined) {
-            var previousCommands = JSON.parse(localStorage.getItem("previousCommands"));
+            var previousCommands = JSON.parse(localStorage.getItem("better_errors_previous_commands"));
             this.previousCommandOffset = previousCommands.push(text);
             if(previousCommands.length > 100) {
               previousCommands.splice(0, 1);
             }
-            localStorage.setItem("previousCommands", JSON.stringify(previousCommands));
+            localStorage.setItem("better_errors_previous_commands", JSON.stringify(previousCommands));
         }
         this.setInput("");
         this.sendInput(text);
@@ -883,7 +883,7 @@
     
     REPL.prototype.onNavigateHistory = function(direction) {
         this.previousCommandOffset += direction;
-        var previousCommands = JSON.parse(localStorage.getItem("previousCommands"));
+        var previousCommands = JSON.parse(localStorage.getItem("better_errors_previous_commands"));
         
         if(this.previousCommandOffset < 0) {
             this.previousCommandOffset = -1;

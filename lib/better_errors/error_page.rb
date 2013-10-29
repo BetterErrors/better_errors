@@ -87,7 +87,7 @@ module BetterErrors
     end
 
     def real_exception(exception)
-      if exception.respond_to? :original_exception
+      if exception.respond_to?(:original_exception) && exception.original_exception.is_a?(Exception)
         exception.original_exception
       else
         exception

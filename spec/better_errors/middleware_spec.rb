@@ -71,6 +71,40 @@ module BetterErrors
         status.should == 500
       end
 
+      context "original_exception" do
+        class OriginalExceptionException < Exception
+          attr_reader :original_exception
+
+          def initialize(message, original_exception = nil)
+            super(message)
+            @original_exception = original_exception
+          end
+        end
+
+        it "shows Original Exception if it responds_to and has an original_exception" do
+          app = Middleware.new(->env {
+            raise OriginalExceptionException.new("Other Exception", Exception.new("Original Exception"))
+          })
+
+          status, _, body = app.call({})
+
+          status.should == 500
+          body.join.should_not match(/Other Exception/)
+          body.join.should match(/Original Exception/)
+        end
+
+        it "won't crash if the exception responds_to but doesn't have an original_exception" do
+          app = Middleware.new(->env {
+            raise OriginalExceptionException.new("Other Exception")
+          })
+
+          status, _, body = app.call({})
+
+          status.should == 500
+          body.join.should match(/Other Exception/)
+        end
+      end
+
       it "returns ExceptionWrapper's status_code" do
         ad_ew = double("ActionDispatch::ExceptionWrapper")
         ad_ew.stub('new').with({}, exception ){ double("ExceptionWrapper", status_code: 404) }

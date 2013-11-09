@@ -1,0 +1,96 @@
+/* Test css loaded */
+
+/* Fixed Iframe that overlaps the page
+*/
+#better_errors iframe
+{
+     position:fixed;
+    top:0px;
+    left:0px;
+    bottom:0px;
+    right:0px;
+    width:100%;
+    height:100%;
+    border:none;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    z-index:999999;
+}
+
+/*  The msg that indicated weather that the request was intiated via ajax
+*/
+#better_errors span{
+    top: 0px;
+    right: 90px;
+    position: fixed;
+    z-index: 1000000;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+}
+
+/*  Close button css
+    Thanks for rohitazad for cssonly close button
+    http://jsfiddle.net/rohitazad/VzZhU/
+*/
+#better_errors a.button_be{
+    top: 5px;
+    position: fixed;
+    z-index: 1000000;
+    cursor: pointer;
+    color: white;
+    border: 1px solid #AEAEAE;
+    border-radius: 30px;
+    background: #605F61;
+    font-size: 31px;
+    font-weight: bold;
+    display: inline-block;
+    line-height: 0px;
+    padding: 11px 3px;
+}
+
+ /* Close button
+ */
+#better_errors .remove_be{
+    right: 0px;
+}
+
+#better_errors .remove_be:before{
+    content: "×";
+}
+
+/* Fade button
+ */
+
+#better_errors .fade_be:before{
+    content: "o";
+}
+
+#better_errors .fade_be{
+    right: 55px;
+}
+
+
+
+/* Minimize button
+*/
+#better_errors .minimize_be{
+    right: 30px;
+}
+
+#better_errors .minimize_be:before{
+    content: "-";
+}
+
+ /* After Minimize
+ */
+#better_errors.minimize .minimize_be:before{
+    content: "+";
+}
+
+
+#better_errors.minimize span,#better_errors.minimize .fade_be,#better_errors.minimize iframe{
+    display: none;
+}
+

@@ -75,6 +75,19 @@ get "/" do
 end
 ```
 
+### Better errors in Ajax mode
+
+Better Errors also works when an ajax requests have exceptions.During any exception an better errors panel pop's up.
+You can use better errors as usual,close the panel after you have applied your fixes.
+Minimize the panel or fade the panel incase you want to see your page as well as better errors simultaneously.
+To utilize this use the below helper method in your layout file.The helper method uses jQuery so your ajax requests are directly fired XMLHttpRequest or some other frameworks this may not work.
+
+```ruby
+
+    better_error_ajax if Rails.env.development?
+
+```
+
 ### Unicorn, Puma, and other multi-worker servers
 
 Better Errors works by leaving a lot of context in server process memory. If

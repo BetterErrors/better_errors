@@ -18,9 +18,11 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.required_ruby_version = ">= 1.9.2"
-  
+
   s.add_dependency "erubis", ">= 2.6.6"
   s.add_dependency "coderay", ">= 1.0.0"
+  s.add_development_dependency 'minitest' , ">= 4.7.5"
+  s.add_development_dependency 'capybara' , ">=2.1.0"
 
   # optional dependencies:
   # s.add_dependency "binding_of_caller"

@@ -10,6 +10,7 @@ require "better_errors/middleware"
 require "better_errors/code_formatter"
 require "better_errors/repl"
 
+
 module BetterErrors
   POSSIBLE_EDITOR_PRESETS = [
     { symbols: [:emacs, :emacsclient],  sniff: /emacs/i, url: "emacs://open?url=file://%{file}&line=%{line}" },
@@ -142,5 +143,15 @@ rescue LoadError => e
 end
 
 require "better_errors/core_ext/exception"
-
 require "better_errors/rails" if defined? Rails::Railtie
+
+
+if defined? ActionView::Base
+   # Load better errors assests as a vendor
+  require "better_errors/ajax_js"
+  # Load helper method
+  require "better_errors/ajax_js_helper"
+
+  # Register AjaxJsHelper method
+  ActionView::Base.send :include, AjaxJsHelper
+end

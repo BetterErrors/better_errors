@@ -771,6 +771,7 @@
     var OID = <%== object_id.to_s.inspect %>;
     
     var previousFrame = null;
+    var set_cursor_timer = 0;
     var previousFrameInfo = null;
     var allFrames = document.querySelectorAll("ul.frames li");
     var allFrameInfos = document.querySelectorAll(".frame_info");
@@ -822,6 +823,11 @@
         
         REPL.all[this.index] = this;
     }
+
+    REPL.prototype.set_cursor = function() {
+        this.inputElement.value = this.inputElement.value;
+        clearInterval(set_cursor_timer);
+    }
     
     REPL.prototype.focus = function() {
         this.inputElement.focus();
@@ -838,11 +844,7 @@
     
     REPL.prototype.setInput = function(text) {
         this.inputElement.value = text;
-        
-        if(this.inputElement.setSelectionRange) {
-            // set cursor to end of input
-            this.inputElement.setSelectionRange(text.length, text.length);
-        }
+        this.inputElement.value = this.inputElement.value;
     };
     
     REPL.prototype.writeRawOutput = function(output) {
@@ -907,6 +909,9 @@
         } else if(ev.keyCode == 38 || (ev.ctrlKey && ev.keyCode == 80)) {
             // the user pressed the up arrow or Ctrl-P
             this.onNavigateHistory(-1);
+            self = this
+            set_cursor_timer = setInterval(function(){self.set_cursor()}, 1);
+
             return false;
         } else if(ev.keyCode == 40 || (ev.ctrlKey && ev.keyCode == 78)) {
             // the user pressed the down arrow or Ctrl-N

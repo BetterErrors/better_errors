@@ -19,7 +19,8 @@ module BetterErrors
     }
   
     it "includes the error message" do
-      response.should include("you divided by zero you silly goose!")
+      error_message = "you divided by zero you silly goose!"
+      response.should include("<p title=\"#{error_message}\">#{error_message}</p>")
     end
   
     it "includes the request path" do

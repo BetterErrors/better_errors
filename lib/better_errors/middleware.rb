@@ -115,9 +115,8 @@ module BetterErrors
     end
 
     def text?(env)
-      env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
-      !env["HTTP_ACCEPT"].to_s.include?('html')
-      false
+      !env["HTTP_ACCEPT"].to_s.include?('html') && 
+      !env["HTTP_ACCEPT"].to_s.include?('javascript')
     end
 
     def ajax?(env)

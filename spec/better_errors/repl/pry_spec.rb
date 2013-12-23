@@ -25,7 +25,11 @@ module BetterErrors
         filled.should == "  "
 
         output, prompt, filled = repl.send_input "end"
-        output.should == "=> nil\n"
+        if RUBY_VERSION >= "2.1.0"
+          output.should == "=> :f\n"
+        else
+          output.should == "=> nil\n"
+        end
         prompt.should == ">>"
         filled.should == ""
       end

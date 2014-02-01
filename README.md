@@ -29,6 +29,8 @@ gem "binding_of_caller"
 
 This is an optional dependency however, and Better Errors will work without it.
 
+_Note: If you discover that Better Errors isn't working - particularly after upgrading from version 0.5.0 or less - be sure to set `config.consider_all_requests_local = true` in `config/environments/development.rb`._
+
 ## Security
 
 **NOTE:** It is *critical* you put better\_errors in the **development** section. **Do NOT run better_errors in production, or on Internet facing hosts.**

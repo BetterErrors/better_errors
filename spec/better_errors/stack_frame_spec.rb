@@ -6,77 +6,77 @@ module BetterErrors
       it "is true for application filenames" do
         BetterErrors.stub(:application_root).and_return("/abc/xyz")
         frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
-        
+
         frame.application?.should be_true
       end
-      
+
       it "is false for everything else" do
         BetterErrors.stub(:application_root).and_return("/abc/xyz")
         frame = StackFrame.new("/abc/nope", 123, "foo")
-        
+
         frame.application?.should be_false
       end
-      
+
       it "doesn't care if no application_root is set" do
         frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
-        
+
         frame.application?.should be_false
       end
     end
-    
+
     context "#gem?" do
       it "is true for gem filenames" do
         Gem.stub(:path).and_return(["/abc/xyz"])
         frame = StackFrame.new("/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
-        
+
         frame.gem?.should be_true
       end
-      
+
       it "is false for everything else" do
         Gem.stub(:path).and_return(["/abc/xyz"])
         frame = StackFrame.new("/abc/nope", 123, "foo")
-        
+
         frame.gem?.should be_false
       end
     end
-    
+
     context "#application_path" do
       it "chops off the application root" do
         BetterErrors.stub(:application_root).and_return("/abc/xyz")
         frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
-        
+
         frame.application_path.should == "app/controllers/crap_controller.rb"
       end
     end
-    
+
     context "#gem_path" do
       it "chops of the gem path and stick (gem) there" do
         Gem.stub(:path).and_return(["/abc/xyz"])
         frame = StackFrame.new("/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
-        
+
         frame.gem_path.should == "whatever (1.2.3) lib/whatever.rb"
       end
-      
+
       it "prioritizes gem path over application path" do
         BetterErrors.stub(:application_root).and_return("/abc/xyz")
         Gem.stub(:path).and_return(["/abc/xyz/vendor"])
         frame = StackFrame.new("/abc/xyz/vendor/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
-        
+
         frame.gem_path.should == "whatever (1.2.3) lib/whatever.rb"
       end
     end
-    
+
     context "#pretty_path" do
       it "returns #application_path for application paths" do
         BetterErrors.stub(:application_root).and_return("/abc/xyz")
         frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
         frame.pretty_path.should == frame.application_path
       end
-      
+
       it "returns #gem_path for gem paths" do
         Gem.stub(:path).and_return(["/abc/xyz"])
         frame = StackFrame.new("/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
-        
+
         frame.pretty_path.should == frame.gem_path
       end
     end
@@ -90,28 +90,28 @@ module BetterErrors
       frames.first.filename.should == "my_file.rb"
       frames.first.line.should == 123
     end
-    
+
     it "doesn't blow up if no method name is given" do
       error = StandardError.allocate
-      
+
       error.stub(:backtrace).and_return(["foo.rb:123"])
       frames = StackFrame.from_exception(error)
       frames.first.filename.should == "foo.rb"
       frames.first.line.should == 123
-      
+
       error.stub(:backtrace).and_return(["foo.rb:123: this is an error message"])
       frames = StackFrame.from_exception(error)
       frames.first.filename.should == "foo.rb"
       frames.first.line.should == 123
     end
-    
+
     it "ignores a backtrace line if its format doesn't make any sense at all" do
       error = StandardError.allocate
       error.stub(:backtrace).and_return(["foo.rb:123:in `foo'", "C:in `find'", "bar.rb:123:in `bar'"])
       frames = StackFrame.from_exception(error)
       frames.count.should == 2
     end
-    
+
     it "doesn't blow up if a filename contains a colon" do
       error = StandardError.allocate
       error.stub(:backtrace).and_return(["crap:filename.rb:123"])
@@ -125,11 +125,7 @@ module BetterErrors
         ::Kernel.binding
       end
       frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index", obj.my_binding)
-      if RUBY_VERSION >= "2.0.0"
-        frame.class_name.should == 'BasicObject'
-      else
-        frame.class_name.should be_nil
-      end
+      frame.class_name.should == 'BasicObject'
     end
 
     it "sets method names properly" do
@@ -143,13 +139,8 @@ module BetterErrors
       end
 
       frame = StackFrame.from_exception(obj.my_method).first
-      if RUBY_VERSION >= "2.0.0"
-        frame.method_name.should == "#my_method"
-        frame.class_name.should == "String"
-      else
-        frame.method_name.should == "my_method"
-        frame.class_name.should be_nil
-      end
+      frame.method_name.should == "#my_method"
+      frame.class_name.should == "String"
     end
 
     if RUBY_ENGINE == "java"

@@ -136,8 +136,6 @@ module BetterErrors
 
   private
     def set_pretty_method_name
-      return if RUBY_VERSION < "2.0.0"
-
       name =~ /\A(block (\([^)]+\) )?in )?/
       recv = frame_binding.eval("self")
 

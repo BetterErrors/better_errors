@@ -4,49 +4,7 @@ module BetterErrors
   # @private
   class StackFrame
     def self.from_exception(exception)
-      if has_binding_stack?(exception)
-        list = exception.__better_errors_bindings_stack.map { |binding|
-          file = binding.eval "__FILE__"
-          line = binding.eval "__LINE__"
-          name = binding.frame_description
-          StackFrame.new(file, line, name, binding)
-        }
-      else
-        list = (exception.backtrace || []).map { |frame|
-          next unless md = /\A(?<file>.*?):(?<line>\d+)(:in `(?<name>.*)')?/.match(frame)
-          StackFrame.new(md[:file], md[:line].to_i, md[:name])
-        }.compact
-      end
-
-      if syntax_error?(exception)
-        if trace = exception.backtrace and trace.first =~ /\A(.*):(\d+)/
-          list.unshift StackFrame.new($1, $2.to_i, "")
-        end
-      end
-
-      list
-    end
-
-    def self.syntax_error_classes
-      # Better Errors may be loaded before some of the gems that provide these
-      # classes, so we lazily set up the set of syntax error classes at runtime
-      # after everything has hopefully had a chance to load.
-      #
-      @syntax_error_classes ||= begin
-        class_names = %w[
-          Haml::SyntaxError
-        ]
-
-        Set.new(class_names.map { |klass| eval(klass) rescue nil }.compact)
-      end
-    end
-
-    def self.syntax_error?(exception)
-      exception.is_a?(SyntaxError) || syntax_error_classes.include?(exception.class)
-    end
-
-    def self.has_binding_stack?(exception)
-      exception.respond_to?(:__better_errors_bindings_stack) && exception.__better_errors_bindings_stack.any?
+      RaisedException.new(exception).backtrace
     end
 
     attr_reader :filename, :line, :name, :frame_binding

@@ -136,11 +136,10 @@ end
 
 begin
   require "binding_of_caller"
+  require "better_errors/exception_extension"
   BetterErrors.binding_of_caller_available = true
 rescue LoadError => e
   BetterErrors.binding_of_caller_available = false
 end
-
-require "better_errors/core_ext/exception"
 
 require "better_errors/rails" if defined? Rails::Railtie

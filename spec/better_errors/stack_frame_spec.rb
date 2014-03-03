@@ -139,8 +139,13 @@ module BetterErrors
       end
 
       frame = StackFrame.from_exception(obj.my_method).first
-      frame.method_name.should == "#my_method"
-      frame.class_name.should == "String"
+      if BetterErrors.binding_of_caller_available?
+        frame.method_name.should == "#my_method"
+        frame.class_name.should == "String"
+      else
+        frame.method_name.should == "my_method"
+        frame.class_name.should == nil
+      end
     end
 
     if RUBY_ENGINE == "java"

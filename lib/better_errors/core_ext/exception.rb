@@ -2,13 +2,8 @@ module BetterErrors
   module CoreExt
     module Exception
       def set_backtrace(*)
-        unless Thread.current[:__better_errors_exception_lock]
-          Thread.current[:__better_errors_exception_lock] = true
-          begin
-            @__better_errors_bindings_stack = binding.callers.drop(1)
-          ensure
-            Thread.current[:__better_errors_exception_lock] = false
-          end
+        if caller_locations.none? { |loc| loc.path == __FILE__ }
+          @__better_errors_bindings_stack = binding.callers.drop(1)
         end
 
         super

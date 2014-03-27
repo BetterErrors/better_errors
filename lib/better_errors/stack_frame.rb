@@ -99,7 +99,7 @@ module BetterErrors
 
       return unless method_name = frame_binding.eval("::Kernel.__method__")
 
-      if Kernel.instance_method(:is_a?).bind(recv).call Module
+      if Module === recv
         @class_name = "#{$1}#{recv}"
         @method_name = ".#{method_name}"
       else

@@ -67,8 +67,12 @@ module BetterErrors
     end
 
   private
-    def editor_url(frame)
-      BetterErrors.editor[frame.filename, frame.line]
+    def editor_url(editor, frame)
+      editor[frame.filename, frame.line]
+    end
+
+    def editor_name(editor, frame)
+      editor_url(editor, frame)[/\A(.*?):\/\//, 1]  # Just return the URL protocol
     end
 
     def rack_session

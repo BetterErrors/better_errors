@@ -47,22 +47,22 @@ module BetterErrors
   end
   @ignored_instance_variables = []
 
-  # Returns a proc, which when called with a filename and line number argument,
-  # returns a URL to open the filename and line in the selected editor.
+  # Returns a collection of procs, each of which when called with a filename and line
+  # number argument, returns a URL to open the filename and line in the selected editor.
   #
   # Generates TextMate URLs by default.
   #
-  #   BetterErrors.editor["/some/file", 123]
+  #   BetterErrors.editors.first["/some/file", 123]
   #     # => txmt://open?url=file:///some/file&line=123
   #
   # @return [Proc]
-  def self.editor
-    @editor
+  def self.editors
+    @editors
   end
 
   # Configures how Better Errors generates open-in-editor URLs.
   #
-  # @overload BetterErrors.editor=(sym)
+  # @overload BetterErrors.editors=(sym)
   #   Uses one of the preset editor configurations. Valid symbols are:
   #
   #   * `:textmate`, `:txmt`, `:tm`
@@ -96,23 +96,36 @@ module BetterErrors
   #
   #   @param [Proc] proc
   #
-  def self.editor=(editor)
-    POSSIBLE_EDITOR_PRESETS.each do |config|
-      if config[:symbols].include?(editor)
-        return self.editor = config[:url]
-      end
-    end
+  # @overload BetterErrors.editor=(enum)
+  #   Uses `enum` to generate a collection of open-in-editor URLs.
+  #
+  #   Each element of `enum` should be a Symbol, String or Proc as described
+  #   in the above overloads of this method.
+  #
+  #   @example
+  #     BetterErrors.editors = [
+  #       :sublime,
+  #       "atm://open?url=file://%{file}&line=%{line}",
+  #       :textmate
+  #     ]
+  #
+  #   @params [Enumerable] enum
+  def self.editors=(editors)
+    @editors = [*editors].map do |editor|
 
-    if editor.is_a? String
-      self.editor = proc { |file, line| editor % { file: URI.encode_www_form_component(file), line: line } }
-    else
-      if editor.respond_to? :call
-        @editor = editor
+      if config = POSSIBLE_EDITOR_PRESETS.detect { |config| config[:symbols].include?(editor) }
+        editor = config[:url]
+        redo
+      elsif editor.is_a? String
+        proc { |file, line| editor % { file: URI.encode_www_form_component(file), line: line } }
+      elsif editor.respond_to? :call
+        editor
       else
-        raise TypeError, "Expected editor to be a valid editor key, a format string or a callable."
+        raise TypeError, "Expected editor to be a valid editor key, a format string or a callable, but found #{ editor.inspect }"
       end
     end
   end
+  singleton_class.send :alias_method, :editor=, :editors=  # An alias is used for backwards compatibility, and it reads better when only a single editor is defined.
 
   # Enables experimental Pry support in the inline REPL
   #

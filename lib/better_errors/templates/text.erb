@@ -1,4 +1,4 @@
-<%== text_heading("=", "%s at %s" % [exception.class, request_path]) %>
+<%== text_heading("=", "%s at %s" % [exception.type, request_path]) %>
 
 > <%== exception_message %>
 <% if backtrace_frames.any? %>

@@ -7,6 +7,8 @@ module BetterErrors
 
     its(:exception) { should == exception }
     its(:message)   { should == "whoops" }
+    its(:type)      { should == RuntimeError }
+
     it { should_not be_syntax_error }
 
     context "when the exception wraps another exception" do
@@ -21,6 +23,8 @@ module BetterErrors
       let(:exception) { SyntaxError.new("foo.rb:123: you made a typo!") }
 
       its(:message) { should == "you made a typo!" }
+      its(:type)    { should == SyntaxError }
+
       it { should be_syntax_error }
     end
   end

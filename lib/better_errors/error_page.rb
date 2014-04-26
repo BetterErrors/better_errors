@@ -78,14 +78,6 @@ module BetterErrors
       env["SCRIPT_NAME"] || ""
     end
 
-    def real_exception(exception)
-      if exception.respond_to?(:original_exception) && exception.original_exception.is_a?(Exception)
-        exception.original_exception
-      else
-        exception
-      end
-    end
-
     def request_path
       env["PATH_INFO"]
     end

@@ -1,5 +1,6 @@
 require "cgi"
 require "json"
+require "securerandom"
 
 module BetterErrors
   # @private
@@ -19,6 +20,10 @@ module BetterErrors
       @env = env
       @start_time = Time.now.to_f
       @repls = []
+    end
+
+    def id
+      @id ||= SecureRandom.hex(8)
     end
 
     def render(template_name = "main")

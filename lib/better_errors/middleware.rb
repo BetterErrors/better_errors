@@ -71,7 +71,7 @@ module BetterErrors
 
     def better_errors_call(env)
       case env["PATH_INFO"]
-      when %r{/__better_errors/(?<oid>-?\d+)/(?<method>\w+)\z}
+      when %r{/__better_errors/(?<id>.+?)/(?<method>\w+)\z}
         internal_call env, $~
       when %r{/__better_errors/?\z}
         show_error_page env
@@ -124,7 +124,7 @@ module BetterErrors
     end
 
     def internal_call(env, opts)
-      if opts[:oid].to_i != @error_page.object_id
+      if opts[:id] != @error_page.id
         return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(error: "Session expired")]]
       end
 

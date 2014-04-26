@@ -1,7 +1,7 @@
 # @private
 module BetterErrors
   class RaisedException
-    attr_reader :exception, :backtrace
+    attr_reader :exception, :message, :backtrace
 
     def initialize(exception)
       if exception.respond_to?(:original_exception) && exception.original_exception
@@ -9,42 +9,17 @@ module BetterErrors
       end
 
       @exception = exception
+      @message = exception.message
 
       setup_backtrace
-    end
-
-    def syntax_error?
-      syntax_error_classes.any? { |klass| exception.is_a?(klass) }
+      massage_syntax_error
     end
 
     def type
       exception.class
     end
 
-    def message
-      if syntax_error? && /\A.+?:\d+: (.*)/m =~ exception.message
-        $1
-      else
-        exception.message
-      end
-    end
-
   private
-    def syntax_error_classes
-      # Better Errors may be loaded before some of the gems that provide these
-      # classes, so we lazily set up the set of syntax error classes at runtime
-      # after everything has hopefully had a chance to load.
-      #
-      @syntax_error_classes ||= begin
-        class_names = %w[
-          SyntaxError
-          Haml::SyntaxError
-        ]
-
-        class_names.map { |klass| eval(klass) rescue nil }.compact
-      end
-    end
-
     def has_bindings?
       exception.respond_to?(:__better_errors_bindings_stack) && exception.__better_errors_bindings_stack.any?
     end
@@ -54,12 +29,6 @@ module BetterErrors
         setup_backtrace_from_bindings
       else
         setup_backtrace_from_backtrace
-      end
-
-      if syntax_error?
-        if trace = exception.backtrace and trace.first =~ /\A(.*?):(\d+)/
-          backtrace.unshift(StackFrame.new($1, $2.to_i, ""))
-        end
       end
     end
 
@@ -78,6 +47,20 @@ module BetterErrors
           StackFrame.new(file, line.to_i, name)
         end
       }.compact
+    end
+
+    def massage_syntax_error
+      case exception.class.to_s
+      when "Haml::SyntaxError"
+        if /\A(.+?):(\d+)/ =~ exception.backtrace.first
+          backtrace.unshift(StackFrame.new($1, $2.to_i, ""))
+        end
+      when "SyntaxError"
+        if /\A(.+?):(\d+): (.*)/m =~ exception.message
+          backtrace.unshift(StackFrame.new($1, $2.to_i, ""))
+          @message = $3
+        end
+      end
     end
   end
 end

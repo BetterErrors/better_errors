@@ -2,17 +2,26 @@ require "spec_helper"
 
 module BetterErrors
   describe RaisedException do
-    context "#exception" do
-      let(:exception) { RuntimeError.new("whoops") }
+    let(:exception) { RuntimeError.new("whoops") }
+    subject { RaisedException.new(exception) }
 
-      it "returns the wrapped exception" do
-        RaisedException.new(exception).exception.should == exception
-      end
+    its(:exception) { should == exception }
+    its(:message)   { should == "whoops" }
+    it { should_not be_syntax_error }
 
-      it "returns the original exception, if there is one" do
-        wrapper = double(:original_exception => exception)
-        RaisedException.new(wrapper).exception.should == exception
-      end
+    context "when the exception wraps another exception" do
+      let(:original_exception) { RuntimeError.new("something went wrong!") }
+      let(:exception) { double(:original_exception => original_exception) }
+
+      its(:exception) { should == original_exception }
+      its(:message)   { should == "something went wrong!" }
+    end
+
+    context "when the exception is a syntax error" do
+      let(:exception) { SyntaxError.new("foo.rb:123: you made a typo!") }
+
+      its(:message) { should == "you made a typo!" }
+      it { should be_syntax_error }
     end
   end
 end

@@ -14,7 +14,15 @@ module BetterErrors
     end
 
     def syntax_error?
-      syntax_error_classes.any? { |klass| is_a?(klass) }
+      syntax_error_classes.any? { |klass| exception.is_a?(klass) }
+    end
+
+    def message
+      if syntax_error? && /\A.+?:\d+: (.*)/m =~ exception.message
+        $1
+      else
+        exception.message
+      end
     end
 
   private

@@ -54,11 +54,11 @@ module BetterErrors
     end
 
     def application_frames
-      backtrace_frames.select { |frame| frame.context == :application }
+      backtrace_frames.select(&:application?)
     end
 
     def first_frame
-      backtrace_frames.detect { |frame| frame.context == :application } || backtrace_frames.first
+      application_frames.first || backtrace_frames.first
     end
 
   private

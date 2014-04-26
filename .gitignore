@@ -1,6 +1,7 @@
 *.gem
-tmp
-Gemfile.lock
-coverage
-.yardoc
-doc
+/tmp
+/Gemfile.lock
+/coverage
+/.yardoc
+/doc
+/.bundle

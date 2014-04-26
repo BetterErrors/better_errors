@@ -4,6 +4,10 @@ module BetterErrors
     attr_reader :exception, :backtrace
 
     def initialize(exception)
+      if exception.respond_to?(:original_exception) && exception.original_exception
+        exception = exception.original_exception
+      end
+
       @exception = exception
 
       setup_backtrace

@@ -77,6 +77,10 @@ get "/" do
 end
 ```
 
+### Debug AJAX requests
+
+Visit `/__better_errors` on your app's root path to view the error page for the last exception that occurred, even when it has been triggered by an AJAX request.
+
 ### Unicorn, Puma, and other multi-worker servers
 
 Better Errors works by leaving a lot of context in server process memory. If

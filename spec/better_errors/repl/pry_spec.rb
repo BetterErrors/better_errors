@@ -15,23 +15,23 @@ module BetterErrors
 
       it "does line continuation" do
         output, prompt, filled = repl.send_input ""
-        output.should == "=> nil\n"
-        prompt.should == ">>"
-        filled.should == ""
+        expect(output).to eq("=> nil\n")
+        expect(prompt).to eq(">>")
+        expect(filled).to eq("")
 
         output, prompt, filled = repl.send_input "def f(x)"
-        output.should == ""
-        prompt.should == ".."
-        filled.should == "  "
+        expect(output).to eq("")
+        expect(prompt).to eq("..")
+        expect(filled).to eq("  ")
 
         output, prompt, filled = repl.send_input "end"
         if RUBY_VERSION >= "2.1.0"
-          output.should == "=> :f\n"
+          expect(output).to eq("=> :f\n")
         else
-          output.should == "=> nil\n"
+          expect(output).to eq("=> nil\n")
         end
-        prompt.should == ">>"
-        filled.should == ""
+        expect(prompt).to eq(">>")
+        expect(filled).to eq("")
       end
 
       it_behaves_like "a REPL provider"

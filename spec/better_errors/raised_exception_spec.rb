@@ -5,27 +5,52 @@ module BetterErrors
     let(:exception) { RuntimeError.new("whoops") }
     subject { RaisedException.new(exception) }
 
-    its(:exception) { should == exception }
-    its(:message)   { should == "whoops" }
-    its(:type)      { should == RuntimeError }
+    describe '#exception' do
+      subject { super().exception }
+      it { should == exception }
+    end
+
+    describe '#message' do
+      subject { super().message }
+      it   { should == "whoops" }
+    end
+
+    describe '#type' do
+      subject { super().type }
+      it      { should == RuntimeError }
+    end
 
     context "when the exception wraps another exception" do
       let(:original_exception) { RuntimeError.new("something went wrong!") }
       let(:exception) { double(:original_exception => original_exception) }
 
-      its(:exception) { should == original_exception }
-      its(:message)   { should == "something went wrong!" }
+      describe '#exception' do
+        subject { super().exception }
+        it { should == original_exception }
+      end
+
+      describe '#message' do
+        subject { super().message }
+        it   { should == "something went wrong!" }
+      end
     end
 
     context "when the exception is a syntax error" do
       let(:exception) { SyntaxError.new("foo.rb:123: you made a typo!") }
 
-      its(:message) { should == "you made a typo!" }
-      its(:type)    { should == SyntaxError }
+      describe '#message' do
+        subject { super().message }
+        it { should == "you made a typo!" }
+      end
+
+      describe '#type' do
+        subject { super().type }
+        it    { should == SyntaxError }
+      end
 
       it "has the right filename and line number in the backtrace" do
-        subject.backtrace.first.filename.should == "foo.rb"
-        subject.backtrace.first.line.should == 123
+        expect(subject.backtrace.first.filename).to eq("foo.rb")
+        expect(subject.backtrace.first.line).to eq(123)
       end
     end
 
@@ -40,12 +65,19 @@ module BetterErrors
         end
       }
 
-      its(:message) { should == "you made a typo!" }
-      its(:type)    { should == Haml::SyntaxError }
+      describe '#message' do
+        subject { super().message }
+        it { should == "you made a typo!" }
+      end
+
+      describe '#type' do
+        subject { super().type }
+        it    { should == Haml::SyntaxError }
+      end
 
       it "has the right filename and line number in the backtrace" do
-        subject.backtrace.first.filename.should == "foo.rb"
-        subject.backtrace.first.line.should == 123
+        expect(subject.backtrace.first.filename).to eq("foo.rb")
+        expect(subject.backtrace.first.line).to eq(123)
       end
     end
   end

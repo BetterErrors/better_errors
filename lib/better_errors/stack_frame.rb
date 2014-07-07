@@ -49,10 +49,10 @@ module BetterErrors
     end
 
     def context
-      if gem?
-        :gem
-      elsif application?
+      if application?
         :application
+      elsif gem?
+        :gem
       else
         :dunno
       end

@@ -36,8 +36,8 @@ module BetterErrors
         @fiber = Fiber.new do
           @pry.repl binding
         end
-        @input = Input.new
-        @output = Output.new
+        @input = REPL::Pry::Input.new
+        @output = REPL::Pry::Output.new
         @pry = ::Pry.new input: @input, output: @output
         @pry.hooks.clear_all if defined?(@pry.hooks.clear_all)
         @fiber.resume

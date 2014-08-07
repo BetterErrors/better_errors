@@ -1,6 +1,7 @@
 require "json"
 require "ipaddr"
 require "set"
+require "rack"
 
 module BetterErrors
   # Better Errors' error handling middleware. Including this in your middleware

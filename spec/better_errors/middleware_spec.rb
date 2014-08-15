@@ -40,6 +40,14 @@ module BetterErrors
       app.call("REMOTE_ADDR" => "77.55.33.11")
     end
 
+    it "respects the X-Forwarded-For header" do
+      app.should_not_receive :better_errors_call
+      app.call(
+        "REMOTE_ADDR"          => "127.0.0.1",
+        "HTTP_X_FORWARDED_FOR" => "1.2.3.4",
+      )
+    end
+
     it "doesn't blow up when given a blank REMOTE_ADDR" do
       expect { app.call("REMOTE_ADDR" => " ") }.to_not raise_error
     end

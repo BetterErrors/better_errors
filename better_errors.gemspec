@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "erubis", ">= 2.6.6"
   s.add_dependency "coderay", ">= 1.0.0"
+  s.add_dependency "rack", ">= 0.9.0"
 
   # optional dependencies:
   # s.add_dependency "binding_of_caller"

@@ -7,20 +7,20 @@ module BetterErrors
         BetterErrors.stub(:application_root).and_return("/abc/xyz")
         frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
 
-        frame.application?.should be_true
+        frame.should be_application
       end
 
       it "is false for everything else" do
         BetterErrors.stub(:application_root).and_return("/abc/xyz")
         frame = StackFrame.new("/abc/nope", 123, "foo")
 
-        frame.application?.should be_false
+        frame.should_not be_application
       end
 
       it "doesn't care if no application_root is set" do
         frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
 
-        frame.application?.should be_false
+        frame.should_not be_application
       end
     end
 
@@ -29,14 +29,14 @@ module BetterErrors
         Gem.stub(:path).and_return(["/abc/xyz"])
         frame = StackFrame.new("/abc/xyz/gems/whatever-1.2.3/lib/whatever.rb", 123, "foo")
 
-        frame.gem?.should be_true
+        frame.should be_gem
       end
 
       it "is false for everything else" do
         Gem.stub(:path).and_return(["/abc/xyz"])
         frame = StackFrame.new("/abc/nope", 123, "foo")
 
-        frame.gem?.should be_false
+        frame.should_not be_gem
       end
     end
 

@@ -139,7 +139,7 @@ begin
   require "binding_of_caller"
   require "better_errors/exception_extension"
   BetterErrors.binding_of_caller_available = true
-rescue LoadError => e
+rescue LoadError
   BetterErrors.binding_of_caller_available = false
 end
 

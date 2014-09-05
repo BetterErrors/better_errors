@@ -33,7 +33,7 @@ module BetterErrors
     end
 
     def gem_path
-      if path = Gem.path.detect { |path| filename.index(path) == 0 }
+      if path = Gem.path.detect { |p| filename.index(p) == 0 }
         gem_name_and_version, path = filename.sub("#{path}/gems/", "").split("/", 2)
         /(?<gem_name>.+)-(?<gem_version>[\w.]+)/ =~ gem_name_and_version
         "#{gem_name} (#{gem_version}) #{path}"

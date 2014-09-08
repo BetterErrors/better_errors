@@ -4,11 +4,11 @@ module BetterErrors
       def initialize(binding)
         @binding = binding
       end
-    
+
       def send_input(str)
         [execute(str), ">>", ""]
       end
-    
+
     private
       def execute(str)
         "=> #{@binding.eval(str).inspect}\n"

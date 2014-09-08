@@ -9,7 +9,7 @@ module BetterErrors
         local_a = 123
         binding
       }
-      
+
       let(:repl) { Basic.new fresh_binding }
 
       it_behaves_like "a REPL provider"

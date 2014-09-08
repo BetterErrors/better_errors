@@ -9,29 +9,29 @@ module BetterErrors
           Fiber.yield
         end
       end
-      
+
       class Output
         def initialize
           @buffer = ""
         end
-        
+
         def puts(*args)
           args.each do |arg|
             @buffer << "#{arg.chomp}\n"
           end
         end
-        
+
         def tty?
           false
         end
-        
+
         def read_buffer
           @buffer
         ensure
           @buffer = ""
         end
       end
-      
+
       def initialize(binding)
         @fiber = Fiber.new do
           @pry.repl binding
@@ -42,7 +42,7 @@ module BetterErrors
         @pry.hooks.clear_all if defined?(@pry.hooks.clear_all)
         @fiber.resume
       end
-    
+
       def send_input(str)
         local ::Pry.config, color: false, pager: false do
           @fiber.resume "#{str}\n"
@@ -59,7 +59,7 @@ module BetterErrors
       rescue
         [">>", ""]
       end
-      
+
     private
       def local(obj, attrs)
         old_attrs = {}

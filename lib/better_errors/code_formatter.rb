@@ -11,9 +11,9 @@ module BetterErrors
       ".erb"  => :erb,
       ".haml" => :haml
     }
-    
+
     attr_reader :filename, :line, :context
-    
+
     def initialize(filename, line, context = 5)
       @filename = filename
       @line     = line
@@ -29,7 +29,7 @@ module BetterErrors
     def formatted_code
       formatted_lines.join
     end
-    
+
     def coderay_scanner
       ext = File.extname(filename)
       FILE_TYPES[ext] || :text
@@ -40,20 +40,20 @@ module BetterErrors
         yield (current_line == line), current_line, str
       }
     end
-    
+
     def highlighted_lines
       CodeRay.scan(context_lines.join, coderay_scanner).div(wrap: nil).lines
     end
-    
+
     def context_lines
       range = line_range
       source_lines[(range.begin - 1)..(range.end - 1)] or raise Errno::EINVAL
     end
-    
+
     def source_lines
       @source_lines ||= File.readlines(filename)
     end
-    
+
     def line_range
       min = [line - context, 1].max
       max = [line + context, source_lines.count].min

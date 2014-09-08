@@ -3,16 +3,16 @@ require "spec_helper"
 module BetterErrors
   describe CodeFormatter do
     let(:filename) { File.expand_path("../support/my_source.rb", __FILE__) }
-    
+
     let(:formatter) { CodeFormatter.new(filename, 8) }
-    
+
     it "picks an appropriate scanner" do
       formatter.coderay_scanner.should == :ruby
     end
-    
+
     it "shows 5 lines of context" do
       formatter.line_range.should == (3..13)
-      
+
       formatter.context_lines.should == [
           "three\n",
           "four\n",
@@ -43,12 +43,12 @@ module BetterErrors
         formatter = CodeFormatter::HTML.new(filename, 20)
         formatter.output.should_not == formatter.source_unavailable
       end
-      
+
       it "doesn't barf when the lines don't make any sense" do
         formatter = CodeFormatter::HTML.new(filename, 999)
         formatter.output.should == formatter.source_unavailable
       end
-      
+
       it "doesn't barf when the file doesn't exist" do
         formatter = CodeFormatter::HTML.new("fkdguhskd7e l", 1)
         formatter.output.should == formatter.source_unavailable
@@ -82,7 +82,7 @@ module BetterErrors
         formatter = CodeFormatter::Text.new(filename, 999)
         formatter.output.should == formatter.source_unavailable
       end
-      
+
       it "doesn't barf when the file doesn't exist" do
         formatter = CodeFormatter::Text.new("fkdguhskd7e l", 1)
         formatter.output.should == formatter.source_unavailable

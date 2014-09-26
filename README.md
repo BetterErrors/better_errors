@@ -1,8 +1,8 @@
-# Better Errors [![Gem Version](http://img.shields.io/gem/v/better_errors.svg)](https://rubygems.org/gems/better_errors) [![Build Status](https://travis-ci.org/charliesome/better_errors.svg)](https://travis-ci.org/charliesome/better_errors) [![Code Climate](http://img.shields.io/codeclimate/github/charliesome/better_errors.svg)](https://codeclimate.com/github/charliesome/better_errors)
+# Better Errors [![Gem Version](https://img.shields.io/gem/v/better_errors.svg)](https://rubygems.org/gems/better_errors) [![Build Status](https://travis-ci.org/charliesome/better_errors.svg)](https://travis-ci.org/charliesome/better_errors) [![Code Climate](https://img.shields.io/codeclimate/github/charliesome/better_errors.svg)](https://codeclimate.com/github/charliesome/better_errors)
 
 Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails in any Rack app as Rack middleware.
 
-![image](http://i.imgur.com/6zBGAAb.png)
+![image](https://i.imgur.com/6zBGAAb.png)
 
 ## Features
 
@@ -21,7 +21,7 @@ group :development do
 end
 ```
 
-If you would like to use Better Errors' **advanced features** (REPL, local/instance variable inspection, pretty stack frame names), you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem by [@banisterfiend](http://twitter.com/banisterfiend) to your Gemfile:
+If you would like to use Better Errors' **advanced features** (REPL, local/instance variable inspection, pretty stack frame names), you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem by [@banisterfiend](https://twitter.com/banisterfiend) to your Gemfile:
 
 ```ruby
 gem "binding_of_caller"
@@ -76,6 +76,11 @@ get "/" do
   raise "oops"
 end
 ```
+
+### Plain text
+
+Better Errors will render a plain text error page  when the request is an
+`XMLHttpRequest` or when the `Accept` header does *not* include 'html'.
 
 ### Unicorn, Puma, and other multi-worker servers
 

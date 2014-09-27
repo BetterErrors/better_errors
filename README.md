@@ -55,6 +55,12 @@ Note that the `allow_ip!` is actually backed by a `Set`, so you can add more tha
 
 **VirtualBox:** If you are using VirtualBox and are accessing the guest from your host's browser, you will need to use `allow_ip!` to see the error page.
 
+**Avoiding the need to know your VirtualBox/Vagrant box ip address:** if you don't want to keep finding your IP addess to pass it to `better_errors` (handy when you have many developers working in heterogeneous development environments) you can add the following line to your `config/environments/development.rb`.
+
+```ruby
+BetterErrors::Middleware.allow_ip! '0.0.0.0/0'
+```
+
 ## Usage
 
 If you're using Rails, there's nothing else you need to do.

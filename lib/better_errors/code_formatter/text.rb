@@ -2,7 +2,7 @@ module BetterErrors
   # @private
   class CodeFormatter::Text < CodeFormatter
     def source_unavailable
-      "# Source is not available"
+      '# Source is not available'
     end
 
     def formatted_lines

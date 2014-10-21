@@ -1,5 +1,5 @@
-$: << File.expand_path("../../lib", __FILE__)
+$: << File.expand_path('../../lib', __FILE__)
 
-ENV["EDITOR"] = nil
+ENV['EDITOR'] = nil
 
-require "better_errors"
+require 'better_errors'

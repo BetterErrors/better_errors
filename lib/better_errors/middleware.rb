@@ -1,7 +1,7 @@
-require "json"
-require "ipaddr"
-require "set"
-require "rack"
+require 'json'
+require 'ipaddr'
+require 'set'
+require 'rack'
 
 module BetterErrors
   # Better Errors' error handling middleware. Including this in your middleware
@@ -36,8 +36,8 @@ module BetterErrors
       ALLOWED_IPS << IPAddr.new(addr)
     end
 
-    allow_ip! "127.0.0.0/8"
-    allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
+    allow_ip! '127.0.0.0/8'
+    allow_ip! '::1/128' rescue nil # windows ruby doesn't have ipv6 support
 
     # A new instance of BetterErrors::Middleware
     #
@@ -65,12 +65,12 @@ module BetterErrors
     def allow_ip?(env)
       request = Rack::Request.new(env)
       return true unless request.ip and !request.ip.strip.empty?
-      ip = IPAddr.new request.ip.split("%").first
+      ip = IPAddr.new request.ip.split('%').first
       ALLOWED_IPS.any? { |subnet| subnet.include? ip }
     end
 
     def better_errors_call(env)
-      case env["PATH_INFO"]
+      case env['PATH_INFO']
       when %r{/__better_errors/(?<id>.+?)/(?<method>\w+)\z}
         internal_call env, $~
       when %r{/__better_errors/?\z}
@@ -104,12 +104,12 @@ module BetterErrors
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 
-      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+      [status_code, { 'Content-Type' => "text/#{type}; charset=utf-8" }, [content]]
     end
 
     def text?(env)
-      env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
-      !env["HTTP_ACCEPT"].to_s.include?('html')
+      env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ||
+      !env['HTTP_ACCEPT'].to_s.include?('html')
     end
 
     def log_exception
@@ -125,16 +125,16 @@ module BetterErrors
 
     def internal_call(env, opts)
       if opts[:id] != @error_page.id
-        return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(error: "Session expired")]]
+        return [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [JSON.dump(error: 'Session expired')]]
       end
 
-      env["rack.input"].rewind
-      response = @error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
+      env['rack.input'].rewind
+      response = @error_page.send("do_#{opts[:method]}", JSON.parse(env['rack.input'].read))
+      [200, { 'Content-Type' => 'text/plain; charset=utf-8' }, [JSON.dump(response)]]
     end
 
     def no_errors_page
-      "<h1>No errors</h1><p>No errors have been recorded yet.</p><hr>" +
+      '<h1>No errors</h1><p>No errors have been recorded yet.</p><hr>' +
       "<code>Better Errors v#{BetterErrors::VERSION}</code>"
     end
   end

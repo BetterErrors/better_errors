@@ -1,16 +1,16 @@
-require "spec_helper"
+require 'spec_helper'
 
 module BetterErrors
   describe CodeFormatter do
-    let(:filename) { File.expand_path("../support/my_source.rb", __FILE__) }
+    let(:filename) { File.expand_path('../support/my_source.rb', __FILE__) }
 
     let(:formatter) { CodeFormatter.new(filename, 8) }
 
-    it "picks an appropriate scanner" do
+    it 'picks an appropriate scanner' do
       formatter.coderay_scanner.should == :ruby
     end
 
-    it "shows 5 lines of context" do
+    it 'shows 5 lines of context' do
       formatter.line_range.should == (3..13)
 
       formatter.context_lines.should == [
@@ -28,18 +28,18 @@ module BetterErrors
         ]
     end
 
-    it "works when the line is right on the edge" do
+    it 'works when the line is right on the edge' do
       formatter = CodeFormatter.new(filename, 20)
       formatter.line_range.should == (15..20)
     end
 
     describe CodeFormatter::HTML do
-      it "highlights the erroring line" do
+      it 'highlights the erroring line' do
         formatter = CodeFormatter::HTML.new(filename, 8)
         formatter.output.should =~ /highlight.*eight/
       end
 
-      it "works when the line is right on the edge" do
+      it 'works when the line is right on the edge' do
         formatter = CodeFormatter::HTML.new(filename, 20)
         formatter.output.should_not == formatter.source_unavailable
       end
@@ -50,15 +50,15 @@ module BetterErrors
       end
 
       it "doesn't barf when the file doesn't exist" do
-        formatter = CodeFormatter::HTML.new("fkdguhskd7e l", 1)
+        formatter = CodeFormatter::HTML.new('fkdguhskd7e l', 1)
         formatter.output.should == formatter.source_unavailable
       end
     end
 
     describe CodeFormatter::Text do
-      it "highlights the erroring line" do
+      it 'highlights the erroring line' do
         formatter = CodeFormatter::Text.new(filename, 8)
-        formatter.output.should == <<-TEXT.gsub(/^        /, "")
+        formatter.output.should == <<-TEXT.gsub(/^        /, '')
             3   three
             4   four
             5   five
@@ -73,7 +73,7 @@ module BetterErrors
         TEXT
       end
 
-      it "works when the line is right on the edge" do
+      it 'works when the line is right on the edge' do
         formatter = CodeFormatter::Text.new(filename, 20)
         formatter.output.should_not == formatter.source_unavailable
       end
@@ -84,7 +84,7 @@ module BetterErrors
       end
 
       it "doesn't barf when the file doesn't exist" do
-        formatter = CodeFormatter::Text.new("fkdguhskd7e l", 1)
+        formatter = CodeFormatter::Text.new('fkdguhskd7e l', 1)
         formatter.output.should == formatter.source_unavailable
       end
     end

@@ -1,6 +1,6 @@
-require "spec_helper"
-require "better_errors/repl/basic"
-require "better_errors/repl/shared_examples"
+require 'spec_helper'
+require 'better_errors/repl/basic'
+require 'better_errors/repl/shared_examples'
 
 module BetterErrors
   module REPL
@@ -12,7 +12,7 @@ module BetterErrors
 
       let(:repl) { Basic.new fresh_binding }
 
-      it_behaves_like "a REPL provider"
+      it_behaves_like 'a REPL provider'
     end
   end
 end

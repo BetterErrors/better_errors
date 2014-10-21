@@ -1,22 +1,22 @@
-require "pp"
-require "erubis"
-require "coderay"
-require "uri"
+require 'pp'
+require 'erubis'
+require 'coderay'
+require 'uri'
 
-require "better_errors/code_formatter"
-require "better_errors/error_page"
-require "better_errors/middleware"
-require "better_errors/raised_exception"
-require "better_errors/repl"
-require "better_errors/stack_frame"
-require "better_errors/version"
+require 'better_errors/code_formatter'
+require 'better_errors/error_page'
+require 'better_errors/middleware'
+require 'better_errors/raised_exception'
+require 'better_errors/repl'
+require 'better_errors/stack_frame'
+require 'better_errors/version'
 
 module BetterErrors
   POSSIBLE_EDITOR_PRESETS = [
-    { symbols: [:emacs, :emacsclient],  sniff: /emacs/i, url: "emacs://open?url=file://%{file}&line=%{line}" },
+    { symbols: [:emacs, :emacsclient],  sniff: /emacs/i, url: 'emacs://open?url=file://%{file}&line=%{line}' },
     { symbols: [:macvim, :mvim],        sniff: /vim/i,   url: proc { |file, line| "mvim://open?url=file://#{file}&line=#{line}" } },
-    { symbols: [:sublime, :subl, :st],  sniff: /subl/i,  url: "subl://open?url=file://%{file}&line=%{line}" },
-    { symbols: [:textmate, :txmt, :tm], sniff: /mate/i,  url: "txmt://open?url=file://%{file}&line=%{line}" },
+    { symbols: [:sublime, :subl, :st],  sniff: /subl/i,  url: 'subl://open?url=file://%{file}&line=%{line}' },
+    { symbols: [:textmate, :txmt, :tm], sniff: /mate/i,  url: 'txmt://open?url=file://%{file}&line=%{line}' },
   ]
 
   class << self
@@ -109,7 +109,7 @@ module BetterErrors
       if editor.respond_to? :call
         @editor = editor
       else
-        raise TypeError, "Expected editor to be a valid editor key, a format string or a callable."
+        raise TypeError, 'Expected editor to be a valid editor key, a format string or a callable.'
       end
     end
   end
@@ -119,7 +119,7 @@ module BetterErrors
   # If you encounter problems while using Pry, *please* file a bug report at
   # https://github.com/charliesome/better_errors/issues
   def self.use_pry!
-    REPL::PROVIDERS.unshift const: :Pry, impl: "better_errors/repl/pry"
+    REPL::PROVIDERS.unshift const: :Pry, impl: 'better_errors/repl/pry'
   end
 
   # Automatically sniffs a default editor preset based on the EDITOR
@@ -128,7 +128,7 @@ module BetterErrors
   # @return [Symbol]
   def self.default_editor
     POSSIBLE_EDITOR_PRESETS.detect(-> { {} }) { |config|
-      ENV["EDITOR"] =~ config[:sniff]
+      ENV['EDITOR'] =~ config[:sniff]
     }[:url] || :textmate
   end
 
@@ -136,11 +136,11 @@ module BetterErrors
 end
 
 begin
-  require "binding_of_caller"
-  require "better_errors/exception_extension"
+  require 'binding_of_caller'
+  require 'better_errors/exception_extension'
   BetterErrors.binding_of_caller_available = true
 rescue LoadError
   BetterErrors.binding_of_caller_available = false
 end
 
-require "better_errors/rails" if defined? Rails::Railtie
+require 'better_errors/rails' if defined? Rails::Railtie

@@ -20,6 +20,7 @@ module BetterErrors
     end
 
   private
+
     def has_bindings?
       exception.respond_to?(:__better_errors_bindings_stack) && exception.__better_errors_bindings_stack.any?
     end
@@ -33,31 +34,31 @@ module BetterErrors
     end
 
     def setup_backtrace_from_bindings
-      @backtrace = exception.__better_errors_bindings_stack.map { |binding|
-        file = binding.eval "__FILE__"
-        line = binding.eval "__LINE__"
+      @backtrace = exception.__better_errors_bindings_stack.map do |binding|
+        file = binding.eval '__FILE__'
+        line = binding.eval '__LINE__'
         name = binding.frame_description
         StackFrame.new(file, line, name, binding)
-      }
+      end
     end
 
     def setup_backtrace_from_backtrace
-      @backtrace = (exception.backtrace || []).map { |frame|
+      @backtrace = (exception.backtrace || []).map do |frame|
         if /\A(?<file>.*?):(?<line>\d+)(:in `(?<name>.*)')?/ =~ frame
           StackFrame.new(file, line.to_i, name)
         end
-      }.compact
+      end.compact
     end
 
     def massage_syntax_error
       case exception.class.to_s
-      when "Haml::SyntaxError"
+      when 'Haml::SyntaxError'
         if /\A(.+?):(\d+)/ =~ exception.backtrace.first
-          backtrace.unshift(StackFrame.new($1, $2.to_i, ""))
+          backtrace.unshift(StackFrame.new($1, $2.to_i, ''))
         end
-      when "SyntaxError"
+      when 'SyntaxError'
         if /\A(.+?):(\d+): (.*)/m =~ exception.message
-          backtrace.unshift(StackFrame.new($1, $2.to_i, ""))
+          backtrace.unshift(StackFrame.new($1, $2.to_i, ''))
           @message = $3
         end
       end

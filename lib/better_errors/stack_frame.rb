@@ -1,4 +1,4 @@
-require "set"
+require 'set'
 
 module BetterErrors
   # @private
@@ -34,7 +34,7 @@ module BetterErrors
 
     def gem_path
       if path = Gem.path.detect { |p| filename.index(p) == 0 }
-        gem_name_and_version, path = filename.sub("#{path}/gems/", "").split("/", 2)
+        gem_name_and_version, path = filename.sub("#{path}/gems/", '').split('/', 2)
         /(?<gem_name>.+)-(?<gem_version>[\w.]+)/ =~ gem_name_and_version
         "#{gem_name} (#{gem_version}) #{path}"
       end
@@ -68,7 +68,7 @@ module BetterErrors
 
     def local_variables
       return {} unless frame_binding
-      frame_binding.eval("local_variables").each_with_object({}) do |name, hash|
+      frame_binding.eval('local_variables').each_with_object({}) do |name, hash|
         if defined?(frame_binding.local_variable_get)
           hash[name] = frame_binding.local_variable_get(name)
         else
@@ -85,7 +85,7 @@ module BetterErrors
     end
 
     def visible_instance_variables
-      frame_binding.eval("instance_variables") - BetterErrors.ignored_instance_variables
+      frame_binding.eval('instance_variables') - BetterErrors.ignored_instance_variables
     end
 
     def to_s
@@ -95,9 +95,9 @@ module BetterErrors
   private
     def set_pretty_method_name
       name =~ /\A(block (\([^)]+\) )?in )?/
-      recv = frame_binding.eval("self")
+      recv = frame_binding.eval('self')
 
-      return unless method_name = frame_binding.eval("::Kernel.__method__")
+      return unless method_name = frame_binding.eval('::Kernel.__method__')
 
       if Module === recv
         @class_name = "#{$1}#{recv}"

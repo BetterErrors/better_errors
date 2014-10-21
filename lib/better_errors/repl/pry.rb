@@ -1,5 +1,5 @@
-require "fiber"
-require "pry"
+require 'fiber'
+require 'pry'
 
 module BetterErrors
   module REPL
@@ -12,7 +12,7 @@ module BetterErrors
 
       class Output
         def initialize
-          @buffer = ""
+          @buffer = ''
         end
 
         def puts(*args)
@@ -28,7 +28,7 @@ module BetterErrors
         def read_buffer
           @buffer
         ensure
-          @buffer = ""
+          @buffer = ''
         end
       end
 
@@ -52,12 +52,12 @@ module BetterErrors
 
       def prompt
         if indent = @pry.instance_variable_get(:@indent) and !indent.indent_level.empty?
-          ["..", indent.indent_level]
+          ['..', indent.indent_level]
         else
-          [">>", ""]
+          ['>>', '']
         end
       rescue
-        [">>", ""]
+        ['>>', '']
       end
 
     private

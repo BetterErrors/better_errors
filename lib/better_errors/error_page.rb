@@ -1,6 +1,6 @@
-require "cgi"
-require "json"
-require "securerandom"
+require 'cgi'
+require 'json'
+require 'securerandom'
 
 module BetterErrors
   # @private
@@ -26,23 +26,23 @@ module BetterErrors
       @id ||= SecureRandom.hex(8)
     end
 
-    def render(template_name = "main")
+    def render(template_name = 'main')
       self.class.template(template_name).result binding
     end
 
     def do_variables(opts)
-      index = opts["index"].to_i
+      index = opts['index'].to_i
       @frame = backtrace_frames[index]
       @var_start_time = Time.now.to_f
-      { html: render("variable_info") }
+      { html: render('variable_info') }
     end
 
     def do_eval(opts)
-      index = opts["index"].to_i
-      code = opts["source"]
+      index = opts['index'].to_i
+      code = opts['source']
 
       unless binding = backtrace_frames[index].frame_binding
-        return { error: "REPL unavailable in this stack frame" }
+        return { error: 'REPL unavailable in this stack frame' }
       end
 
       result, prompt, prefilled_input =
@@ -80,11 +80,11 @@ module BetterErrors
     end
 
     def uri_prefix
-      env["SCRIPT_NAME"] || ""
+      env['SCRIPT_NAME'] || ''
     end
 
     def request_path
-      env["PATH_INFO"]
+      env['PATH_INFO']
     end
 
     def html_formatted_code_block(frame)

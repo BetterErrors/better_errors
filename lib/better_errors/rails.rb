@@ -1,7 +1,7 @@
 module BetterErrors
   # @private
   class Railtie < Rails::Railtie
-    initializer "better_errors.configure_rails_initialization" do
+    initializer 'better_errors.configure_rails_initialization' do
       if use_better_errors?
         insert_middleware
         BetterErrors.logger = Rails.logger

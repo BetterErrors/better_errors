@@ -2,7 +2,7 @@ module BetterErrors
   # @private
   module REPL
     PROVIDERS = [
-        { impl:   "better_errors/repl/basic",
+        { impl:   'better_errors/repl/basic',
           const:  :Basic },
       ]
 

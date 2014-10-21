@@ -1,15 +1,15 @@
 module BetterErrors
   # @private
   class CodeFormatter
-    require "better_errors/code_formatter/html"
-    require "better_errors/code_formatter/text"
+    require 'better_errors/code_formatter/html'
+    require 'better_errors/code_formatter/text'
 
     FILE_TYPES = {
-      ".rb"   => :ruby,
-      ""      => :ruby,
-      ".html" => :html,
-      ".erb"  => :erb,
-      ".haml" => :haml
+      '.rb'   => :ruby,
+      ''      => :ruby,
+      '.html' => :html,
+      '.erb'  => :erb,
+      '.haml' => :haml
     }
 
     attr_reader :filename, :line, :context
@@ -36,9 +36,9 @@ module BetterErrors
     end
 
     def each_line_of(lines, &blk)
-      line_range.zip(lines).map { |current_line, str|
+      line_range.zip(lines).map do |current_line, str|
         yield (current_line == line), current_line, str
-      }
+      end
     end
 
     def highlighted_lines

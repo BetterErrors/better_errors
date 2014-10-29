@@ -875,6 +875,7 @@
             this.previousCommandOffset = previousCommands.push(text);
             if(previousCommands.length > 100) {
               previousCommands.splice(0, 1);
+              this.previousCommandOffset -= 1;
             }
             localStorage.setItem("better_errors_previous_commands", JSON.stringify(previousCommands));
         }

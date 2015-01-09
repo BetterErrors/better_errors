@@ -51,7 +51,7 @@ module BetterErrors
 
     def massage_syntax_error
       case exception.class.to_s
-      when "Haml::SyntaxError"
+      when "Haml::SyntaxError", "Sprockets::Coffeelint::Error"
         if /\A(.+?):(\d+)/ =~ exception.backtrace.first
           backtrace.unshift(StackFrame.new($1, $2.to_i, ""))
         end

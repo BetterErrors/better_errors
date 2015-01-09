@@ -48,5 +48,25 @@ module BetterErrors
         subject.backtrace.first.line.should == 123
       end
     end
+
+    context "when the exception is a Coffeelint syntax error" do
+      before do
+        stub_const("Sprockets::Coffeelint::Error", Class.new(SyntaxError))
+      end
+
+      let(:exception) {
+        Sprockets::Coffeelint::Error.new("[stdin]:11:88: error: unexpected=").tap do |ex|
+          ex.set_backtrace(["app/assets/javascripts/files/index.coffee:11", "sprockets/coffeelint.rb:3"])
+        end
+      }
+
+      its(:message) { should == "[stdin]:11:88: error: unexpected=" }
+      its(:type)    { should == Sprockets::Coffeelint::Error }
+
+      it "has the right filename and line number in the backtrace" do
+        subject.backtrace.first.filename.should == "app/assets/javascripts/files/index.coffee"
+        subject.backtrace.first.line.should == 11
+      end
+    end
   end
 end

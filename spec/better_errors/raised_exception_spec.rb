@@ -69,6 +69,19 @@ module BetterErrors
       end
     end
 
+    context "when the exception is a NameError" do
+      let(:exception) {
+        begin
+          foo
+        rescue NameError => e
+          e
+        end
+      }
+
+      its(:type) { should == NameError }
+      its(:hint) { should == "`foo` is probably misspelled." }
+    end
+
     context "when the exception is a NoMethodError" do
       let(:exception) {
         begin

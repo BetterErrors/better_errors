@@ -65,7 +65,8 @@ module BetterErrors
     end
 
     def setup_hint
-      if exception.is_a?(NoMethodError)
+      case exception
+      when NoMethodError
         matches = /\Aundefined method `([^']+)' for ([^:]+):(\w+)\z/.match(message)
         method = matches[1]
         val = matches[2]
@@ -75,6 +76,12 @@ module BetterErrors
           @hint = "Something is `nil` when it probably shouldn't be."
         else
           @hint = "`#{method}` is being called on a `#{klass}`, which probably isn't the type you were expecting."
+        end
+      when NameError
+        matches = /\Aundefined local variable or method `([^']+)' for/.match(message)
+        if matches
+          method_or_var = matches[1]
+          @hint = "`#{method_or_var}` is probably misspelled."
         end
       end
     end

@@ -68,14 +68,16 @@ module BetterErrors
       case exception
       when NoMethodError
         matches = /\Aundefined method `([^']+)' for ([^:]+):(\w+)\z/.match(message)
-        method = matches[1]
-        val = matches[2]
-        klass = matches[3]
+        if matches
+          method = matches[1]
+          val = matches[2]
+          klass = matches[3]
 
-        if val == "nil"
-          @hint = "Something is `nil` when it probably shouldn't be."
-        else
-          @hint = "`#{method}` is being called on a `#{klass}`, which probably isn't the type you were expecting."
+          if val == "nil"
+            @hint = "Something is `nil` when it probably shouldn't be."
+          else
+            @hint = "`#{method}` is being called on a `#{klass}`, which probably isn't the type you were expecting."
+          end
         end
       when NameError
         matches = /\Aundefined local variable or method `([^']+)' for/.match(message)

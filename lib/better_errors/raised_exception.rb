@@ -1,7 +1,7 @@
 # @private
 module BetterErrors
   class RaisedException
-    attr_reader :exception, :message, :backtrace
+    attr_reader :exception, :message, :backtrace, :hint
 
     def initialize(exception)
       if exception.respond_to?(:original_exception) && exception.original_exception
@@ -12,6 +12,7 @@ module BetterErrors
       @message = exception.message
 
       setup_backtrace
+      setup_hint
       massage_syntax_error
     end
 
@@ -59,6 +60,21 @@ module BetterErrors
         if /\A(.+?):(\d+): (.*)/m =~ exception.message
           backtrace.unshift(StackFrame.new($1, $2.to_i, ""))
           @message = $3
+        end
+      end
+    end
+
+    def setup_hint
+      if exception.is_a?(NoMethodError)
+        matches = /\Aundefined method `([^']+)' for ([^:]+):(\w+)\z/.match(message)
+        method = matches[1]
+        val = matches[2]
+        klass = matches[3]
+
+        if val == "nil"
+          @hint = "Something is `nil` when it probably shouldn't be."
+        else
+          @hint = "`#{method}` is being called on a `#{klass}`, which probably isn't the type you were expecting."
         end
       end
     end

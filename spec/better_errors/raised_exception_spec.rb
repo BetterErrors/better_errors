@@ -68,5 +68,29 @@ module BetterErrors
         subject.backtrace.first.line.should == 11
       end
     end
+
+    context "when the exception is a NoMethodError" do
+      let(:exception) {
+        begin
+          val.foo
+        rescue NoMethodError => e
+          e
+        end
+      }
+
+      context "on `nil`" do
+        let(:val) { nil }
+
+        its(:type) { should == NoMethodError }
+        its(:hint) { should == "Something is `nil` when it probably shouldn't be." }
+      end
+
+      context "on other values" do
+        let(:val) { 42 }
+
+        its(:type) { should == NoMethodError }
+        its(:hint) { should == "`foo` is being called on a `Fixnum`, which probably isn't the type you were expecting." }
+      end
+    end
   end
 end

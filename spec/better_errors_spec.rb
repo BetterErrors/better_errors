@@ -55,7 +55,7 @@ describe BetterErrors do
     end
 
     ["subl -w", "/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"].each do |editor|
-      it "uses mvim:// scheme when EDITOR=#{editor}" do
+      it "uses subl:// scheme when EDITOR=#{editor}" do
         ENV["EDITOR"] = editor
         subject.editor = subject.default_editor
         subject.editor[].should start_with "subl://"

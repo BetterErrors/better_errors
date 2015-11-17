@@ -170,6 +170,12 @@
         color: white;
     }
 
+    header.exception small a {
+        font-weight: 100;
+        font-size: 10pt;
+        color: grey;
+    }
+
     header.exception:hover {
         height: auto;
         z-index: 2;
@@ -733,6 +739,9 @@
         <header class="exception">
             <h2><strong><%= exception.type %></strong> <span>at <%= request_path %></span></h2>
             <p><%= exception.message %></p>
+            <small>
+              <a href="https://stackoverflow.com/search?q=%5Bruby-on-rails%5D+<%= exception.type %>+<%= exception.message %>" target="_blank">Search on Stack Overflow</a>
+            </small>
         </header>
     </div>
 

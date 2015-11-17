@@ -30,6 +30,10 @@ module BetterErrors
       response.should include("ZeroDivisionError")
     end
 
+    it "includes a link to search" do
+      response.should include("https://stackoverflow.com/search?q=%5Bruby-on-rails%5D+ZeroDivisionError")
+    end
+
     context "variable inspection" do
       let(:exception) { empty_binding.eval("raise") rescue $! }
 

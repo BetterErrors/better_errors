@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= exception.type %> at <%= request_path %></title>
+    <title><%= exception_type %> at <%= request_path %></title>
 </head>
 <body>
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>
@@ -731,8 +731,8 @@
 
     <div class='top'>
         <header class="exception">
-            <h2><strong><%= exception.type %></strong> <span>at <%= request_path %></span></h2>
-            <p><%= exception.message %></p>
+            <h2><strong><%= exception_type %></strong> <span>at <%= request_path %></span></h2>
+            <p><%= exception_message %></p>
         </header>
     </div>
 

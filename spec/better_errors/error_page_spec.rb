@@ -72,5 +72,21 @@ module BetterErrors
       ])
       response.should include("Source unavailable")
     end
+
+    context 'with an exception with blank lines' do
+      class SpacedError < StandardError
+        def initialize(message = nil)
+          message = "\n\n#{message}" if message
+          super
+        end
+      end
+
+      let!(:exception) { raise SpacedError, "Danger Warning!" rescue $! }
+
+      it 'should not include leading blank lines from exception_message' do
+        exception.message.should =~ /\A\n\n/
+        error_page.exception_message.should_not =~ /\A\n\n/
+      end
+    end
   end
 end

@@ -58,6 +58,14 @@ module BetterErrors
       exception.backtrace
     end
 
+    def exception_type
+      exception.type
+    end
+
+    def exception_message
+      exception.message.lstrip
+    end
+
     def application_frames
       backtrace_frames.select(&:application?)
     end

@@ -115,7 +115,7 @@ module BetterErrors
     def log_exception
       return unless BetterErrors.logger
 
-      message = "\n#{@error_page.exception.type} - #{@error_page.exception.message}:\n"
+      message = "\n#{@error_page.exception_type} - #{@error_page.exception_message}:\n"
       @error_page.backtrace_frames.each do |frame|
         message << "  #{frame}\n"
       end

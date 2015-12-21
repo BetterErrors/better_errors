@@ -29,12 +29,18 @@ module BetterErrors
     #
     # Set to `{ "127.0.0.1/8", "::1/128" }` by default.
     ALLOWED_IPS = Set.new
+    ALLOWED_DOMAINS = Set.new
 
     # Adds an address to the set of IP addresses allowed to access Better
     # Errors.
     def self.allow_ip!(addr)
       ALLOWED_IPS << IPAddr.new(addr)
     end
+
+    def self.allow_domain!(addr)
+      ALLOWED_DOMAINS << addr
+    end
+
 
     allow_ip! "127.0.0.0/8"
     allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
@@ -53,7 +59,7 @@ module BetterErrors
     # @param [Hash] env
     # @return [Array]
     def call(env)
-      if allow_ip? env
+      if allow_ip?(env) || allow_domain?(env)
         better_errors_call env
       else
         @app.call env
@@ -67,6 +73,11 @@ module BetterErrors
       return true unless request.ip and !request.ip.strip.empty?
       ip = IPAddr.new request.ip.split("%").first
       ALLOWED_IPS.any? { |subnet| subnet.include? ip }
+    end
+
+    def allow_domain?(env)
+      request = Rack::Request.new(env)
+      ALLOWED_DOMAINS.include? request.host
     end
 
     def better_errors_call(env)

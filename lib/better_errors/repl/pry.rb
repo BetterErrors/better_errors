@@ -30,6 +30,10 @@ module BetterErrors
         ensure
           @buffer = ""
         end
+
+        def print(*args)
+          @buffer << args.join(' ')
+        end
       end
 
       def initialize(binding)

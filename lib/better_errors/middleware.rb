@@ -59,7 +59,7 @@ module BetterErrors
     # @param [Hash] env
     # @return [Array]
     def call(env)
-      if allow_ip?(env) || allow_domain?(env)
+      if allow_domain?(env) || allow_ip?(env)
         better_errors_call env
       else
         @app.call env

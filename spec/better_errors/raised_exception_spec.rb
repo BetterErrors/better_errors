@@ -10,10 +10,10 @@ module BetterErrors
     its(:type)      { should == RuntimeError }
 
     context "when the exception wraps another exception" do
-      let(:original_exception) { RuntimeError.new("something went wrong!") }
-      let(:exception) { double(:original_exception => original_exception) }
+      let(:cause) { RuntimeError.new("something went wrong!") }
+      let(:exception) { double(:cause => cause) }
 
-      its(:exception) { should == original_exception }
+      its(:exception) { should == cause }
       its(:message)   { should == "something went wrong!" }
     end
 

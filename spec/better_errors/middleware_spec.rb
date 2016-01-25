@@ -79,17 +79,17 @@ module BetterErrors
         status.should == 500
       end
 
-      context "original_exception" do
+      context "cause" do
         class OriginalExceptionException < Exception
-          attr_reader :original_exception
+          attr_reader :cause
 
-          def initialize(message, original_exception = nil)
+          def initialize(message, cause = nil)
             super(message)
-            @original_exception = original_exception
+            @cause = cause
           end
         end
 
-        it "shows Original Exception if it responds_to and has an original_exception" do
+        it "shows Original Exception if it responds_to and has an cause" do
           app = Middleware.new(->env {
             raise OriginalExceptionException.new("Other Exception", Exception.new("Original Exception"))
           })
@@ -101,7 +101,7 @@ module BetterErrors
           body.join.should match(/Original Exception/)
         end
 
-        it "won't crash if the exception responds_to but doesn't have an original_exception" do
+        it "won't crash if the exception responds_to but doesn't have an cause" do
           app = Middleware.new(->env {
             raise OriginalExceptionException.new("Other Exception")
           })

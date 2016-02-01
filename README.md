@@ -95,6 +95,14 @@ in `development`. Another option would be to use Webrick, Mongrel, Thin,
 or another single-process server as your `rails server`, when you are trying
 to troubleshoot an issue in development.
 
+##Specify editor to open files in
+
+```ruby
+# e.g. in config/initializers/better_errors.rb
+# Other preset values are [:mvim, :macvim, :textmate, :txmt, :tm, :sublime, :subl, :st]
+BetterErrors.editor = :mvim
+```
+
 ## Get in touch!
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!

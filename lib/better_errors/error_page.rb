@@ -41,17 +41,13 @@ module BetterErrors
       index = opts["index"].to_i
       code = opts["source"]
 
-      unless binding = backtrace_frames[index].frame_binding
+      unless (binding = backtrace_frames[index].frame_binding)
         return { error: "REPL unavailable in this stack frame" }
       end
 
-      result, prompt, prefilled_input =
-        (@repls[index] ||= REPL.provider.new(binding)).send_input(code)
+      @repls[index] ||= get_repl(index, binding)
 
-      { result: result,
-        prompt: prompt,
-        prefilled_input: prefilled_input,
-        highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil) }
+      send_input(index, code)
     end
 
     def backtrace_frames
@@ -113,6 +109,29 @@ module BetterErrors
       "<span class='unsupported'>(object doesn't support inspect)</span>"
     rescue Exception
       "<span class='unsupported'>(exception was raised in inspect)</span>"
+    end
+
+    def get_repl(index, binding)
+      REPL.provider.new(binding).tap do |repl|
+        if repl.is_a?(REPL::Pry)
+          pry = repl.instance_variable_get(:@pry)
+          pry.instance_variable_set(
+            :@last_exception,
+            ::Pry::LastException.new(@exception.exception)
+          )
+        end
+      end
+    end
+
+    def send_input(index, code)
+      result, prompt, prefilled_input = @repls[index].send_input(code)
+
+      {
+        highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil),
+        prefilled_input:   prefilled_input,
+        prompt:            prompt,
+        result:            result
+      }
     end
   end
 end

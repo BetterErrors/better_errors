@@ -116,7 +116,13 @@ module BetterErrors
       return unless BetterErrors.logger
 
       message = "\n#{@error_page.exception_type} - #{@error_page.exception_message}:\n"
-      @error_page.backtrace_frames.each do |frame|
+      traces = if defined?(Rails) && defined?(Rails.backtrace_cleaner)
+        Rails.backtrace_cleaner.clean(@error_page.backtrace_frames.map {|frame| "#{frame}"})
+      else
+        @error_page.backtrace_frames
+      end
+
+      traces.each do |frame|
         message << "  #{frame}\n"
       end
 

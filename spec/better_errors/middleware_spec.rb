@@ -79,37 +79,63 @@ module BetterErrors
         status.should == 500
       end
 
-      context "original_exception" do
-        class OriginalExceptionException < Exception
-          attr_reader :original_exception
+      if Exception.new.respond_to?(:cause)
+        context "cause" do
+          class OtherException < Exception
+            def initialize(message)
+              super(message)
+            end
+          end
 
-          def initialize(message, original_exception = nil)
-            super(message)
-            @original_exception = original_exception
+          it "shows Original Exception if it responds_to and has an cause" do
+            app = Middleware.new(->env {
+              begin
+                raise "Original Exception"
+              rescue
+                raise OtherException.new("Other Exception")
+              end
+            })
+
+            status, _, body = app.call({})
+
+            status.should == 500
+            body.join.should_not match(/\n> Other Exception\n/)
+            body.join.should match(/\n> Original Exception\n/)
           end
         end
+      else
+        context "original_exception" do
+          class OriginalExceptionException < Exception
+            attr_reader :original_exception
 
-        it "shows Original Exception if it responds_to and has an original_exception" do
-          app = Middleware.new(->env {
-            raise OriginalExceptionException.new("Other Exception", Exception.new("Original Exception"))
-          })
+            def initialize(message, original_exception = nil)
+              super(message)
+              @original_exception = original_exception
+            end
+          end
 
-          status, _, body = app.call({})
+          it "shows Original Exception if it responds_to and has an original_exception" do
+            app = Middleware.new(->env {
+              raise OriginalExceptionException.new("Other Exception", Exception.new("Original Exception"))
+            })
 
-          status.should == 500
-          body.join.should_not match(/Other Exception/)
-          body.join.should match(/Original Exception/)
-        end
+            status, _, body = app.call({})
 
-        it "won't crash if the exception responds_to but doesn't have an original_exception" do
-          app = Middleware.new(->env {
-            raise OriginalExceptionException.new("Other Exception")
-          })
+            status.should == 500
+            body.join.should_not match(/Other Exception/)
+            body.join.should match(/Original Exception/)
+          end
 
-          status, _, body = app.call({})
+          it "won't crash if the exception responds_to but doesn't have an original_exception" do
+            app = Middleware.new(->env {
+              raise OriginalExceptionException.new("Other Exception")
+            })
 
-          status.should == 500
-          body.join.should match(/Other Exception/)
+            status, _, body = app.call({})
+
+            status.should == 500
+            body.join.should match(/Other Exception/)
+          end
         end
       end
 

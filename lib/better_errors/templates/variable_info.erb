@@ -45,26 +45,28 @@
     </div>
 </div>
 
-<div class="sub">
-    <h3>Local Variables</h3>
-    <div class='inset variables'>
-        <table class="var_table">
-            <% @frame.local_variables.each do |name, value| %>
-                <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
-            <% end %>
-        </table>
+<% if BetterErrors.binding_of_caller_available? && @frame.frame_binding %>
+    <div class="sub">
+        <h3>Local Variables</h3>
+        <div class='inset variables'>
+            <table class="var_table">
+                <% @frame.local_variables.each do |name, value| %>
+                    <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
+                <% end %>
+            </table>
+        </div>
     </div>
-</div>
 
-<div class="sub">
-    <h3>Instance Variables</h3>
-    <div class="inset variables">
-        <table class="var_table">
-            <% @frame.instance_variables.each do |name, value| %>
-                <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
-            <% end %>
-        </table>
+    <div class="sub">
+        <h3>Instance Variables</h3>
+        <div class="inset variables">
+            <table class="var_table">
+                <% @frame.instance_variables.each do |name, value| %>
+                    <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
+                <% end %>
+            </table>
+        </div>
     </div>
-</div>
 
-<!-- <%= Time.now.to_f - @var_start_time %> seconds -->
+    <!-- <%= Time.now.to_f - @var_start_time %> seconds -->
+<% end %>

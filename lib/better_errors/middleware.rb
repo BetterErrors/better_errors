@@ -94,7 +94,7 @@ module BetterErrors
       @app.call(env).tap do
         error = BetterErrors.take_last_error
         if error
-          @error_page = @handler.new ex, env
+          @error_page = @handler.new error, env
           log_exception
         end
       end

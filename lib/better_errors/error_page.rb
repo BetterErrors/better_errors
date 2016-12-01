@@ -76,7 +76,8 @@ module BetterErrors
 
   private
     def editor_url(frame)
-      BetterErrors.editor[frame.filename, frame.line]
+      filename = BetterErrors.project_base_path.present? ? "#{BetterErrors.project_base_path}/#{frame.pretty_path}" : frame.filename
+      BetterErrors.editor[filename, frame.line]
     end
 
     def rack_session

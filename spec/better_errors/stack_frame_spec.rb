@@ -2,6 +2,16 @@ require "spec_helper"
 
 module BetterErrors
   describe StackFrame do
+    context "#context" do
+      it 'is :application if Gem.path is empty' do
+        Gem.stub(:path).and_return([''])
+        BetterErrors.stub(:application_root).and_return("/abc/xyz")
+        frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "foo")
+
+        frame.context.should == :application
+      end
+    end
+
     context "#application?" do
       it "is true for application filenames" do
         BetterErrors.stub(:application_root).and_return("/abc/xyz")

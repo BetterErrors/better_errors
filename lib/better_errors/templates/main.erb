@@ -902,6 +902,30 @@
         this.setInput(previousCommands[this.previousCommandOffset]);
     };
 
+    REPL.prototype.clearScreen = function() {
+        this.outputElement.innerHTML = '';
+        this.outputElement.scrollTop = 0;
+    };
+
+    REPL.prototype.beginningOfLine = function() {
+        this.inputElement.setSelectionRange(0, 0);
+    }
+
+    REPL.prototype.endOfLine = function() {
+        var text = this.getInput();
+        this.inputElement.setSelectionRange(text.length, text.length);
+    }
+
+    REPL.prototype.killLine = function() {
+        var text = this.getInput();
+        var pos = this.inputElement.selectionStart;
+        this.setInput(text.substr(0, pos));
+    }
+
+    REPL.prototype.killWholeLine = function() {
+        this.setInput('');
+    }
+
     REPL.prototype.onKeyDown = function(ev) {
         if(ev.keyCode == 13) {
             this.onEnterKey();
@@ -915,6 +939,21 @@
             this.onNavigateHistory(1);
             ev.preventDefault();
             return false;
+        } else if (ev.keyCode == 76 && ev.ctrlKey) { // ^L
+            ev.preventDefault();
+            this.clearScreen();
+        } else if (ev.keyCode == 65 && ev.ctrlKey) { // ^A
+            ev.preventDefault();
+            this.beginningOfLine();
+        } else if (ev.keyCode == 69 && ev.ctrlKey) { // ^E
+            ev.preventDefault();
+            this.endOfLine();
+        } else if (ev.keyCode == 75 && ev.ctrlKey) { // ^K
+            ev.preventDefault();
+            this.killLine()
+        } else if (ev.keyCode == 67 && ev.ctrlKey) { // ^C
+            ev.preventDefault();
+            this.killWholeLine()
         }
     };
 

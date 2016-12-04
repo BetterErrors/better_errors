@@ -15,3 +15,5 @@ module BetterErrors
     end
   end
 end
+good
+ @__better_errors_bindings_stack ||

@@ -3,13 +3,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'better_errors/version'
 
 Gem::Specification.new do |s|
-  s.name          = "better_errors"
+  s.name          = "better_errors-creditkudos"
   s.version       = BetterErrors::VERSION
   s.authors       = ["Charlie Somerville"]
   s.email         = ["charlie@charliesomerville.com"]
-  s.description   = %q{Provides a better error page for Rails and other Rack apps. Includes source code inspection, a live REPL and local/instance variable inspection for all stack frames.}
-  s.summary       = %q{Better error page for Rails and other Rack apps}
-  s.homepage      = "https://github.com/charliesome/better_errors"
+  s.description   = %q{Temporary fork of better_errors with some performance improvements.}
+  s.summary       = %q{Temporary fork of better_errors with some performance improvements.}
+  s.homepage      = "https://github.com/creditkudos/better_errors"
   s.license       = "MIT"
 
   s.files         = `git ls-files`.split($/)

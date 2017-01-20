@@ -88,5 +88,35 @@ module BetterErrors
         error_page.exception_message.should_not =~ /\A\n\n/
       end
     end
+
+    context 'with an inspect size limit set' do
+      before { BetterErrors.maximum_variable_inspect_size = 50_000 }
+
+      it "shows variables with inspects that are below the inspect size threshold" do
+        content = 'AAAAA'
+        empty_binding.instance_variable_set('@small', content)
+
+        html = error_page.do_variables("index" => 0)[:html]
+        html.should_not include "object too large"
+      end
+
+
+      it "hides variables with inspects that are above the inspect size threshold" do
+        content = 'A' * (BetterErrors.maximum_variable_inspect_size)
+        empty_binding.instance_variable_set('@big', content)
+
+        html = error_page.do_variables("index" => 0)[:html]
+        html.should include "object too large"
+      end
+
+      it "shows variables with large inspects if max inspect size is disabled" do
+        content = 'A' * (BetterErrors.maximum_variable_inspect_size)
+        BetterErrors.maximum_variable_inspect_size = nil
+        empty_binding.instance_variable_set('@big', content)
+
+        html = error_page.do_variables("index" => 0)[:html]
+        html.should_not include "object too large"
+      end
+    end
   end
 end

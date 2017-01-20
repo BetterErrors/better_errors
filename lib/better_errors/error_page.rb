@@ -108,11 +108,22 @@ module BetterErrors
     end
 
     def inspect_value(obj)
-      CGI.escapeHTML(obj.inspect)
+      inspect_raw_value(obj)
     rescue NoMethodError
       "<span class='unsupported'>(object doesn't support inspect)</span>"
-    rescue Exception
-      "<span class='unsupported'>(exception was raised in inspect)</span>"
+    rescue Exception => e
+      binding.pry
+      "<span class='unsupported'>(exception #{CGI.escapeHTML(e.class.to_s)} was raised in inspect)</span>"
+    end
+
+    def inspect_raw_value(obj)
+      value = CGI.escapeHTML(obj.inspect)
+
+      if !BetterErrors.maximum_variable_inspect_size.nil? && value.length > BetterErrors.maximum_variable_inspect_size
+        value = "<span class='unsupported'>(object too large - modify #{CGI.escapeHTML(obj.class.to_s)}#inspect or raise BetterErrors.maximum_variable_inspect_size)</span>"
+      end
+
+      value
     end
   end
 end

@@ -103,6 +103,18 @@ to troubleshoot an issue in development.
 BetterErrors.editor = :mvim
 ```
 
+
+##Set maximum variable size for inspector.
+
+```ruby
+# e.g. in config/initializers/better_errors.rb
+# This will stop BetterErrors from trying to render larger objects, which can cause
+# slow loading times and browser performance problems.
+# default value: 100_000
+BetterErrors.maximum_variable_inspect_size = 100_000
+```
+
+
 ## Get in touch!
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!

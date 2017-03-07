@@ -114,5 +114,24 @@ module BetterErrors
     rescue Exception
       "<span class='unsupported'>(exception was raised in inspect)</span>"
     end
+
+    def pretty_hash_json(object)
+      JSON.pretty_generate(purify_hash(object))
+    end
+
+    # Converts a hash-like object to a real hashes.
+    #
+    # Required, e.g., for generating pretty JSON for a HashWithIndifferentAccess object, because some versions of JSON
+    # fail to pretty print objects that are instances of Hash subclasses and not of Hash class itself.
+    #
+    def purify_hash(object)
+      if object.is_a?(Hash) && !object.instance_of?(Hash)
+        object.each_with_object({}) do |(key, value), memo|
+          memo[key] = purify_hash(value)
+        end
+      else
+        object
+      end
+    end
   end
 end

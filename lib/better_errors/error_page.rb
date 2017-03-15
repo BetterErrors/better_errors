@@ -112,7 +112,6 @@ module BetterErrors
     rescue NoMethodError
       "<span class='unsupported'>(object doesn't support inspect)</span>"
     rescue Exception => e
-      binding.pry
       "<span class='unsupported'>(exception #{CGI.escapeHTML(e.class.to_s)} was raised in inspect)</span>"
     end
 

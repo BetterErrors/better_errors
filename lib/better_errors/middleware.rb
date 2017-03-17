@@ -25,6 +25,7 @@ module BetterErrors
   #   end
   #
   class Middleware
+    include ActionView::Helpers
     # The set of IP addresses that are allowed to access Better Errors.
     #
     # Set to `{ "127.0.0.1/8", "::1/128" }` by default.
@@ -90,26 +91,36 @@ module BetterErrors
 
     def show_error_page(env, exception=nil)
       type, content = if @error_page
-        if text?(env)
-          [ 'plain', @error_page.render('text') ]
+        if ajax?(env)
+          regex = /<script\b[^>]*>([\s\S]*?)<\/script>/
+          page = @error_page.render
+          javascript = page.scan(regex).join
+          escaped_html = escape_javascript(page)
+          [ 'script/javascript', "document.body.innerHTML = '#{escaped_html}'; #{javascript};" ]
+        elsif text?(env)
+          [ 'text/plain', @error_page.render('text') ]
         else
-          [ 'html', @error_page.render ]
+          [ 'text/html', @error_page.render ]
         end
       else
-        [ 'html', no_errors_page ]
+        [ 'text/html', no_errors_page ]
       end
 
       status_code = 500
       if defined? ActionDispatch::ExceptionWrapper
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
-
-      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+      
+      [status_code, { "Content-Type" => "#{type}; charset=utf-8" }, [content]]
     end
 
     def text?(env)
-      env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
-      !env["HTTP_ACCEPT"].to_s.include?('html')
+      !env["HTTP_ACCEPT"].to_s.include?('html') && 
+      !env["HTTP_ACCEPT"].to_s.include?('javascript')
+    end
+
+    def ajax?(env)
+      env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
     end
 
     def log_exception
@@ -138,4 +149,5 @@ module BetterErrors
       "<code>Better Errors v#{BetterErrors::VERSION}</code>"
     end
   end
+
 end

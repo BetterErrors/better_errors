@@ -119,10 +119,10 @@ module BetterErrors
       value = CGI.escapeHTML(obj.inspect)
 
       if !BetterErrors.maximum_variable_inspect_size.nil? && value.length > BetterErrors.maximum_variable_inspect_size
-        value = "<span class='unsupported'>(object too large - modify #{CGI.escapeHTML(obj.class.to_s)}#inspect or raise BetterErrors.maximum_variable_inspect_size)</span>"
+        "<span class='unsupported'>(object too large - modify #{CGI.escapeHTML(obj.class.to_s)}#inspect or raise BetterErrors.maximum_variable_inspect_size)</span>"
+      else
+        value
       end
-
-      value
     end
   end
 end

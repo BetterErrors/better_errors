@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem "rake"
+gem "rake", "< 12"
 gem "rack", "1.6.4"
 gem "rspec", "2.14.1"
 gem "binding_of_caller", platforms: :ruby

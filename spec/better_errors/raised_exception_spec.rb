@@ -1,4 +1,5 @@
 require "spec_helper"
+require "rspec/its"
 
 module BetterErrors
   describe RaisedException do

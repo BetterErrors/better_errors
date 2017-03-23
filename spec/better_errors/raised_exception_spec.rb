@@ -24,8 +24,8 @@ module BetterErrors
       its(:type)    { should == SyntaxError }
 
       it "has the right filename and line number in the backtrace" do
-        subject.backtrace.first.filename.should == "foo.rb"
-        subject.backtrace.first.line.should == 123
+        expect(subject.backtrace.first.filename).to eq("foo.rb")
+        expect(subject.backtrace.first.line).to eq(123)
       end
     end
 
@@ -44,8 +44,8 @@ module BetterErrors
       its(:type)    { should == Haml::SyntaxError }
 
       it "has the right filename and line number in the backtrace" do
-        subject.backtrace.first.filename.should == "foo.rb"
-        subject.backtrace.first.line.should == 123
+        expect(subject.backtrace.first.filename).to eq("foo.rb")
+        expect(subject.backtrace.first.line).to eq(123)
       end
     end
 
@@ -64,8 +64,8 @@ module BetterErrors
       its(:type)    { should == Sprockets::Coffeelint::Error }
 
       it "has the right filename and line number in the backtrace" do
-        subject.backtrace.first.filename.should == "app/assets/javascripts/files/index.coffee"
-        subject.backtrace.first.line.should == 11
+        expect(subject.backtrace.first.filename).to eq("app/assets/javascripts/files/index.coffee")
+        expect(subject.backtrace.first.line).to eq(11)
       end
     end
   end

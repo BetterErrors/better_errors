@@ -7,13 +7,13 @@ module BetterErrors
     let(:formatter) { CodeFormatter.new(filename, 8) }
 
     it "picks an appropriate scanner" do
-      formatter.coderay_scanner.should == :ruby
+      expect(formatter.coderay_scanner).to eq(:ruby)
     end
 
     it "shows 5 lines of context" do
-      formatter.line_range.should == (3..13)
+      expect(formatter.line_range).to eq(3..13)
 
-      formatter.context_lines.should == [
+      expect(formatter.context_lines).to eq([
           "three\n",
           "four\n",
           "five\n",
@@ -25,40 +25,40 @@ module BetterErrors
           "eleven\n",
           "twelve\n",
           "thirteen\n"
-        ]
+        ])
     end
 
     it "works when the line is right on the edge" do
       formatter = CodeFormatter.new(filename, 20)
-      formatter.line_range.should == (15..20)
+      expect(formatter.line_range).to eq(15..20)
     end
 
     describe CodeFormatter::HTML do
       it "highlights the erroring line" do
         formatter = CodeFormatter::HTML.new(filename, 8)
-        formatter.output.should =~ /highlight.*eight/
+        expect(formatter.output).to match(/highlight.*eight/)
       end
 
       it "works when the line is right on the edge" do
         formatter = CodeFormatter::HTML.new(filename, 20)
-        formatter.output.should_not == formatter.source_unavailable
+        expect(formatter.output).not_to eq(formatter.source_unavailable)
       end
 
       it "doesn't barf when the lines don't make any sense" do
         formatter = CodeFormatter::HTML.new(filename, 999)
-        formatter.output.should == formatter.source_unavailable
+        expect(formatter.output).to eq(formatter.source_unavailable)
       end
 
       it "doesn't barf when the file doesn't exist" do
         formatter = CodeFormatter::HTML.new("fkdguhskd7e l", 1)
-        formatter.output.should == formatter.source_unavailable
+        expect(formatter.output).to eq(formatter.source_unavailable)
       end
     end
 
     describe CodeFormatter::Text do
       it "highlights the erroring line" do
         formatter = CodeFormatter::Text.new(filename, 8)
-        formatter.output.should == <<-TEXT.gsub(/^        /, "")
+        expect(formatter.output).to eq <<-TEXT.gsub(/^        /, "")
             3   three
             4   four
             5   five
@@ -75,17 +75,17 @@ module BetterErrors
 
       it "works when the line is right on the edge" do
         formatter = CodeFormatter::Text.new(filename, 20)
-        formatter.output.should_not == formatter.source_unavailable
+        expect(formatter.output).not_to eq(formatter.source_unavailable)
       end
 
       it "doesn't barf when the lines don't make any sense" do
         formatter = CodeFormatter::Text.new(filename, 999)
-        formatter.output.should == formatter.source_unavailable
+        expect(formatter.output).to eq(formatter.source_unavailable)
       end
 
       it "doesn't barf when the file doesn't exist" do
         formatter = CodeFormatter::Text.new("fkdguhskd7e l", 1)
-        formatter.output.should == formatter.source_unavailable
+        expect(formatter.output).to eq(formatter.source_unavailable)
       end
     end
   end

@@ -144,9 +144,10 @@ begin
   require "binding_of_caller"
   require "better_errors/exception_extension"
   BetterErrors.binding_of_caller_available = true
-  BetterErrors.maximum_variable_inspect_size ||= 100_000
 rescue LoadError
   BetterErrors.binding_of_caller_available = false
 end
+
+BetterErrors.maximum_variable_inspect_size ||= 100_000
 
 require "better_errors/rails" if defined? Rails::Railtie

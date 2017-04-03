@@ -95,7 +95,7 @@ in `development`. Another option would be to use Webrick, Mongrel, Thin,
 or another single-process server as your `rails server`, when you are trying
 to troubleshoot an issue in development.
 
-##Specify editor to open files in
+## Specify editor to open files in
 
 ```ruby
 # e.g. in config/initializers/better_errors.rb

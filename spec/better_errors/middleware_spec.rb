@@ -64,6 +64,14 @@ module BetterErrors
         body.join.should match /No errors have been recorded yet./
       end
 
+      it 'does not attempt to use ActionDispatch::ExceptionWrapper with a nil exception' do
+        ad_ew = double("ActionDispatch::ExceptionWrapper")
+        stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
+        ad_ew.should_not_receive :new
+
+        status, headers, body = app.call("PATH_INFO" => "/__better_errors")
+      end
+
       it "shows that no errors have been recorded on any subfolder path" do
         status, headers, body = app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors")
         body.join.should match /No errors have been recorded yet./

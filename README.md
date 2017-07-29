@@ -6,10 +6,14 @@ Better Errors replaces the standard Rails error page with a much better and more
 
 ## Features
 
+For screenshots of these features, [see the wiki](https://github.com/charliesome/better_errors/wiki).
+
 * Full stack trace
 * Source code inspection for all stack frames (with highlighting)
 * Local and instance variable inspection
-* Live REPL on every stack frame
+* Live shell (REPL) on every stack frame
+* Links directly to the source line in your editor
+* Useful information in non-HTML requests
 
 ## Installation
 

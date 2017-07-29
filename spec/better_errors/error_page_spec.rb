@@ -19,15 +19,15 @@ module BetterErrors
     }
 
     it "includes the error message" do
-      response.should include("you divided by zero you silly goose!")
+      expect(response).to include("you divided by zero you silly goose!")
     end
 
     it "includes the request path" do
-      response.should include("/some/path")
+      expect(response).to include("/some/path")
     end
 
     it "includes the exception class" do
-      response.should include("ZeroDivisionError")
+      expect(response).to include("ZeroDivisionError")
     end
 
     context "variable inspection" do
@@ -36,41 +36,41 @@ module BetterErrors
       if BetterErrors.binding_of_caller_available?
         it "shows local variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          html.should include("local_a")
-          html.should include(":value_for_local_a")
-          html.should include("local_b")
-          html.should include(":value_for_local_b")
+          expect(html).to include("local_a")
+          expect(html).to include(":value_for_local_a")
+          expect(html).to include("local_b")
+          expect(html).to include(":value_for_local_b")
         end
       else
         it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
           html = error_page.do_variables("index" => 0)[:html]
-          html.should include(%{gem "binding_of_caller"})
+          expect(html).to include(%{gem "binding_of_caller"})
         end
       end
 
       it "shows instance variables" do
         html = error_page.do_variables("index" => 0)[:html]
-        html.should include("inst_c")
-        html.should include(":value_for_inst_c")
-        html.should include("inst_d")
-        html.should include(":value_for_inst_d")
+        expect(html).to include("inst_c")
+        expect(html).to include(":value_for_inst_c")
+        expect(html).to include("inst_d")
+        expect(html).to include(":value_for_inst_d")
       end
 
       it "shows filter instance variables" do
-        BetterErrors.stub(:ignored_instance_variables).and_return([ :@inst_d ])
+        allow(BetterErrors).to receive(:ignored_instance_variables).and_return([ :@inst_d ])
         html = error_page.do_variables("index" => 0)[:html]
-        html.should include("inst_c")
-        html.should include(":value_for_inst_c")
-        html.should_not include('<td class="name">@inst_d</td>')
-        html.should_not include("<pre>:value_for_inst_d</pre>")
+        expect(html).to include("inst_c")
+        expect(html).to include(":value_for_inst_c")
+        expect(html).not_to include('<td class="name">@inst_d</td>')
+        expect(html).not_to include("<pre>:value_for_inst_d</pre>")
       end
     end
 
     it "doesn't die if the source file is not a real filename" do
-      exception.stub(:backtrace).and_return([
+      allow(exception).to receive(:backtrace).and_return([
         "<internal:prelude>:10:in `spawn_rack_application'"
       ])
-      response.should include("Source unavailable")
+      expect(response).to include("Source unavailable")
     end
 
     context 'with an exception with blank lines' do
@@ -84,8 +84,8 @@ module BetterErrors
       let!(:exception) { raise SpacedError, "Danger Warning!" rescue $! }
 
       it 'should not include leading blank lines from exception_message' do
-        exception.message.should =~ /\A\n\n/
-        error_page.exception_message.should_not =~ /\A\n\n/
+        expect(exception.message).to match(/\A\n\n/)
+        expect(error_page.exception_message).not_to match(/\A\n\n/)
       end
     end
 

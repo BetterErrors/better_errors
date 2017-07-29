@@ -100,7 +100,7 @@ module BetterErrors
       end
 
       status_code = 500
-      if defined? ActionDispatch::ExceptionWrapper
+      if defined?(ActionDispatch::ExceptionWrapper) && exception
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 

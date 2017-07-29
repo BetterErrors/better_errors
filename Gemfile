@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem "rake"
+gem "rake", "< 12"
 gem "rack", "1.6.4"
 gem "rspec", "3.5.0"
 gem "rspec-its"

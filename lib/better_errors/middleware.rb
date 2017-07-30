@@ -124,6 +124,14 @@ module BetterErrors
     end
 
     def internal_call(env, opts)
+      unless @error_page
+        return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+          error: 'No exception information available',
+          explanation: "The application has been restarted since this page loaded. " +
+            "If you didn't do this, the project likely includes a gem like shotgun, " +
+            "which reloads all gems for each request.",
+        )]]
+      end
       if opts[:id] != @error_page.id
         return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
           error: "Session expired",

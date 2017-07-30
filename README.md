@@ -22,16 +22,11 @@ Add this to your Gemfile:
 ```ruby
 group :development do
   gem "better_errors"
+  gem "binding_of_caller"
 end
 ```
 
-If you would like to use Better Errors' **advanced features** (REPL, local/instance variable inspection, pretty stack frame names), you need to add the [`binding_of_caller`](https://github.com/banister/binding_of_caller) gem by [@banisterfiend](https://twitter.com/banisterfiend) to your Gemfile:
-
-```ruby
-gem "binding_of_caller"
-```
-
-This is an optional dependency however, and Better Errors will work without it.
+[`binding_of_caller`](https://github.com/banister/binding_of_caller) is optional, but is necessary to use Better Errors' advanced features (REPL, local/instance variable inspection, pretty stack frame names).
 
 _Note: If you discover that Better Errors isn't working - particularly after upgrading from version 0.5.0 or less - be sure to set `config.consider_all_requests_local = true` in `config/environments/development.rb`._
 
@@ -49,25 +44,13 @@ For more information on how to configure access, see [the wiki](https://github.c
 
 If you're using Rails, there's nothing else you need to do.
 
+### Using without Rails.
+
 If you're not using Rails, you need to insert `BetterErrors::Middleware` into your middleware stack, and optionally set `BetterErrors.application_root` if you'd like Better Errors to abbreviate filenames within your application.
 
-Here's an example using Sinatra:
+For instructions for your specific middleware, [see the wiki](https://github.com/charliesome/better_errors/wiki/Non-Rails-frameworks).
 
-```ruby
-require "sinatra"
-require "better_errors"
-
-configure :development do
-  use BetterErrors::Middleware
-  BetterErrors.application_root = __dir__
-end
-
-get "/" do
-  raise "oops"
-end
-```
-
-### Plain text
+### Plain text requests
 
 Better Errors will render a plain text error page  when the request is an
 `XMLHttpRequest` or when the `Accept` header does *not* include 'html'.

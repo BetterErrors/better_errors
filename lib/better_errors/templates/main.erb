@@ -938,7 +938,11 @@
             apiCall("variables", { "index": index }, function(response) {
                 el.loaded = true;
                 if(response.error) {
-                    el.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
+                    el.innerHTML = "<h2 class='error'>" + escapeHTML(response.error) + "</h2>";
+                    if(response.explanation) {
+                      el.innerHTML += "<p class='explanation'>" + escapeHTML(response.explanation) + "</p>";
+                    }
+                    el.innerHTML += "<p><a target='_new' href='https://github.com/charliesome/better_errors'>More about Better Errors</a></p>";
                 } else {
                     el.innerHTML = response.html;
 
@@ -946,9 +950,8 @@
                     if(repl) {
                         new REPL(index).install(repl);
                     }
-
-                    switchTo(el);
                 }
+                switchTo(el);
             });
         }
     }

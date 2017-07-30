@@ -125,7 +125,11 @@ module BetterErrors
 
     def internal_call(env, opts)
       if opts[:id] != @error_page.id
-        return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(error: "Session expired")]]
+        return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+          error: "Session expired",
+          explanation: "This page was likely opened from a previous exception, " +
+            "and the exception is no longer available in memory.",
+        )]]
       end
 
       env["rack.input"].rewind

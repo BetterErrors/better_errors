@@ -12,8 +12,10 @@ Gem::Specification.new do |s|
   s.homepage      = "https://github.com/charliesome/better_errors"
   s.license       = "MIT"
 
-  s.files         = `git ls-files`.split($/)
-  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
+  s.files         = `git ls-files -z`.split("\x0").reject do |f|
+    f.match(%r{^((test|spec|features|feature-screenshots)/|Rakefile)})
+  end
+
   s.require_paths = ["lib"]
 
   s.required_ruby_version = ">= 2.0.0"

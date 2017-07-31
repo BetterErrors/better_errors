@@ -219,9 +219,18 @@ module BetterErrors
 
         context 'when Shotgun is in use' do
           let!(:shotgun) { class_double("Shotgun").as_stubbed_const }
+
           it 'returns a JSON error' do
             expect(json_body['explanation'])
               .to match(/The shotgun gem/)
+          end
+
+          context 'when Hanami is also in use' do
+            let!(:hanami) { class_double("Hanami").as_stubbed_const }
+            it 'returns a JSON error' do
+              expect(json_body['explanation'])
+                .to match(/--no-code-reloading/)
+            end
           end
         end
       end

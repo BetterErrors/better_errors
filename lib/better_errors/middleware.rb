@@ -141,6 +141,9 @@ module BetterErrors
       explanation = if defined? Middleman
         "Middleman reloads all dependencies for each request, " +
           "which breaks Better Errors."
+      elsif defined?(Shotgun) && defined?(Hanami)
+        "Hanami is likely running with code-reloading enabled, which is the default. " +
+          "You can disable this by running hanami with the `--no-code-reloading` option."
       elsif defined? Shotgun
         "The shotgun gem causes everything to be reloaded for every request. " +
           "You can disable shotgun in the Gemfile temporarily to use Better Errors."

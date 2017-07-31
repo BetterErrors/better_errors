@@ -208,6 +208,22 @@ module BetterErrors
             'explanation' => /application has been restarted/,
           )
         end
+
+        context 'when Middleman is in use' do
+          let!(:middleman) { class_double("Middleman").as_stubbed_const }
+          it 'returns a JSON error' do
+            expect(json_body['explanation'])
+              .to match(/Middleman reloads all dependencies/)
+          end
+        end
+
+        context 'when Shotgun is in use' do
+          let!(:shotgun) { class_double("Shotgun").as_stubbed_const }
+          it 'returns a JSON error' do
+            expect(json_body['explanation'])
+              .to match(/The shotgun gem/)
+          end
+        end
       end
 
       context 'when an error has been recorded' do

@@ -83,7 +83,7 @@ module BetterErrors
 
       let!(:exception) { raise SpacedError, "Danger Warning!" rescue $! }
 
-      it 'should not include leading blank lines from exception_message' do
+      it 'does not include leading blank lines in exception_message' do
         expect(exception.message).to match(/\A\n\n/)
         expect(error_page.exception_message).not_to match(/\A\n\n/)
       end

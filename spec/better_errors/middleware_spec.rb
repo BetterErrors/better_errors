@@ -67,7 +67,7 @@ module BetterErrors
       it 'does not attempt to use ActionDispatch::ExceptionWrapper with a nil exception' do
         ad_ew = double("ActionDispatch::ExceptionWrapper")
         stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
-        ad_ew.should_not_receive :new
+        expect(ad_ew).to_not receive :new
 
         status, headers, body = app.call("PATH_INFO" => "/__better_errors")
       end

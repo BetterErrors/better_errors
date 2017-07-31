@@ -100,7 +100,7 @@ module BetterErrors
       end
 
       status_code = 500
-      if defined? ActionDispatch::ExceptionWrapper
+      if defined?(ActionDispatch::ExceptionWrapper) && exception
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 
@@ -124,9 +124,8 @@ module BetterErrors
     end
 
     def internal_call(env, opts)
-      if opts[:id] != @error_page.id
-        return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(error: "Session expired")]]
-      end
+      return no_errors_json_response unless @error_page
+      return invalid_error_json_response if opts[:id] != @error_page.id
 
       env["rack.input"].rewind
       response = @error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
@@ -136,6 +135,34 @@ module BetterErrors
     def no_errors_page
       "<h1>No errors</h1><p>No errors have been recorded yet.</p><hr>" +
       "<code>Better Errors v#{BetterErrors::VERSION}</code>"
+    end
+
+    def no_errors_json_response
+      explanation = if defined? Middleman
+        "Middleman reloads all dependencies for each request, " +
+          "which breaks Better Errors."
+      elsif defined?(Shotgun) && defined?(Hanami)
+        "Hanami is likely running with code-reloading enabled, which is the default. " +
+          "You can disable this by running hanami with the `--no-code-reloading` option."
+      elsif defined? Shotgun
+        "The shotgun gem causes everything to be reloaded for every request. " +
+          "You can disable shotgun in the Gemfile temporarily to use Better Errors."
+      else
+        "The application has been restarted since this page loaded, " +
+          "or the framework is reloading all gems before each request "
+      end
+      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+        error: 'No exception information available',
+        explanation: explanation,
+      )]]
+    end
+
+    def invalid_error_json_response
+      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+        error: "Session expired",
+        explanation: "This page was likely opened from a previous exception, " +
+          "and the exception is no longer available in memory.",
+      )]]
     end
   end
 end

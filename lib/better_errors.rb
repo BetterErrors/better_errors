@@ -51,6 +51,7 @@ module BetterErrors
     attr_accessor :maximum_variable_inspect_size
   end
   @ignored_instance_variables = []
+  @maximum_variable_inspect_size = 100_000
 
   # Returns a proc, which when called with a filename and line number argument,
   # returns a URL to open the filename and line in the selected editor.
@@ -147,7 +148,5 @@ begin
 rescue LoadError
   BetterErrors.binding_of_caller_available = false
 end
-
-BetterErrors.maximum_variable_inspect_size ||= 100_000
 
 require "better_errors/rails" if defined? Rails::Railtie

@@ -153,7 +153,7 @@ module BetterErrors
       empty_binding.instance_variable_set('@small', content)
 
       html = error_page.do_variables("index" => 0)[:html]
-      html.should_not include "object too large"
+      expect(html).to_not include("object too large")
     end
 
     it "hides variables with inspects that are above the inspect size threshold" do
@@ -163,7 +163,7 @@ module BetterErrors
       empty_binding.instance_variable_set('@big', content)
 
       html = error_page.do_variables("index" => 0)[:html]
-      html.should include "object too large"
+      expect(html).to include("object too large")
     end
 
     it "shows variables with large inspects if max inspect size is disabled" do
@@ -173,7 +173,7 @@ module BetterErrors
       empty_binding.instance_variable_set('@big', content)
 
       html = error_page.do_variables("index" => 0)[:html]
-      html.should_not include "object too large"
+      expect(html).to_not include("object too large")
     end
   end
 end

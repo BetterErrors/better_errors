@@ -159,7 +159,7 @@ module BetterErrors
     it "hides variables with inspects that are above the inspect size threshold" do
       BetterErrors.maximum_variable_inspect_size = 50_000
 
-      content = 'A' * (BetterErrors.maximum_variable_inspect_size)
+      content = 'A' * BetterErrors.maximum_variable_inspect_size
       empty_binding.instance_variable_set('@big', content)
 
       html = error_page.do_variables("index" => 0)[:html]
@@ -169,7 +169,7 @@ module BetterErrors
     it "shows variables with large inspects if max inspect size is disabled" do
       BetterErrors.maximum_variable_inspect_size = nil
 
-      content = 'A' * (50_000)
+      content = 'A' * 50_000
       empty_binding.instance_variable_set('@big', content)
 
       html = error_page.do_variables("index" => 0)[:html]

@@ -1,11 +1,21 @@
 require "spec_helper"
 require "pry"
-require "better_errors/repl/pry"
 require "better_errors/repl/shared_examples"
 
 module BetterErrors
   module REPL
     describe Pry do
+      before(:all) do
+        load "better_errors/repl/pry.rb"
+      end
+      after(:all) do
+        # Ensure the Pry REPL file has not been included. If this is not done,
+        # the constant leaks into other examples.
+        # In practice, this constant is only defined if `use_pry!` is called and then the
+        # REPL is used, causing BetterErrors::REPL to require the file.
+        BetterErrors::REPL.send(:remove_const, :Pry)
+      end
+
       let(:fresh_binding) {
         local_a = 123
         binding

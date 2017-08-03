@@ -1,5 +1,5 @@
 require "pp"
-require "erubis"
+require "erubi"
 require "coderay"
 require "uri"
 

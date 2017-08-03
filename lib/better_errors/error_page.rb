@@ -10,7 +10,7 @@ module BetterErrors
     end
 
     def self.template(template_name)
-      Erubis::EscapedEruby.new(File.read(template_path(template_name)))
+      Erubi::Engine.new(File.read(template_path(template_name)), escape: true)
     end
 
     attr_reader :exception, :env, :repls
@@ -27,7 +27,7 @@ module BetterErrors
     end
 
     def render(template_name = "main")
-      self.class.template(template_name).result binding
+      binding.eval(self.class.template(template_name).src)
     end
 
     def do_variables(opts)

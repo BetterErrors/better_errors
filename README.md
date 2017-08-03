@@ -75,6 +75,20 @@ Better Errors includes a link to your editor for the file and line of code that 
 By default, it uses your environment to determine which editor should be opened.
 See [the wiki for instructions on configuring the editor](https://github.com/charliesome/better_errors/wiki/Link-to-your-editor).
 
+
+##Set maximum variable size for inspector.
+
+```ruby
+# e.g. in config/initializers/better_errors.rb
+# This will stop BetterErrors from trying to render larger objects, which can cause
+# slow loading times and browser performance problems. Stated size is in characters and refers
+# to the length of #inspect's payload for the given object. Please be aware that HTML escaping
+# modifies the size of this payload so setting this limit too precisely is not recommended.  
+# default value: 100_000
+BetterErrors.maximum_variable_inspect_size = 100_000
+```
+
+
 ## Get in touch!
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!

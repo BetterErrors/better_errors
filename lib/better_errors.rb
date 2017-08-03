@@ -44,6 +44,11 @@ module BetterErrors
     # The ignored instance variables.
     # @return [Array]
     attr_accessor :ignored_instance_variables
+
+    # The maximum variable payload size. If variable.inspect exceeds this,
+    # the variable won't be returned.
+    # @return int
+    attr_accessor :maximum_variable_inspect_size
   end
   @ignored_instance_variables = []
 
@@ -142,5 +147,7 @@ begin
 rescue LoadError
   BetterErrors.binding_of_caller_available = false
 end
+
+BetterErrors.maximum_variable_inspect_size ||= 100_000
 
 require "better_errors/rails" if defined? Rails::Railtie

@@ -11,7 +11,9 @@ module BetterErrors
         binding
       }
 
-      let(:repl) { Pry.new fresh_binding }
+      let!(:exception) { raise ZeroDivisionError, "you divided by zero you silly goose!" rescue $! }
+
+      let(:repl) { Pry.new(fresh_binding, exception) }
 
       it "does line continuation" do
         output, prompt, filled = repl.send_input ""

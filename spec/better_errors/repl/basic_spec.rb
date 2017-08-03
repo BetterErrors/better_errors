@@ -10,7 +10,9 @@ module BetterErrors
         binding
       }
 
-      let(:repl) { Basic.new fresh_binding }
+      let!(:exception) { raise ZeroDivisionError, "you divided by zero you silly goose!" rescue $! }
+
+      let(:repl) { Basic.new(fresh_binding, exception) }
 
       it_behaves_like "a REPL provider"
     end

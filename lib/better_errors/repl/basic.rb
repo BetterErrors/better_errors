@@ -1,7 +1,7 @@
 module BetterErrors
   module REPL
     class Basic
-      def initialize(binding)
+      def initialize(binding, _exception)
         @binding = binding
       end
 

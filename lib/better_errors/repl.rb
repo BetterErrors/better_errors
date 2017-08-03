@@ -21,7 +21,9 @@ module BetterErrors
     end
 
     def self.test_provider(provider)
-      require provider[:impl]
+      # We must load this file instead of `require`ing it, since during our tests we want the file
+      # to be reloaded. In practice, this will only be called once, so `require` is not necessary.
+      load "#{provider[:impl]}.rb"
       true
     rescue LoadError
       false

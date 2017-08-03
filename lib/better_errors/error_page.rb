@@ -45,9 +45,9 @@ module BetterErrors
         return { error: "REPL unavailable in this stack frame" }
       end
 
-      @repls[index] ||= get_repl(index, binding)
+      @repls[index] ||= REPL.provider.new(binding, exception)
 
-      send_input(index, code)
+      eval_and_respond(index, code)
     end
 
     def backtrace_frames
@@ -111,19 +111,7 @@ module BetterErrors
       "<span class='unsupported'>(exception was raised in inspect)</span>"
     end
 
-    def get_repl(index, binding)
-      REPL.provider.new(binding).tap do |repl|
-        if repl.is_a?(REPL::Pry)
-          pry = repl.instance_variable_get(:@pry)
-          pry.instance_variable_set(
-            :@last_exception,
-            ::Pry::LastException.new(@exception.exception)
-          )
-        end
-      end
-    end
-
-    def send_input(index, code)
+    def eval_and_respond(index, code)
       result, prompt, prefilled_input = @repls[index].send_input(code)
 
       {

@@ -88,5 +88,31 @@ module BetterErrors
         expect(error_page.exception_message).not_to match(/\A\n\n/)
       end
     end
+
+    describe '#do_eval' do
+      let(:exception) { empty_binding.eval("raise") rescue $! }
+      subject(:do_eval) { error_page.do_eval("index" => 0, "source" => command) }
+      let(:command) { 'EvalTester.stuff_was_done(:yep)' }
+      before do
+        stub_const('EvalTester', eval_tester)
+      end
+      let(:eval_tester) { double('EvalTester', stuff_was_done: 'response') }
+
+      context 'with Pry disabled' do
+        it "evaluates the code" do
+          do_eval
+          expect(eval_tester).to have_received(:stuff_was_done).with(:yep)
+        end
+
+        it 'returns a hash of the code and its result' do
+          expect(do_eval).to include(
+            highlighted_input: /stuff_was_done/,
+            prefilled_input: '',
+            prompt: '>>',
+            result: "=> \"response\"\n",
+          )
+        end
+      end
+    end
   end
 end

@@ -79,6 +79,21 @@ See [the wiki for instructions on configuring the editor](https://github.com/cha
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!
 
+## Development
+
+After checking out the repo, run `bundle install` to install the basic dependencies.
+
+You can run the tests with the most recent version of Rails running `bundle exec rake`.
+
+To run the tests against the other sets of dependencies, though, you will need to use Appraisal.
+Run `appraisal install` to run install the dependencies for each of the possible combinations.
+
+Then you can run `appraisal rake` to run all tests, or (for example) `appraisal rails_42_boc rake` to only run the specs with Rails 4.2 and binding_of_caller.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+On CI, the specs are run against each major release of Ruby in addition to each Appraisal gemfile.
+
 ## Contributing
 
 1. Fork it

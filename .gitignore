@@ -6,3 +6,6 @@
 /doc
 /.bundle
 /vendor/gems
+
+/gemfiles/*.gemfile.lock
+/gemfiles/.bundle

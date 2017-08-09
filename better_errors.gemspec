@@ -20,6 +20,12 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 2.0.0"
 
+  s.add_development_dependency "rake", "~> 10.0"
+  s.add_development_dependency "rspec", "~> 3.5"
+  s.add_development_dependency "rspec-its"
+  s.add_development_dependency "yard"
+  s.add_development_dependency "kramdown"
+
   s.add_dependency "erubi", ">= 1.0.0"
   s.add_dependency "coderay", ">= 1.0.0"
   s.add_dependency "rack", ">= 0.9.0"

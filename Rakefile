@@ -1,6 +1,9 @@
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 
+RSpec::Core::RakeTask.new(:test)
+task :default => :test
+
 def gemfiles
   @gemfiles ||= Dir[File.dirname(__FILE__) + '/gemfiles/*.gemfile']
 end

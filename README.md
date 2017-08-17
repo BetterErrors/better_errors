@@ -83,16 +83,25 @@ If you're using better_errors, I'd love to hear from you. Drop me a line and tel
 
 After checking out the repo, run `bundle install` to install the basic dependencies.
 
-You can run the tests with the most recent version of Rails running `bundle exec rake`.
+You can run the tests with the simplest set of dependencies using:
 
-To run the tests against the other sets of dependencies, though, you will need to use Appraisal.
-Run `appraisal install` to run install the dependencies for each of the possible combinations.
+```rb
+bundle exec rspec
+```
 
-Then you can run `appraisal rake` to run all tests, or (for example) `appraisal rails_42_boc rake` to only run the specs with Rails 4.2 and binding_of_caller.
+To run specs for each of the dependency combinations, run:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```rb
+bundle exec rake test:all
+```
 
-On CI, the specs are run against each major release of Ruby in addition to each Appraisal gemfile.
+You can run specs for a specific dependency combination using:
+
+```rb
+BUNDLE_GEMFILE=gemfiles/pry09.gemfile bundle exec rspec
+```
+
+On CI, the specs are run against each gemfile on each supported version of Ruby.
 
 ## Contributing
 

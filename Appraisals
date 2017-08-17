@@ -1,5 +1,6 @@
 appraise "rails42" do
   gem 'rails', '~> 4.2.0'
+  gem 'nokogiri', RUBY_VERSION < '2.1' ? '~> 1.6.0' : '>= 1.7'
 end
 
 appraise "rails50" do
@@ -12,6 +13,7 @@ end
 
 appraise "rails42_haml" do
   gem 'rails', '~> 4.2.0'
+  gem 'nokogiri', RUBY_VERSION < '2.1' ? '~> 1.6.0' : '>= 1.7'
   gem 'haml'
 end
 
@@ -27,6 +29,7 @@ end
 
 appraise "rails42_boc" do
   gem 'rails', '~> 4.2.0'
+  gem 'nokogiri', RUBY_VERSION < '2.1' ? '~> 1.6.0' : '>= 1.7'
   gem "binding_of_caller", platforms: :ruby
 end
 

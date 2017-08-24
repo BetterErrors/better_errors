@@ -8,7 +8,7 @@ module BetterErrors
 
     let(:response) { error_page.render }
 
-    let(:empty_binding) {
+    let(:exception_binding) {
       local_a = :value_for_local_a
       local_b = :value_for_local_b
 
@@ -31,7 +31,7 @@ module BetterErrors
     end
 
     context "variable inspection" do
-      let(:exception) { empty_binding.eval("raise") rescue $! }
+      let(:exception) { exception_binding.eval("raise") rescue $! }
 
       if BetterErrors.binding_of_caller_available?
         it "shows local variables" do
@@ -41,10 +41,65 @@ module BetterErrors
           expect(html).to include("local_b")
           expect(html).to include(":value_for_local_b")
         end
+
       else
         it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
           html = error_page.do_variables("index" => 0)[:html]
           expect(html).to include(%{gem "binding_of_caller"})
+        end
+      end
+
+      context 'when maximum_variable_inspect_size is set' do
+        before do
+          BetterErrors.maximum_variable_inspect_size = 500
+        end
+
+        context 'with a variable that is not larger than maximum_variable_inspect_size' do
+          let(:exception_binding) {
+            @small = content
+
+            binding
+          }
+          let(:content) { 'A' * 480 }
+
+          it "shows the variable content" do
+            html = error_page.do_variables("index" => 0)[:html]
+            expect(html).to include(content)
+          end
+        end
+
+        context 'with a variable that is larger than maximum_variable_inspect_size' do
+          let(:exception_binding) {
+            @big = content
+
+            binding
+          }
+          let(:content) { 'A' * 501 }
+
+          it "includes an indication that the variable was too large" do
+            html = error_page.do_variables("index" => 0)[:html]
+            expect(html).to_not include(content)
+            expect(html).to include("object too large")
+          end
+        end
+      end
+
+      context 'when maximum_variable_inspect_size is disabled' do
+        before do
+          BetterErrors.maximum_variable_inspect_size = nil
+        end
+
+        let(:exception_binding) {
+          @big = content
+
+          binding
+        }
+        let(:content) { 'A' * 100_001 }
+
+        it "includes the content of large variables" do
+          html = error_page.do_variables("index" => 0)[:html]
+          expect(html).to include(content)
+          expect(html).to_not include("object too large")
         end
       end
 
@@ -90,7 +145,7 @@ module BetterErrors
     end
 
     describe '#do_eval' do
-      let(:exception) { empty_binding.eval("raise") rescue $! }
+      let(:exception) { exception_binding.eval("raise") rescue $! }
       subject(:do_eval) { error_page.do_eval("index" => 0, "source" => command) }
       let(:command) { 'EvalTester.stuff_was_done(:yep)' }
       before do
@@ -168,36 +223,6 @@ module BetterErrors
           end
         end
       end
-    end
-
-    it "shows variables with inspects that are below the inspect size threshold" do
-      BetterErrors.maximum_variable_inspect_size = 50_000
-
-      content = 'AAAAA'
-      empty_binding.instance_variable_set('@small', content)
-
-      html = error_page.do_variables("index" => 0)[:html]
-      expect(html).to_not include("object too large")
-    end
-
-    it "hides variables with inspects that are above the inspect size threshold" do
-      BetterErrors.maximum_variable_inspect_size = 50_000
-
-      content = 'A' * BetterErrors.maximum_variable_inspect_size
-      empty_binding.instance_variable_set('@big', content)
-
-      html = error_page.do_variables("index" => 0)[:html]
-      expect(html).to include("object too large")
-    end
-
-    it "shows variables with large inspects if max inspect size is disabled" do
-      BetterErrors.maximum_variable_inspect_size = nil
-
-      content = 'A' * 150_000
-      empty_binding.instance_variable_set('@big', content)
-
-      html = error_page.do_variables("index" => 0)[:html]
-      expect(html).to_not include("object too large")
     end
   end
 end

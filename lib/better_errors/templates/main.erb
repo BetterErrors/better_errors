@@ -394,7 +394,7 @@
      * Monospace
      * --------------------------------------------------------------------- */
 
-    pre, code, .be-repl input, .be-repl .prompt span, textarea, .code_linenums {
+    pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums {
         font-family: menlo, lucida console, monospace;
         font-size: 8pt;
     }
@@ -548,25 +548,25 @@
         white-space: pre-wrap;
     }
 
-    /* .prompt > span + input */
-    .be-console .prompt {
+    /* .command-line > span + input */
+    .be-console .command-line {
         display: table;
         width: 100%;
     }
 
-    .be-console .prompt span,
-    .be-console .prompt input {
+    .be-console .command-line span,
+    .be-console .command-line input {
         display: table-cell;
     }
 
-    .be-console .prompt span {
+    .be-console .command-line span {
         width: 1%;
         padding-right: 5px;
         padding-left: 10px;
         white-space: pre;
     }
 
-    .be-console .prompt input {
+    .be-console .command-line input {
         width: 99%;
     }
 
@@ -810,7 +810,7 @@
     REPL.prototype.install = function(containerElement) {
         this.container = containerElement;
 
-        this.promptElement  = this.container.querySelector(".prompt span");
+        this.promptElement  = this.container.querySelector(".command-line .prompt");
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
 

@@ -44,8 +44,14 @@ module BetterErrors
     # The ignored instance variables.
     # @return [Array]
     attr_accessor :ignored_instance_variables
+
+    # The maximum variable payload size. If variable.inspect exceeds this,
+    # the variable won't be returned.
+    # @return int
+    attr_accessor :maximum_variable_inspect_size
   end
   @ignored_instance_variables = []
+  @maximum_variable_inspect_size = 100_000
 
   # Returns a proc, which when called with a filename and line number argument,
   # returns a URL to open the filename and line in the selected editor.

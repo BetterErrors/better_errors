@@ -58,6 +58,60 @@ module BetterErrors
           expect(html).not_to include('<td class="name">' + '@inst_d</td>')
           expect(html).not_to include("<pre>" + ":value_for_inst_d</pre>")
         end
+
+        context 'when maximum_variable_inspect_size is set' do
+          before do
+            BetterErrors.maximum_variable_inspect_size = 500
+          end
+
+          context 'with a variable that is not larger than maximum_variable_inspect_size' do
+            let(:exception_binding) {
+              @small = content
+
+              binding
+            }
+            let(:content) { 'A' * 480 }
+
+            it "shows the variable content" do
+              html = error_page.do_variables("index" => 0)[:html]
+              expect(html).to include(content)
+            end
+          end
+
+          context 'with a variable that is larger than maximum_variable_inspect_size' do
+            let(:exception_binding) {
+              @big = content
+
+              binding
+            }
+            let(:content) { 'A' * 501 }
+
+            it "includes an indication that the variable was too large" do
+              html = error_page.do_variables("index" => 0)[:html]
+              expect(html).to_not include(content)
+              expect(html).to include("object too large")
+            end
+          end
+        end
+
+        context 'when maximum_variable_inspect_size is disabled' do
+          before do
+            BetterErrors.maximum_variable_inspect_size = nil
+          end
+
+          let(:exception_binding) {
+            @big = content
+
+            binding
+          }
+          let(:content) { 'A' * 100_001 }
+
+          it "includes the content of large variables" do
+            html = error_page.do_variables("index" => 0)[:html]
+            expect(html).to include(content)
+            expect(html).to_not include("object too large")
+          end
+        end
       else
         it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
           html = error_page.do_variables("index" => 0)[:html]

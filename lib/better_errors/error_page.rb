@@ -114,11 +114,18 @@ module BetterErrors
     def inspect_raw_value(obj)
       value = CGI.escapeHTML(obj.inspect)
 
-      if !BetterErrors.maximum_variable_inspect_size.nil? && value.length > BetterErrors.maximum_variable_inspect_size
-        "<span class='unsupported'>(object too large - modify #{CGI.escapeHTML(obj.class.to_s)}#inspect or raise BetterErrors.maximum_variable_inspect_size)</span>"
-      else
+      if value_small_enough_to_inspect?(value)
         value
+      else
+        "<span class='unsupported'>(object too large. "\
+          "Modify #{CGI.escapeHTML(obj.class.to_s)}#inspect "\
+          "or increase BetterErrors.maximum_variable_inspect_size)</span>"
       end
+    end
+
+    def value_small_enough_to_inspect?(value)
+      return true if BetterErrors.maximum_variable_inspect_size.nil?
+      value.length <= BetterErrors.maximum_variable_inspect_size
     end
 
     def eval_and_respond(index, code)

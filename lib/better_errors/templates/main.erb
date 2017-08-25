@@ -394,7 +394,7 @@
      * Monospace
      * --------------------------------------------------------------------- */
 
-    pre, code, .repl input, .repl .prompt span, textarea, .code_linenums {
+    pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums {
         font-family: menlo, lucida console, monospace;
         font-size: 8pt;
     }
@@ -460,7 +460,7 @@
         font-weight: 200;
     }
 
-    .code, .console, .unavailable {
+    .code, .be-console, .unavailable {
         background: #fff;
         padding: 5px;
 
@@ -532,13 +532,13 @@
     }
 
     /* REPL shell */
-    .console {
+    .be-console {
         padding: 0 1px 10px 1px;
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 2px;
     }
 
-    .console pre {
+    .be-console pre {
         padding: 10px 10px 0 10px;
         max-height: 400px;
         overflow-x: none;
@@ -548,30 +548,31 @@
         white-space: pre-wrap;
     }
 
-    /* .prompt > span + input */
-    .console .prompt {
+    /* .command-line > span + input */
+    .be-console .command-line {
         display: table;
         width: 100%;
     }
 
-    .console .prompt span,
-    .console .prompt input {
+    .be-console .command-line span,
+    .be-console .command-line input {
         display: table-cell;
     }
 
-    .console .prompt span {
+    .be-console .command-line span {
         width: 1%;
         padding-right: 5px;
         padding-left: 10px;
+        white-space: pre;
     }
 
-    .console .prompt input {
+    .be-console .command-line input {
         width: 99%;
     }
 
     /* Input box */
-    .console input,
-    .console input:focus {
+    .be-console input,
+    .be-console input:focus {
         outline: 0;
         border: 0;
         padding: 0;
@@ -669,14 +670,14 @@
 
     nav.sidebar::-webkit-scrollbar,
     .inset pre::-webkit-scrollbar,
-    .console pre::-webkit-scrollbar,
+    .be-console pre::-webkit-scrollbar,
     .code::-webkit-scrollbar {
         width: 10px;
         height: 10px;
     }
 
     .inset pre::-webkit-scrollbar-thumb,
-    .console pre::-webkit-scrollbar-thumb,
+    .be-console pre::-webkit-scrollbar-thumb,
     .code::-webkit-scrollbar-thumb {
         background: #ccc;
         border-radius: 5px;
@@ -692,7 +693,7 @@
         background: -webkit-linear-gradient(left, #aaa, #999);
     }
 
-    .console pre:hover::-webkit-scrollbar-thumb,
+    .be-console pre:hover::-webkit-scrollbar-thumb,
     .inset pre:hover::-webkit-scrollbar-thumb,
     .code:hover::-webkit-scrollbar-thumb {
         background: #888;
@@ -809,7 +810,7 @@
     REPL.prototype.install = function(containerElement) {
         this.container = containerElement;
 
-        this.promptElement  = this.container.querySelector(".prompt span");
+        this.promptElement  = this.container.querySelector(".command-line .prompt");
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
 
@@ -924,7 +925,7 @@
 
         el.style.display = "block";
 
-        var replInput = el.querySelector('.console input');
+        var replInput = el.querySelector('.be-console input');
         if (replInput) replInput.focus();
     }
 
@@ -946,7 +947,7 @@
                 } else {
                     el.innerHTML = response.html;
 
-                    var repl = el.querySelector(".repl .console");
+                    var repl = el.querySelector(".be-repl .be-console");
                     if(repl) {
                         new REPL(index).install(repl);
                     }

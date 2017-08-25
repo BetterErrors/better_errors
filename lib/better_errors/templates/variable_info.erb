@@ -8,10 +8,10 @@
     </div>
 
     <% if BetterErrors.binding_of_caller_available? && @frame.frame_binding %>
-        <div class="repl">
-            <div class="console">
+        <div class="be-repl">
+            <div class="be-console">
                 <pre></pre>
-                <div class="prompt"><span>&gt;&gt;</span> <input/></div>
+                <div class="command-line"><span class='prompt'>&gt;&gt;</span> <input/></div>
             </div>
         </div>
     <% end %>

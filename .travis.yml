@@ -1,6 +1,13 @@
 sudo: false
 language: ruby
 cache: bundler
+env:
+  # With this env variable, coverage information sent to coveralls will not be processed until the webhook is sent.
+  COVERALLS_PARALLEL: true
+notifications:
+  webhooks:
+    # Inform coveralls that all builds are complete. https://coveralls.zendesk.com/hc/en-us/articles/203484329-Parallel-Build-Webhook
+    - secure: "YnHYbTq51ySistjvOxsuNhyg4GLuUffEJstTYeGYXiBF7HG5h43IVYo8KNuLzwkgsOYBcNo+YMdQX7qCqJffSbhsr1FZRSzBmjFFxcyD4hu+ukM2theZ4mePVAZiePscYvQPRNY4hIb4d3egStJEytkalDhB3sOebF57tIaCssg="
 rvm:
   - 2.0.0
   - 2.1.10

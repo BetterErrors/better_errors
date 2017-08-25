@@ -579,6 +579,16 @@
         margin: 0;
     }
 
+    .console .clear_output {
+        text-align: right;
+        margin-right: 1em;
+    }
+
+    .console .clear_output a {
+        color: red;
+    }
+
+
     /* Hint text */
     .hint {
         margin: 15px 0 20px 0;
@@ -812,10 +822,16 @@
         this.promptElement  = this.container.querySelector(".prompt span");
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
+        this.outputClearElement  = this.container.querySelector(".clear_output");
 
         var self = this;
         this.inputElement.onkeydown = function(ev) {
             self.onKeyDown(ev);
+        };
+
+        this.outputClearElement.onclick = function(ev) {
+            ev.preventDefault();
+            self.clearOutput();
         };
 
         this.setPrompt(">>");
@@ -852,6 +868,11 @@
 
     REPL.prototype.writeOutput = function(output) {
         this.writeRawOutput(escapeHTML(output));
+    };
+
+    REPL.prototype.clearOutput = function() {
+        this.outputElement.innerHTML = '';
+        this.outputElement.scrollTop = this.outputElement.scrollHeight;
     };
 
     REPL.prototype.sendInput = function(line) {

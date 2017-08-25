@@ -93,6 +93,30 @@ BetterErrors.maximum_variable_inspect_size = 100_000
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!
 
+## Development
+
+After checking out the repo, run `bundle install` to install the basic dependencies.
+
+You can run the tests with the simplest set of dependencies using:
+
+```rb
+bundle exec rspec
+```
+
+To run specs for each of the dependency combinations, run:
+
+```rb
+bundle exec rake test:all
+```
+
+You can run specs for a specific dependency combination using:
+
+```rb
+BUNDLE_GEMFILE=gemfiles/pry09.gemfile bundle exec rspec
+```
+
+On CI, the specs are run against each gemfile on each supported version of Ruby.
+
 ## Contributing
 
 1. Fork it

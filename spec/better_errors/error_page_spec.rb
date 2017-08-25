@@ -8,7 +8,7 @@ module BetterErrors
 
     let(:response) { error_page.render }
 
-    let(:empty_binding) {
+    let(:exception_binding) {
       local_a = :value_for_local_a
       local_b = :value_for_local_b
 
@@ -31,38 +31,38 @@ module BetterErrors
     end
 
     context "variable inspection" do
-      let(:exception) { empty_binding.eval("raise") rescue $! }
+      let(:exception) { exception_binding.eval("raise") rescue $! }
 
       if BetterErrors.binding_of_caller_available?
         it "shows local variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include("local_a")
-          expect(html).to include(":value_for_local_a")
-          expect(html).to include("local_b")
-          expect(html).to include(":value_for_local_b")
+          expect(html).to include('<td class="name">local_a</td>')
+          expect(html).to include("<pre>:value_for_local_a</pre>")
+          expect(html).to include('<td class="name">local_b</td>')
+          expect(html).to include("<pre>:value_for_local_b</pre>")
+        end
+
+        it "shows instance variables" do
+          html = error_page.do_variables("index" => 0)[:html]
+          expect(html).to include('<td class="name">' + '@inst_c</td>')
+          expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
+          expect(html).to include('<td class="name">' + '@inst_d</td>')
+          expect(html).to include("<pre>" + ":value_for_inst_d</pre>")
+        end
+
+        it "does not show filtered variables" do
+          allow(BetterErrors).to receive(:ignored_instance_variables).and_return([:@inst_d])
+          html = error_page.do_variables("index" => 0)[:html]
+          expect(html).to include('<td class="name">' + '@inst_c</td>')
+          expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
+          expect(html).not_to include('<td class="name">' + '@inst_d</td>')
+          expect(html).not_to include("<pre>" + ":value_for_inst_d</pre>")
         end
       else
         it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
           html = error_page.do_variables("index" => 0)[:html]
           expect(html).to include(%{gem "binding_of_caller"})
         end
-      end
-
-      it "shows instance variables" do
-        html = error_page.do_variables("index" => 0)[:html]
-        expect(html).to include("inst_c")
-        expect(html).to include(":value_for_inst_c")
-        expect(html).to include("inst_d")
-        expect(html).to include(":value_for_inst_d")
-      end
-
-      it "shows filter instance variables" do
-        allow(BetterErrors).to receive(:ignored_instance_variables).and_return([ :@inst_d ])
-        html = error_page.do_variables("index" => 0)[:html]
-        expect(html).to include("inst_c")
-        expect(html).to include(":value_for_inst_c")
-        expect(html).not_to include('<td class="name">@inst_d</td>')
-        expect(html).not_to include("<pre>:value_for_inst_d</pre>")
       end
     end
 
@@ -90,7 +90,7 @@ module BetterErrors
     end
 
     describe '#do_eval' do
-      let(:exception) { empty_binding.eval("raise") rescue $! }
+      let(:exception) { exception_binding.eval("raise") rescue $! }
       subject(:do_eval) { error_page.do_eval("index" => 0, "source" => command) }
       let(:command) { 'EvalTester.stuff_was_done(:yep)' }
       before do

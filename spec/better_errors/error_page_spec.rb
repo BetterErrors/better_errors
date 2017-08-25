@@ -36,88 +36,87 @@ module BetterErrors
       if BetterErrors.binding_of_caller_available?
         it "shows local variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include("local_a")
-          expect(html).to include(":value_for_local_a")
-          expect(html).to include("local_b")
-          expect(html).to include(":value_for_local_b")
+          expect(html).to include('<td class="name">local_a</td>')
+          expect(html).to include("<pre>:value_for_local_a</pre>")
+          expect(html).to include('<td class="name">local_b</td>')
+          expect(html).to include("<pre>:value_for_local_b</pre>")
         end
 
-      else
-        it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
+        it "shows instance variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include(%{gem "binding_of_caller"})
-        end
-      end
-
-      context 'when maximum_variable_inspect_size is set' do
-        before do
-          BetterErrors.maximum_variable_inspect_size = 500
+          expect(html).to include('<td class="name">' + '@inst_c</td>')
+          expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
+          expect(html).to include('<td class="name">' + '@inst_d</td>')
+          expect(html).to include("<pre>" + ":value_for_inst_d</pre>")
         end
 
-        context 'with a variable that is not larger than maximum_variable_inspect_size' do
-          let(:exception_binding) {
-            @small = content
+        it "does not show filtered variables" do
+          allow(BetterErrors).to receive(:ignored_instance_variables).and_return([:@inst_d])
+          html = error_page.do_variables("index" => 0)[:html]
+          expect(html).to include('<td class="name">' + '@inst_c</td>')
+          expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
+          expect(html).not_to include('<td class="name">' + '@inst_d</td>')
+          expect(html).not_to include("<pre>" + ":value_for_inst_d</pre>")
+        end
 
-            binding
-          }
-          let(:content) { 'A' * 480 }
+        context 'when maximum_variable_inspect_size is set' do
+          before do
+            BetterErrors.maximum_variable_inspect_size = 500
+          end
 
-          it "shows the variable content" do
-            html = error_page.do_variables("index" => 0)[:html]
-            expect(html).to include(content)
+          context 'with a variable that is not larger than maximum_variable_inspect_size' do
+            let(:exception_binding) {
+              @small = content
+
+              binding
+            }
+            let(:content) { 'A' * 480 }
+
+            it "shows the variable content" do
+              html = error_page.do_variables("index" => 0)[:html]
+              expect(html).to include(content)
+            end
+          end
+
+          context 'with a variable that is larger than maximum_variable_inspect_size' do
+            let(:exception_binding) {
+              @big = content
+
+              binding
+            }
+            let(:content) { 'A' * 501 }
+
+            it "includes an indication that the variable was too large" do
+              html = error_page.do_variables("index" => 0)[:html]
+              expect(html).to_not include(content)
+              expect(html).to include("object too large")
+            end
           end
         end
 
-        context 'with a variable that is larger than maximum_variable_inspect_size' do
+        context 'when maximum_variable_inspect_size is disabled' do
+          before do
+            BetterErrors.maximum_variable_inspect_size = nil
+          end
+
           let(:exception_binding) {
             @big = content
 
             binding
           }
-          let(:content) { 'A' * 501 }
+          let(:content) { 'A' * 100_001 }
 
-          it "includes an indication that the variable was too large" do
+          it "includes the content of large variables" do
             html = error_page.do_variables("index" => 0)[:html]
-            expect(html).to_not include(content)
-            expect(html).to include("object too large")
+            expect(html).to include(content)
+            expect(html).to_not include("object too large")
           end
         end
-      end
-
-      context 'when maximum_variable_inspect_size is disabled' do
-        before do
-          BetterErrors.maximum_variable_inspect_size = nil
-        end
-
-        let(:exception_binding) {
-          @big = content
-
-          binding
-        }
-        let(:content) { 'A' * 100_001 }
-
-        it "includes the content of large variables" do
+      else
+        it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include(content)
-          expect(html).to_not include("object too large")
+          expect(html).to include(%{gem "binding_of_caller"})
         end
-      end
-
-      it "shows instance variables" do
-        html = error_page.do_variables("index" => 0)[:html]
-        expect(html).to include("inst_c")
-        expect(html).to include(":value_for_inst_c")
-        expect(html).to include("inst_d")
-        expect(html).to include(":value_for_inst_d")
-      end
-
-      it "shows filter instance variables" do
-        allow(BetterErrors).to receive(:ignored_instance_variables).and_return([ :@inst_d ])
-        html = error_page.do_variables("index" => 0)[:html]
-        expect(html).to include("inst_c")
-        expect(html).to include(":value_for_inst_c")
-        expect(html).not_to include('<td class="name">@inst_d</td>')
-        expect(html).not_to include("<pre>:value_for_inst_d</pre>")
       end
     end
 

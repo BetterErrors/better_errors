@@ -116,17 +116,17 @@ module BetterErrors
       return unless BetterErrors.logger
 
       message = "\n#{@error_page.exception_type} - #{@error_page.exception_message}:\n"
-      traces = if defined?(Rails) && defined?(Rails.backtrace_cleaner)
-        Rails.backtrace_cleaner.clean(@error_page.backtrace_frames.map {|frame| "#{frame}"})
+      message += backtrace_frames.map { |frame| "  #{frame}\n" }.join
+
+      BetterErrors.logger.fatal message
+    end
+
+    def backtrace_frames
+      if defined?(Rails) && defined?(Rails.backtrace_cleaner)
+        Rails.backtrace_cleaner.clean @error_page.backtrace_frames.map(&:to_s)
       else
         @error_page.backtrace_frames
       end
-
-      traces.each do |frame|
-        message << "  #{frame}\n"
-      end
-
-      BetterErrors.logger.fatal message
     end
 
     def internal_call(env, opts)

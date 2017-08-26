@@ -176,12 +176,41 @@ module BetterErrors
         expect(headers["Content-Type"]).to match /text\/html/
       end
 
-      it "logs the exception" do
-        logger = Object.new
-        expect(logger).to receive :fatal
-        allow(BetterErrors).to receive(:logger).and_return(logger)
+      context 'the logger' do
+        let(:logger) { double('logger', fatal: nil) }
+        before do
+          allow(BetterErrors).to receive(:logger).and_return(logger)
+        end
 
-        app.call({})
+        it "receives the exception as a fatal message" do
+          expect(logger).to receive(:fatal).with(/RuntimeError/)
+          app.call({})
+        end
+
+        context 'when Rails is being used' do
+          before do
+            skip("Rails not included in this run") unless defined? Rails
+          end
+
+          it "receives the exception without filtered backtrace frames" do
+            expect(logger).to receive(:fatal) do |message|
+              expect(message).to_not match(/rspec-core/)
+            end
+            app.call({})
+          end
+        end
+        context 'when Rails is not being used' do
+          before do
+            skip("Rails is included in this run") if defined? Rails
+          end
+
+          it "receives the exception with all backtrace frames" do
+            expect(logger).to receive(:fatal) do |message|
+              expect(message).to match(/rspec-core/)
+            end
+            app.call({})
+          end
+        end
       end
     end
 

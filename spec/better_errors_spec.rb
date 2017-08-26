@@ -69,5 +69,21 @@ describe BetterErrors do
         expect(subject.editor[]).to start_with "txmt://"
       end
     end
+
+    ["mine"].each do |editor|
+      it "uses x-mine:// scheme when EDITOR=#{editor}" do
+        ENV["EDITOR"] = editor
+        subject.editor = subject.default_editor
+        expect(subject.editor[]).to start_with "x-mine://"
+      end
+    end
+
+    ["idea"].each do |editor|
+      it "uses idea:// scheme when EDITOR=#{editor}" do
+        ENV["EDITOR"] = editor
+        subject.editor = subject.default_editor
+        expect(subject.editor[]).to start_with "idea://"
+      end
+    end
   end
 end

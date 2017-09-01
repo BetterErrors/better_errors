@@ -81,7 +81,7 @@ By default, it uses your environment to determine which editor should be opened.
 See [the wiki for instructions on configuring the editor](https://github.com/charliesome/better_errors/wiki/Link-to-your-editor).
 
 
-##Set maximum variable size for inspector.
+## Set maximum variable size for inspector.
 
 ```ruby
 # e.g. in config/initializers/better_errors.rb

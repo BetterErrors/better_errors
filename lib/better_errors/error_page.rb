@@ -31,8 +31,7 @@ module BetterErrors
     end
 
     def do_variables(opts)
-      index = opts["index"].to_i
-      @frame = backtrace_frames[index]
+      load_frame_from(opts)
       @var_start_time = Time.now.to_f
       { html: render("variable_info") }
     end
@@ -48,6 +47,16 @@ module BetterErrors
       @repls[index] ||= REPL.provider.new(binding, exception)
 
       eval_and_respond(index, code)
+    end
+
+    def do_expand(opts)
+      load_frame_from(opts)
+
+      @frame.upperlines -= 5 if opts['direction'] == 'up'
+      @frame.lowerlines += 5 if opts['direction'] == 'down'
+
+      @var_start_time = Time.now.to_f
+      { html: render("trace_info") }
     end
 
     def backtrace_frames
@@ -92,7 +101,8 @@ module BetterErrors
     end
 
     def html_formatted_code_block(frame)
-      CodeFormatter::HTML.new(frame.filename, frame.line).output
+      CodeFormatter::HTML.new(frame.filename, frame.line, frame.upperlines,
+                              frame.lowerlines).output
     end
 
     def text_formatted_code_block(frame)
@@ -137,6 +147,11 @@ module BetterErrors
         prompt:            prompt,
         result:            result
       }
+    end
+
+    def load_frame_from(opts)
+      index = opts["index"].to_i
+      @frame = backtrace_frames[index]
     end
   end
 end

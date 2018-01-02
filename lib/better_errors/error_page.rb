@@ -1,6 +1,7 @@
 require "cgi"
 require "json"
 require "securerandom"
+require "objspace"
 
 module BetterErrors
   # @private
@@ -70,7 +71,7 @@ module BetterErrors
       application_frames.first || backtrace_frames.first
     end
 
-  private
+    private
     def editor_url(frame)
       BetterErrors.editor[frame.filename, frame.line]
     end
@@ -112,7 +113,11 @@ module BetterErrors
     end
 
     def inspect_raw_value(obj)
-      value = CGI.escapeHTML(obj.inspect)
+      if defined?(ObjectSpace.memsize_of) 
+        value =  CGI.escapeHTML(ObjectSpace.memspace_of(obj)) 
+      else
+        value = CGI.escapeHTML(obj.inspect)
+      end
 
       if value_small_enough_to_inspect?(value)
         value

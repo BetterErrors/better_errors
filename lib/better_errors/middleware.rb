@@ -39,6 +39,14 @@ module BetterErrors
     allow_ip! "127.0.0.0/8"
     allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
 
+    def self.internal_url_prefix
+      @internal_url_prefix || ""
+    end
+
+    def self.internal_url_prefix=(value)
+      @internal_url_prefix = value
+    end
+
     # A new instance of BetterErrors::Middleware
     #
     # @param app      The Rack app/middleware to wrap with Better Errors

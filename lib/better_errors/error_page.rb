@@ -71,7 +71,7 @@ module BetterErrors
       application_frames.first || backtrace_frames.first
     end
 
-    private
+  private
     def editor_url(frame)
       BetterErrors.editor[frame.filename, frame.line]
     end
@@ -113,11 +113,7 @@ module BetterErrors
     end
 
     def inspect_raw_value(obj)
-      if defined?(ObjectSpace.memsize_of) 
-        value =  CGI.escapeHTML(ObjectSpace.memspace_of(obj)) 
-      else
-        value = CGI.escapeHTML(obj.inspect)
-      end
+      value = CGI.escapeHTML(obj.inspect)
 
       if value_small_enough_to_inspect?(value)
         value
@@ -130,7 +126,11 @@ module BetterErrors
 
     def value_small_enough_to_inspect?(value)
       return true if BetterErrors.maximum_variable_inspect_size.nil?
-      value.length <= BetterErrors.maximum_variable_inspect_size
+      if defined?(ObjectSpace) && defined?(ObjectSpace.memsize_of) && ObjectSpace.memsize_of(value)
+        ObjectSpace.memsize_of(value) <= BetterErrors.maximum_variable_inspect_size
+      else
+        value.length <= BetterErrors.maximum_variable_inspect_size
+      end
     end
 
     def eval_and_respond(index, code)

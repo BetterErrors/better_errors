@@ -61,7 +61,7 @@ module BetterErrors
 
         context 'when maximum_variable_inspect_size is set' do
           before do
-            BetterErrors.maximum_variable_inspect_size = 500
+            BetterErrors.maximum_variable_inspect_size = 1010
           end
 
           context 'with a variable that is not larger than maximum_variable_inspect_size' do
@@ -84,7 +84,7 @@ module BetterErrors
 
               binding
             }
-            let(:content) { 'A' * 501 }
+            let(:content) { 'A' * 1001 }
 
             it "includes an indication that the variable was too large" do
               html = error_page.do_variables("index" => 0)[:html]

@@ -10,9 +10,10 @@ notifications:
 rvm:
   - 2.0.0
   - 2.1.10
-  - 2.2.7
-  - 2.3.4
-  - 2.4.1
+  - 2.2.10
+  - 2.3.7
+  - 2.4.4
+  - 2.5.1
   - ruby-head
 gemfile:
   - gemfiles/rails42.gemfile
@@ -60,9 +61,15 @@ matrix:
       gemfile: gemfiles/rails51_boc.gemfile
     - rvm: 2.1.10
       gemfile: gemfiles/rails51_haml.gemfile
-    - rvm: 2.4.1
+    - rvm: 2.4.4
       gemfile: gemfiles/rails42.gemfile
-    - rvm: 2.4.1
+    - rvm: 2.4.4
       gemfile: gemfiles/rails42_boc.gemfile
-    - rvm: 2.4.1
+    - rvm: 2.4.4
+      gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/rails42.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/rails42_boc.gemfile
+    - rvm: 2.5.1
       gemfile: gemfiles/rails42_haml.gemfile

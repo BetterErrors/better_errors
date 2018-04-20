@@ -1,6 +1,9 @@
 sudo: false
 language: ruby
 cache: bundler
+before_install:
+  - gem update --system
+  - gem update bundler
 notifications:
   webhooks:
     # With COVERALLS_PARALLEL, coverage information sent to coveralls will not be processed until

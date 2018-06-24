@@ -101,5 +101,13 @@ describe BetterErrors do
         expect(subject.editor[]).to start_with "idea://"
       end
     end
+
+    ["vscode", "code"].each do |editor|
+      it "uses vscode:// scheme when EDITOR=#{editor}" do
+        ENV["EDITOR"] = editor
+        subject.editor = subject.default_editor
+        expect(subject.editor[]).to start_with "vscode://"
+      end
+    end
   end
 end

@@ -61,10 +61,10 @@ module BetterErrors
 
         context 'when maximum_variable_inspect_size is set' do
           before do
-            BetterErrors.maximum_variable_inspect_size = 500
+            BetterErrors.maximum_variable_inspect_size = 1010
           end
 
-          context 'with a variable that is not larger than maximum_variable_inspect_size' do
+          context 'with a variable that is smaller than maximum_variable_inspect_size' do
             let(:exception_binding) {
               @small = content
 
@@ -79,17 +79,42 @@ module BetterErrors
           end
 
           context 'with a variable that is larger than maximum_variable_inspect_size' do
-            let(:exception_binding) {
-              @big = content
+            context 'but has an #inspect that returns a smaller value' do
+              let(:exception_binding) {
+                @big = content
 
-              binding
-            }
-            let(:content) { 'A' * 501 }
+                binding
+              }
+              let(:content) {
+                class ExtremelyLargeInspectableTestValue
+                  def initialize
+                    @a = 'A' * 1101
+                  end
+                  def inspect
+                    "shortval"
+                  end
+                end
+                InspectableTestValue.new
+              }
 
-            it "includes an indication that the variable was too large" do
-              html = error_page.do_variables("index" => 0)[:html]
-              expect(html).to_not include(content)
-              expect(html).to include("object too large")
+              it "shows the variable content" do
+                html = error_page.do_variables("index" => 0)[:html]
+                expect(html).to include("shortval")
+              end
+            end
+            context 'and does not implement #inspect' do
+              let(:exception_binding) {
+                @big = content
+
+                binding
+              }
+              let(:content) { 'A' * 1101 }
+
+              it "includes an indication that the variable was too large" do
+                html = error_page.do_variables("index" => 0)[:html]
+                expect(html).to_not include(content)
+                expect(html).to include("object too large")
+              end
             end
           end
         end

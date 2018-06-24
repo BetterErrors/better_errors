@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/charliesome/better_errors.svg)](https://travis-ci.org/charliesome/better_errors)
-[![Code Climate](https://img.shields.io/codeclimate/github/charliesome/better_errors.svg)](https://codeclimate.com/github/charliesome/better_errors)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6bc3e7d6118d47e6959b16690b815909)](https://www.codacy.com/app/BetterErrors/better_errors?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=charliesome/better_errors&amp;utm_campaign=Badge_Grade)
 [![Coverage](https://coveralls.io/repos/github/charliesome/better_errors/badge.svg?branch=master)](https://coveralls.io/github/charliesome/better_errors?branch=master)
 [![Gem Version](https://img.shields.io/gem/v/better_errors.svg)](https://rubygems.org/gems/better_errors)
 
@@ -7,7 +7,7 @@
 
 Better Errors replaces the standard Rails error page with a much better and more useful error page. It is also usable outside of Rails in any Rack app as Rack middleware.
 
-![image](https://i.imgur.com/6zBGAAb.png)
+![screenshot of Better Errors in action](https://i.imgur.com/6zBGAAb.png)
 
 ## Features
 

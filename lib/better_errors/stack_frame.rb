@@ -76,12 +76,14 @@ module BetterErrors
         # considered a bug in Ruby itself, but we need to work around it.
         next if name == :"\#$!"
 
-        if defined?(frame_binding.local_variable_get)
-          hash[name] = frame_binding.local_variable_get(name)
-        else
-          hash[name] = frame_binding.eval(name.to_s)
-        end
+        hash[name] = local_variable(name)
       end
+    end
+
+    def local_variable(name)
+      get_local_variable(name) || eval_local_variable(name)
+    rescue NameError => ex
+      "#{ex.class}: #{ex.message}"
     end
 
     def instance_variables
@@ -113,6 +115,16 @@ module BetterErrors
         @class_name = "#{$1}#{Kernel.instance_method(:class).bind(recv).call}"
         @method_name = "##{method_name}"
       end
+    end
+
+    def get_local_variable(name)
+      if defined?(frame_binding.local_variable_get)
+        frame_binding.local_variable_get(name)
+      end
+    end
+
+    def eval_local_variable(name)
+      frame_binding.eval(name.to_s)
     end
   end
 end

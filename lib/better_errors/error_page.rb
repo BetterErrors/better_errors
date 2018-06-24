@@ -1,7 +1,6 @@
 require "cgi"
 require "json"
 require "securerandom"
-require "objspace"
 
 module BetterErrors
   # @private
@@ -71,7 +70,8 @@ module BetterErrors
       application_frames.first || backtrace_frames.first
     end
 
-  private
+    private
+
     def editor_url(frame)
       BetterErrors.editor[frame.filename, frame.line]
     end
@@ -105,32 +105,13 @@ module BetterErrors
     end
 
     def inspect_value(obj)
-      inspect_raw_value(obj)
-    rescue NoMethodError
-      "<span class='unsupported'>(object doesn't support inspect)</span>"
+      InspectableValue.new(obj).to_html
+    rescue BetterErrors::ValueLargerThanConfiguredMaximum
+      "<span class='unsupported'>(object too large. "\
+        "Modify #{CGI.escapeHTML(obj.class.name)}#inspect "\
+        "or adjust BetterErrors.maximum_variable_inspect_size)</span>"
     rescue Exception => e
       "<span class='unsupported'>(exception #{CGI.escapeHTML(e.class.to_s)} was raised in inspect)</span>"
-    end
-
-    def inspect_raw_value(obj)
-      value = CGI.escapeHTML(obj.inspect)
-
-      if value_small_enough_to_inspect?(value)
-        value
-      else
-        "<span class='unsupported'>(object too large. "\
-          "Modify #{CGI.escapeHTML(obj.class.to_s)}#inspect "\
-          "or increase BetterErrors.maximum_variable_inspect_size)</span>"
-      end
-    end
-
-    def value_small_enough_to_inspect?(value)
-      return true if BetterErrors.maximum_variable_inspect_size.nil?
-      if defined?(ObjectSpace) && defined?(ObjectSpace.memsize_of) && ObjectSpace.memsize_of(value)
-        ObjectSpace.memsize_of(value) <= BetterErrors.maximum_variable_inspect_size
-      else
-        value.length <= BetterErrors.maximum_variable_inspect_size
-      end
     end
 
     def eval_and_respond(index, code)

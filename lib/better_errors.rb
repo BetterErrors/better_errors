@@ -20,6 +20,7 @@ module BetterErrors
     { symbols: [:textmate, :txmt, :tm], sniff: /mate/i,  url: "txmt://open?url=file://%{file}&line=%{line}" },
     { symbols: [:idea], sniff: /idea/i, url: "idea://open?file=%{file}&line=%{line}" },
     { symbols: [:rubymine], sniff: /mine/i, url: "x-mine://open?file=%{file}&line=%{line}" },
+    { symbols: [:vscode, :code], sniff: /code/i, url: "vscode://file/%{file}:%{line}" },
   ]
 
   class << self

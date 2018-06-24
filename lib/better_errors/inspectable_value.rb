@@ -19,10 +19,12 @@ module BetterErrors
     attr_reader :original_value
 
     def value
-      @value ||= if original_value.respond_to? :inspect
-        original_value.inspect
-      else
-        original_value
+      @value ||= begin
+        if original_value.respond_to? :inspect
+          original_value.inspect
+        else
+          original_value
+        end
       end
     end
 

@@ -383,7 +383,8 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
 
 .code_block{
   background: #f1f1f1;
-  border-left: 1px solid #ccc;
+  padding-bottom: 1px;
+  border-bottom: 1px solid #ccc;
 }
 
 /* Titlebar */
@@ -437,9 +438,8 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
   float:left;
 }
 
-.code_linenums span{
-  display:block;
-  padding:0 12px;
+.code_linenums pre{
+  padding:0 6px;
 }
 
 .code {
@@ -451,6 +451,9 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
 
 .code pre{
   padding-left:12px;
+}
+
+.code pre, .code_linenums pre {
   min-height:16px;
 }
 

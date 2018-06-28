@@ -15,7 +15,7 @@ module BetterErrors
     def formatted_nums
       each_line_of(highlighted_lines) { |highlight, current_line, str|
         class_name = highlight ? "highlight" : ""
-        sprintf '<span class="%s">%5d</span>', class_name, current_line
+        sprintf '<pre class="%s">%4d</pre>', class_name, current_line
       }
     end
 

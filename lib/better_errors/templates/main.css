@@ -26,7 +26,6 @@ body, td, input, textarea {
   font-family: helvetica neue, lucida grande, sans-serif;
   line-height: 1.5;
   color: #333;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 html {
@@ -104,9 +103,7 @@ html {
     right: 0;
     left: 40%;
 
-    padding: 20px;
-    padding-left: 10px;
-    margin-left: 30px;
+    border-left: 5px solid #38a;
 
     overflow-y: auto;
     overflow-x: hidden;
@@ -136,7 +133,6 @@ header.exception {
 
   background-color: #20202a;
   color: #aaa;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
   font-weight: 200;
   box-shadow: inset 0 -5px 3px -3px rgba(0, 0, 0, 0.05), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
 
@@ -225,7 +221,6 @@ nav.tabs a {
   font-weight: bold;
 
   color: #999;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 nav.tabs a.selected {
@@ -233,12 +228,10 @@ nav.tabs a.selected {
   background: rgba(0, 0, 0, 0.5);
   border-radius: 16px;
   box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 nav.tabs a.disabled {
   text-decoration: line-through;
-  text-shadow: none;
   cursor: default;
 }
 
@@ -297,7 +290,6 @@ ul.frames li.selected .name,
 ul.frames li.selected .method,
 ul.frames li.selected .location {
   color: white;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 ul.frames li.selected .location {
@@ -339,7 +331,6 @@ ul.frames .icon.application {
 ul.frames .icon.application:before {
   content: 'A';
   color: white;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsiveness -- flow to single-line mode */
@@ -377,7 +368,7 @@ ul.frames .icon.application:before {
  * Monospace
  * --------------------------------------------------------------------- */
 
-pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums {
+pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums, .title .name {
   font-family: menlo, lucida console, monospace;
   font-size: 8pt;
 }
@@ -387,11 +378,7 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
  * --------------------------------------------------------------------- */
 
 .trace_info {
-  background: #fff;
-  padding: 6px;
-  border-radius: 3px;
   margin-bottom: 2px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.03), 1px 1px 0 rgba(0, 0, 0, 0.05), -1px 1px 0 rgba(0, 0, 0, 0.05), 0 0 0 4px rgba(0, 0, 0, 0.04);
 }
 
 .code_block{
@@ -401,17 +388,11 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
 
 /* Titlebar */
 .trace_info .title {
-  background: #f1f1f1;
+  background: #38a;
+  color: white;
 
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
   overflow: hidden;
-  padding: 6px 10px;
-
-  border: solid 1px #ccc;
-  border-bottom: 0;
-
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
+  padding: 5px 10px 5px 0;
 }
 
 .trace_info .title .name,
@@ -429,9 +410,8 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
 }
 
 .trace_info .title .location a {
-  color:inherit;
-  text-decoration:none;
-  border-bottom:1px solid #aaaaaa;
+  color:white;
+  text-decoration:underline;
 }
 
 .trace_info .title .location a:hover {
@@ -582,7 +562,7 @@ p.unavailable:before {
  * --------------------------------------------------------------------- */
 
 .sub {
-  padding: 10px 0;
+  padding: 10px;
   margin: 10px 0;
 }
 
@@ -601,7 +581,6 @@ p.unavailable:before {
   color: #39a;
   font-size: 1.1em;
   margin: 10px 0;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 
   -webkit-font-smoothing: antialiased;
 }

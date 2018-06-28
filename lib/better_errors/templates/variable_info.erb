@@ -1,7 +1,9 @@
 <header class="trace_info clearfix">
     <h2 class="title">
         <div class="name">#<%= @frame.name %></div>
-        <div class="location"><span class="filename"><a href="<%= editor_url(@frame) %>"><%= @frame.pretty_path %></a></span></div>
+        <div class="location">
+            <a class="filename" href="<%= editor_url(@frame) %>"><span class="filename"><%= @frame.pretty_path %></span> &#x270E;</a>
+        </div>
     </h2>
     <div class="code_block clearfix">
         <%== html_formatted_code_block @frame %>

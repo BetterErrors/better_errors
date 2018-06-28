@@ -422,7 +422,10 @@ ul.frames li .method {
 
 .trace_info .title .location a {
   color:white;
-  text-decoration:underline;
+  text-decoration: none;
+}
+.trace_info .title .location a .filename {
+  text-decoration: underline;
 }
 
 .trace_info .title .location a:hover {

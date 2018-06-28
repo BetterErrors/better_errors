@@ -11,12 +11,16 @@ module BetterErrors
 
     def to_html
       raise ValueLargerThanConfiguredMaximum unless value_small_enough_to_inspect?
-      @html ||= CGI.escapeHTML(value)
+      value_as_html
     end
 
     private
 
     attr_reader :original_value
+
+    def value_as_html
+      @value_as_html ||= CGI.escapeHTML(value)
+    end
 
     def value
       @value ||= begin
@@ -34,7 +38,7 @@ module BetterErrors
       if defined?(ObjectSpace) && defined?(ObjectSpace.memsize_of) && ObjectSpace.memsize_of(value)
         ObjectSpace.memsize_of(value) <= BetterErrors.maximum_variable_inspect_size
       else
-        to_html.length <= BetterErrors.maximum_variable_inspect_size
+        value_as_html.length <= BetterErrors.maximum_variable_inspect_size
       end
     end
   end

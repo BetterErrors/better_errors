@@ -721,12 +721,22 @@
               if(document.styleSheets[i].href)
                   document.styleSheets[i].disabled = true;
           }
-          document.addEventListener("page:restore", function restoreCSS(e) {
-              for(var i=0; i < document.styleSheets.length; i++) {
-                  document.styleSheets[i].disabled = false;
-              }
-              document.removeEventListener("page:restore", restoreCSS, false);
-          });
+          if (window.Turbolinks.controller) {
+              // Turbolinks > 5 (see https://github.com/turbolinks/turbolinks/issues/6)
+              document.addEventListener("turbolinks:load", function restoreCSS(e) {
+                  for(var i=0; i < document.styleSheets.length; i++) {
+                      document.styleSheets[i].disabled = false;
+                  }
+                  document.removeEventListener("turbolinks:load", restoreCSS, false);
+              });
+          } else {
+              document.addEventListener("page:restore", function restoreCSS(e) {
+                  for(var i=0; i < document.styleSheets.length; i++) {
+                      document.styleSheets[i].disabled = false;
+                  }
+                  document.removeEventListener("page:restore", restoreCSS, false);
+              });
+          }
       }
     </script>
 

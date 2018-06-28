@@ -263,7 +263,7 @@ ul.frames li .location {
 }
 
 ul.frames li .method {
-  color: #966;
+  color: #666;
 }
 
 ul.frames li .location {
@@ -299,10 +299,6 @@ ul.frames li.selected .method,
 ul.frames li.selected .location,
 ul.frames li.selected .chevron {
   color: white;
-}
-
-ul.frames li.selected .location {
-  opacity: 0.6;
 }
 
 /* Iconography */
@@ -377,9 +373,9 @@ ul.frames .icon.application:before {
  * Monospace
  * --------------------------------------------------------------------- */
 
-pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums, .title .name {
+pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums, .title .name,
+ul.frames li .method {
   font-family: menlo, lucida console, monospace;
-  font-size: 8pt;
 }
 
 /* ---------------------------------------------------------------------
@@ -466,6 +462,7 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
 }
 
 .code pre, .code_linenums pre {
+  font-size: 11px;
   min-height:16px;
 }
 
@@ -576,66 +573,41 @@ p.unavailable:before {
  * Variable infos
  * --------------------------------------------------------------------- */
 
-.sub {
-  padding: 10px;
-  margin: 10px 0;
-}
-
-.sub:before {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 4px;
-
-  border-radius: 2px;
-  background: rgba(0, 150, 200, 0.05);
-}
-
-.sub h3 {
-  color: #39a;
-  font-size: 1.1em;
-  margin: 10px 0;
+.variables h3 {
+  background-color: #38a;
+  color: white;
+  padding: 4px;
+  font-size: 8pt;
+  margin-top: 1rem;
 
   -webkit-font-smoothing: antialiased;
 }
 
-.sub .inset {
-  overflow-y: auto;
-}
-
-.sub table {
-  table-layout: fixed;
-}
-
-.sub table td {
-  border-top: dotted 1px #ddd;
-  padding: 7px 1px;
-}
-
-.sub table td.name {
-  width: 150px;
+.variables h4 {
+  margin-top: 5px;
+  padding-left: 5px;
 
   font-weight: bold;
-  font-size: 0.8em;
-  padding-right: 20px;
+  font-size: 9pt;
 
   word-wrap: break-word;
 }
 
-.sub table td pre {
+.variables pre {
   max-height: 15em;
   overflow-y: auto;
-}
 
-.sub table td pre {
-  width: 100%;
-
+  font-size: 9pt;
   word-wrap: break-word;
   white-space: normal;
+
+  margin-left: 2rem;
+  border-bottom: 1px dotted #ddd;
 }
 
 /* "(object doesn't support inspect)" */
-.sub .unsupported {
+.variables .unsupported {
+  display: block;
   font-family: sans-serif;
   color: #777;
 }

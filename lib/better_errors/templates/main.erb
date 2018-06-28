@@ -65,7 +65,7 @@
             <ul class="frames">
                 <% backtrace_frames.each_with_index do |frame, index| %>
                     <li class="<%= frame.context %>" data-context="<%= frame.context %>" data-index="<%= index %>">
-                        <span class='stroke'></span>
+                        <span class='chevron'>&#9656;</span>
                         <i class="icon <%= frame.context %>"></i>
                         <div class="info">
                             <div class="name">

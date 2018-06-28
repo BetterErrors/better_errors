@@ -242,8 +242,8 @@ ul.frames li {
   overflow: hidden;
 }
 
-ul.frames .name,
-ul.frames .location {
+ul.frames li .name,
+ul.frames li .location {
   overflow: hidden;
   height: 1.5em;
 
@@ -252,18 +252,31 @@ ul.frames .location {
   text-overflow: ellipsis;
 }
 
-ul.frames .method {
+ul.frames li .method {
   color: #966;
 }
 
-ul.frames .location {
+ul.frames li .location {
   font-size: 0.85em;
   font-weight: 400;
   color: #999;
 }
 
-ul.frames .line {
+ul.frames li .line {
   font-weight: bold;
+}
+
+ul.frames li .chevron {
+  float: right;
+  margin-right: -10px;
+  color: #ccc;
+  font-size: 24px;
+  line-height: 34px;
+}
+@media screen and (max-width: 1100px) {
+  ul.frames li .chevron {
+    display: none;
+  }
 }
 
 /* Selected frame */
@@ -273,7 +286,8 @@ ul.frames li.selected {
 
 ul.frames li.selected .name,
 ul.frames li.selected .method,
-ul.frames li.selected .location {
+ul.frames li.selected .location,
+ul.frames li.selected .chevron {
   color: white;
 }
 
@@ -378,7 +392,12 @@ pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums
   color: white;
 
   overflow: hidden;
-  padding: 5px 10px 5px 0;
+  padding: 5px 10px;
+}
+@media screen and (min-width: 1100px) {
+  .trace_info .title {
+    padding: 5px 10px 5px 0;
+  }
 }
 
 .trace_info .title .name,

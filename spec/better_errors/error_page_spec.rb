@@ -64,56 +64,124 @@ module BetterErrors
             BetterErrors.maximum_variable_inspect_size = 1010
           end
 
-          context 'with a variable that is smaller than maximum_variable_inspect_size' do
-            let(:exception_binding) {
-              @small = content
-
-              binding
-            }
-            let(:content) { 'A' * 480 }
-
-            it "shows the variable content" do
-              html = error_page.do_variables("index" => 0)[:html]
-              expect(html).to include(content)
+          context 'on a platform with ObjectSpace' do
+            before do
+              skip "Missing on this platform" unless Object.constants.include?(:ObjectSpace)
             end
-          end
 
-          context 'with a variable that is larger than maximum_variable_inspect_size' do
-            context 'but has an #inspect that returns a smaller value' do
+            context 'with a variable that is smaller than maximum_variable_inspect_size' do
               let(:exception_binding) {
-                @big = content
+                @small = content
 
                 binding
               }
-              let(:content) {
-                class ExtremelyLargeInspectableTestValue
-                  def initialize
-                    @a = 'A' * 1101
-                  end
-                  def inspect
-                    "shortval"
-                  end
-                end
-                InspectableTestValue.new
-              }
+              let(:content) { 'A' * 480 }
 
               it "shows the variable content" do
                 html = error_page.do_variables("index" => 0)[:html]
-                expect(html).to include("shortval")
+                expect(html).to include(content)
               end
             end
-            context 'and does not implement #inspect' do
+
+            context 'with a variable that is larger than maximum_variable_inspect_size' do
+              context 'but has an #inspect that returns a smaller value' do
+                let(:exception_binding) {
+                  @big = content
+
+                  binding
+                }
+                let(:content) {
+                  class ExtremelyLargeInspectableTestValue
+                    def initialize
+                      @a = 'A' * 1101
+                    end
+                    def inspect
+                      "shortval"
+                    end
+                  end
+                  InspectableTestValue.new
+                }
+
+                it "shows the variable content" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to include("shortval")
+                end
+              end
+              context 'and does not implement #inspect' do
+                let(:exception_binding) {
+                  @big = content
+
+                  binding
+                }
+                let(:content) { 'A' * 1101 }
+
+                it "includes an indication that the variable was too large" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to_not include(content)
+                  expect(html).to include("object too large")
+                end
+              end
+            end
+          end
+          context 'on a platform without ObjectSpace' do
+            before do
+              Object.send(:remove_const, :ObjectSpace) if Object.constants.include?(:ObjectSpace)
+            end
+            after do
+              require "objspace" rescue nil
+            end
+
+            context 'with a variable that is smaller than maximum_variable_inspect_size' do
               let(:exception_binding) {
-                @big = content
+                @small = content
 
                 binding
               }
-              let(:content) { 'A' * 1101 }
+              let(:content) { 'A' * 480 }
 
-              it "includes an indication that the variable was too large" do
+              it "shows the variable content" do
                 html = error_page.do_variables("index" => 0)[:html]
-                expect(html).to_not include(content)
-                expect(html).to include("object too large")
+                expect(html).to include(content)
+              end
+            end
+
+            context 'with a variable that is larger than maximum_variable_inspect_size' do
+              context 'but has an #inspect that returns a smaller value' do
+                let(:exception_binding) {
+                  @big = content
+
+                  binding
+                }
+                let(:content) {
+                  class ExtremelyLargeInspectableTestValue
+                    def initialize
+                      @a = 'A' * 1101
+                    end
+                    def inspect
+                      "shortval"
+                    end
+                  end
+                  InspectableTestValue.new
+                }
+
+                it "shows the variable content" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to include("shortval")
+                end
+              end
+              context 'and does not implement #inspect' do
+                let(:exception_binding) {
+                  @big = content
+
+                  binding
+                }
+                let(:content) { 'A' * 1101 }
+
+                it "includes an indication that the variable was too large" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to_not include(content)
+                  expect(html).to include("object too large")
+                end
               end
             end
           end

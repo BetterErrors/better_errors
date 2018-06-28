@@ -93,7 +93,7 @@ html {
 
   ul.frames {
     position: absolute;
-    top: 34px;
+    top: 36px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -192,16 +192,15 @@ header.exception:hover p {
  * Navigation
  * --------------------------------------------------------------------- */
 
-nav.tabs {
+nav.segmented {
   border-bottom: solid 1px #ddd;
 
-  background-color: #eee;
   text-align: center;
 
   padding: 6px;
 }
 
-nav.tabs a {
+nav.segmented a {
   display: inline-block;
 
   height: 22px;
@@ -212,16 +211,27 @@ nav.tabs a {
   font-size: 8pt;
   font-weight: bold;
 
-  color: #999;
+  color: #38a;
+  border: 1px solid #38a;
 }
 
-nav.tabs a.selected {
+nav.segmented a:first-child {
+  border-right: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+nav.segmented a:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+nav.segmented a.selected {
   color: white;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 16px;
+  background: #38a;
 }
 
-nav.tabs a.disabled {
+nav.segmented a.disabled {
   text-decoration: line-through;
   cursor: default;
 }

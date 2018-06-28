@@ -44,13 +44,13 @@
 
 <% if BetterErrors.binding_of_caller_available? && @frame.frame_binding %>
     <h3>Local Variables</h3>
-    <% @frame.local_variables.each do |name, value| %>
+    <% @frame.local_variables.sort_by(&:first).each do |name, value| %>
         <h4 class="name"><%= name %></h4>
         <pre><%== inspect_value value %></pre>
     <% end %>
 
     <h3>Instance Variables (<%= @frame.class_name %>)</h3>
-    <% @frame.instance_variables.each do |name, value| %>
+    <% @frame.instance_variables.sort_by(&:first).each do |name, value| %>
         <h4 class="name"><%= name %></h4>
         <pre><%== inspect_value value %></pre>
     <% end %>

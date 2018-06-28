@@ -11,7 +11,7 @@ module BetterErrors
 
     private
       def execute(str)
-        "=> #{@binding.eval(str).inspect}\n"
+        "=> #{CGI.escapeHTML(@binding.eval(str).inspect)}\n"
       rescue Exception => e
         "!! #{e.inspect rescue e.class.to_s rescue "Exception"}\n"
       end

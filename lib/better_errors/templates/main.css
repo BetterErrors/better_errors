@@ -373,7 +373,7 @@ ul.frames .icon.application:before {
  * Monospace
  * --------------------------------------------------------------------- */
 
-pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums, .title .name,
+pre, code, .be-repl .command-line input, .be-repl .command-line .prompt, .be-repl .output .command, textarea, .code_linenums, .title .name,
 ul.frames li .method {
   font-family: menlo, lucida console, monospace;
 }
@@ -436,7 +436,6 @@ ul.frames li .method {
 
 .code, .be-console, .unavailable {
   background: #fff;
-  padding: 5px;
 }
 
 .code_linenums{
@@ -506,35 +505,65 @@ p.unavailable:before {
   animation: highlight 400ms linear 1;
 }
 
-/* REPL shell */
-.be-console {
-  padding: 0 1px 10px 1px;
-  border-bottom-left-radius: 2px;
-  border-bottom-right-radius: 2px;
+h3 {
+  background-color: #38a;
+  color: white;
+  padding: 4px;
+  font-size: 8pt;
+  margin-top: 1rem;
+
+  -webkit-font-smoothing: antialiased;
 }
 
-.be-console pre {
-  padding: 10px 10px 0 10px;
-  max-height: 400px;
+/* REPL shell */
+.be-console {
+}
+
+.be-console .output {
+  max-height: 15rem;
   overflow-x: none;
   overflow-y: auto;
-  margin-bottom: -3px;
+
+  padding: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ccc;
+}
+.be-console .output:not(.used) {
+  padding-bottom: 0;
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+@media screen and (min-height: 800px) {
+  .be-console .output {
+    max-height: 25rem;
+  }
+}
+
+.be-console .output pre, .be-console .output h4 {
+  font-size: 9pt;
   word-wrap: break-word;
   white-space: pre-wrap;
+  width: 100%;
+}
+.be-console .output h4 {
+  background-color: #ddd;
+  padding: 5px 0;
+  margin-top: 10px;
 }
 
 /* .command-line > span + input */
 .be-console .command-line {
   display: table;
-  width: 100%;
 }
 
-.be-console .command-line span,
+.be-console .command-line .prompt,
 .be-console .command-line input {
   display: table-cell;
+  line-height: 12px;
+  font-size: 9pt;
 }
 
-.be-console .command-line span {
+.be-console .command-line .prompt {
   width: 1%;
   padding-right: 5px;
   padding-left: 10px;
@@ -563,25 +592,9 @@ p.unavailable:before {
   padding-left: 20px;
 }
 
-.hint:before {
-  content: '\25b2';
-  margin-right: 5px;
-  opacity: 0.5;
-}
-
 /* ---------------------------------------------------------------------
  * Variable infos
  * --------------------------------------------------------------------- */
-
-.variables h3 {
-  background-color: #38a;
-  color: white;
-  padding: 4px;
-  font-size: 8pt;
-  margin-top: 1rem;
-
-  -webkit-font-smoothing: antialiased;
-}
 
 .variables h4 {
   margin-top: 5px;
@@ -645,4 +658,35 @@ nav.sidebar:hover::-webkit-scrollbar-thumb {
 .inset pre:hover::-webkit-scrollbar-thumb,
 .code:hover::-webkit-scrollbar-thumb {
   background: #888;
+}
+
+.bold {
+  font-weight: bold;
+}
+.black {
+  color: black;
+}
+.red {
+  color: red;
+}
+.green {
+  color: green;
+}
+.yellow {
+  color: yellow;
+}
+.blue {
+  color: blue;
+}
+.magenta {
+  color: magenta;
+}
+.cyan {
+  color: cyan;
+}
+.white {
+  color: white;
+}
+.green {
+  color: green;
 }

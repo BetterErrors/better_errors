@@ -6,23 +6,16 @@
     <div class="code_block clearfix">
         <%== html_formatted_code_block @frame %>
     </div>
-
-    <% if BetterErrors.binding_of_caller_available? && @frame.frame_binding %>
-        <div class="be-repl">
-            <div class="be-console">
-                <pre></pre>
-                <div class="command-line"><span class='prompt'>&gt;&gt;</span> <input tabindex="1"/></div>
-            </div>
-        </div>
-    <% end %>
 </header>
 
 <% if BetterErrors.binding_of_caller_available? && @frame.frame_binding %>
-    <div class="hint">
-        This is a live shell. Type in here.
+    <div class="be-repl">
+        <h3>Console</h3>
+        <div class="be-console">
+            <div class="output"></div>
+            <div class="command-line"><span class='prompt'>&gt;</span> <input tabindex="1"/></div>
+        </div>
     </div>
-
-    <div class="variable_info"></div>
 <% end %>
 
 <% unless BetterErrors.binding_of_caller_available? %>

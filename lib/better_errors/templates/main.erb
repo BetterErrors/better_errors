@@ -130,7 +130,7 @@
 
         this.promptElement  = this.container.querySelector(".command-line .prompt");
         this.inputElement   = this.container.querySelector("input");
-        this.outputElement  = this.container.querySelector("pre");
+        this.outputElement  = this.container.querySelector(".output");
 
         var self = this;
         this.inputElement.onkeydown = function(ev) {
@@ -164,24 +164,28 @@
         }
     };
 
-    REPL.prototype.writeRawOutput = function(output) {
-        this.outputElement.innerHTML += output;
-        this.outputElement.scrollTop = this.outputElement.scrollHeight;
+    REPL.prototype.writeErrorOutput = function(error) {
+      this.writeOutput("<pre class='error'>" + error + "</pre>");
     };
 
-    REPL.prototype.writeOutput = function(output) {
-        this.writeRawOutput(escapeHTML(output));
+    REPL.prototype.writeResultOutput = function(prompt, command, result) {
+        this.writeOutput("<h4 class='command'>" + prompt + " "  + command + "</h4>");
+        this.writeOutput("<pre class='result'>" + result + "</pre>");
+    };
+
+    REPL.prototype.writeOutput = function(content) {
+      this.outputElement.className = "output used";
+      this.outputElement.innerHTML += content;
+      this.outputElement.scrollTop = this.outputElement.scrollHeight;
     };
 
     REPL.prototype.sendInput = function(line) {
         var self = this;
         apiCall("eval", { "index": this.index, source: line }, function(response) {
             if(response.error) {
-                self.writeOutput(response.error + "\n");
+                self.writeErrorOutput(response.error);
             }
-            self.writeOutput(self._prompt + " ");
-            self.writeRawOutput(response.highlighted_input + "\n");
-            self.writeOutput(response.result);
+            self.writeResultOutput(self._prompt, response.highlighted_input, response.result);
             self.setPrompt(response.prompt);
             self.setInput(response.prefilled_input);
         });

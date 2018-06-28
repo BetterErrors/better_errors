@@ -66,7 +66,6 @@ html {
 
   ul.frames {
     max-height: 200px;
-    overflow: auto;
   }
 }
 
@@ -86,14 +85,19 @@ html {
     bottom: 0;
 
     box-sizing: border-box;
-
-    overflow-y: auto;
-    overflow-x: hidden;
   }
   
   nav.sidebar {
     width: 40%;
     left: 0;
+  }
+
+  ul.frames {
+    position: absolute;
+    top: 34px;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
   .frame_info {
@@ -103,7 +107,14 @@ html {
     padding: 20px;
     padding-left: 10px;
     margin-left: 30px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
   }
+}
+
+ul.frames {
+  overflow: auto;
 }
 
 nav.sidebar {

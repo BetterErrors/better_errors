@@ -382,14 +382,9 @@ ul.frames li .method {
  * Display area
  * --------------------------------------------------------------------- */
 
-.trace_info {
-  margin-bottom: 2px;
-}
-
-.code_block{
+.code_block {
   background: #f1f1f1;
   padding-bottom: 1px;
-  border-bottom: 1px solid #ccc;
 }
 
 /* Titlebar */
@@ -435,10 +430,6 @@ ul.frames li .method {
 .trace_info .title .name {
   float: right;
   font-weight: 200;
-}
-
-.code, .be-console, .unavailable {
-  background: #fff;
 }
 
 .code_linenums{
@@ -513,28 +504,27 @@ h3 {
   color: white;
   padding: 4px;
   font-size: 8pt;
-  margin-top: 1rem;
 
   -webkit-font-smoothing: antialiased;
 }
 
 /* REPL shell */
 .be-console {
+  background-color: #002B36;
+  color: white;
 }
 
 .be-console .output {
   max-height: 15rem;
-  overflow-x: none;
+  overflow-x: hidden;
   overflow-y: auto;
 
   padding: 8px;
-  margin-bottom: 8px;
   border-bottom: 1px solid #ccc;
 }
 .be-console .output:not(.used) {
-  padding-bottom: 0;
+  padding: 0;
   border-bottom: 0;
-  margin-bottom: 0;
 }
 @media screen and (min-height: 800px) {
   .be-console .output {
@@ -549,14 +539,25 @@ h3 {
   width: 100%;
 }
 .be-console .output h4 {
-  background-color: #ddd;
-  padding: 5px 0;
+  padding: 8px;
   margin-top: 10px;
+}
+.be-console .output h4:first-child {
+  margin-top: 0;
+}
+
+.be-console .output h4, .be-console .command-line {
+  background-color: #555;
+}
+
+.be-console .output pre {
+  padding: 8px;
 }
 
 /* .command-line > span + input */
 .be-console .command-line {
   display: table;
+  padding: 8px 0;
 }
 
 .be-console .command-line .prompt,
@@ -585,6 +586,7 @@ h3 {
   padding: 0;
   background: transparent;
   margin: 0;
+  color: inherit;
 }
 
 /* Hint text */
@@ -663,33 +665,85 @@ nav.sidebar:hover::-webkit-scrollbar-thumb {
   background: #888;
 }
 
-.bold {
-  font-weight: bold;
-}
-.black {
-  color: black;
-}
-.red {
-  color: red;
-}
-.green {
-  color: green;
-}
-.yellow {
-  color: yellow;
-}
-.blue {
-  color: blue;
-}
-.magenta {
-  color: magenta;
-}
-.cyan {
-  color: cyan;
-}
-.white {
-  color: white;
-}
-.green {
-  color: green;
-}
+
+.CodeRay .debug{color:#fff;background:#00f}
+.CodeRay .annotation{color:#586E75}
+.CodeRay .attribute-name{color:#93A1A1}
+.CodeRay .attribute-value{color:#93A1A1}
+.CodeRay .binary{color:#509}
+.CodeRay .char .content{color:#d20}
+.CodeRay .char .delimiter{color:#710}
+.CodeRay .char{color:#2AA198}
+.CodeRay .class{color:#268BD2;font-weight:bold}
+.CodeRay .class-variable{color:#268BD2}
+.CodeRay .color{color:#eee8d5}
+.CodeRay .comment{color:#586E75}
+.CodeRay .comment .char{color:#859900}
+.CodeRay .comment .delimiter{color:#859900}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant{color:#B58900;font-weight:bold}
+.CodeRay .decorator{color:#268BD2}
+.CodeRay .definition{color:#099;font-weight:bold}
+.CodeRay .delimiter{color:#000}
+.CodeRay .directive{color:#088;font-weight:bold}
+.CodeRay .doc{color:#93A1A1}
+.CodeRay .doc-string{color:#93A1A1;font-weight:bold}
+.CodeRay .doctype{color:#DC322F}
+.CodeRay .entity{color:#CB4B16;font-weight:bold}
+.CodeRay .error{color:#93A1A1;background-color:#faa}
+.CodeRay .escape{color:#CB4B16}
+.CodeRay .exception{color:#CB4B16;font-weight:bold}
+.CodeRay .float{color:#2AA198}
+.CodeRay .function{color:#268BD2;font-weight:bold}
+.CodeRay .global-variable{color:#268BD2}
+.CodeRay .hex{color:#2AA198}
+.CodeRay .imaginary{color:#f00}
+.CodeRay .include{color:#b44;font-weight:bold}
+.CodeRay .inline{background-color:transparent;color:#93A1A1!important}
+.CodeRay .inline-delimiter{font-weight:bold;color:#DC322F}
+.CodeRay .instance-variable{color:#268BD2}
+.CodeRay .integer{color:#2AA198}
+.CodeRay .key .char{color:#DC322F}
+.CodeRay .key .delimiter{color:#268BD2}
+.CodeRay .key{color:#859900}
+.CodeRay .keyword{color:#859900;font-weight:bold}
+.CodeRay .label{color:#93A1A1;font-weight:bold}
+.CodeRay .local-variable{color:#268BD2}
+.CodeRay .namespace{color:#859900;font-weight:bold}
+.CodeRay .octal{color:#2AA198}
+.CodeRay .operator, .predefined{color:#859900;font-weight:bold}
+.CodeRay .predefined-constant{color:#2AA198}
+.CodeRay .predefined-type{color:#DC322F;font-weight:bold}
+.CodeRay .preprocessor{color:#859900}
+.CodeRay .pseudo-class{color:#859900;font-weight:bold}
+.CodeRay .regexp .content{color:#2AA198}
+.CodeRay .regexp .delimiter{color:#DC322F}
+.CodeRay .regexp .modifier{color:#CB4B16}
+.CodeRay .regexp{background-color:transparent}
+.CodeRay .reserved{color:#268BD2;font-weight:bold}
+.CodeRay .shell .content{color:#2b2}
+.CodeRay .shell .delimiter{color:#161}
+.CodeRay .shell{background-color:transparent}
+.CodeRay .string .char{color:#2AA198}
+.CodeRay .string .content{color:#2AA198}
+.CodeRay .string .delimiter{color:#DC322F}
+.CodeRay .string .modifier{color:#2AA198}
+.CodeRay .string{background-color:transparent}
+.CodeRay .symbol .content{color:#2AA198}
+.CodeRay .symbol .delimiter{color:#2AA198}
+.CodeRay .symbol{color:#2AA198}
+.CodeRay .tag{color: #268BD2}
+.CodeRay .type{color:#DC322F;font-weight:bold}
+.CodeRay .value{color:#268BD2}
+.CodeRay .variable{color:#268BD2}
+.CodeRay .insert{background:transparent}
+.CodeRay .delete{background:transparent}
+.CodeRay .change{color:#CB4B16;background:transparent}
+.CodeRay .head{color:#CB4B16;background:transparent}
+.CodeRay .head .filename{color:#CB4B16}
+.CodeRay .delete .eyecatcher{background-color:rgba(255,0,0,0.2);border:1px solid rgba(230,0,0,0.5);margin:-1px;border-bottom:none;border-top-left-radius:5px;border-top-right-radius:5px}
+.CodeRay .insert .eyecatcher{background-color:rgba(0,255,0,0.2);border:1px solid rgba(0,128,0,0.5);margin:-1px;border-top:none;border-bottom-left-radius:5px;border-bottom-right-radius:5px}
+.CodeRay .insert .insert{color:#CB4B16;background:transparent;font-weight:bold}
+.CodeRay .delete .delete{color:##2AA198;background:transparent;font-weight:bold}
+.CodeRay .change .change{color:#CB4B16}
+.CodeRay .head .head{color:#CB4B16}

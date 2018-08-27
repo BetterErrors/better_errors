@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email         = ["charlie@charliesomerville.com"]
   s.description   = %q{Provides a better error page for Rails and other Rack apps. Includes source code inspection, a live REPL and local/instance variable inspection for all stack frames.}
   s.summary       = %q{Better error page for Rails and other Rack apps}
-  s.homepage      = "https://github.com/charliesome/better_errors"
+  s.homepage      = "https://github.com/BetterErrors/better_errors"
   s.license       = "MIT"
 
   s.files         = `git ls-files -z`.split("\x0").reject do |f|

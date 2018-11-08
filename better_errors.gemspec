@@ -38,5 +38,7 @@ Gem::Specification.new do |s|
     s.metadata['changelog_uri'] = 'https://github.com/BetterErrors/better_errors/releases'
     s.metadata['source_code_uri'] = 'https://github.com/BetterErrors/better_errors'
     s.metadata['bug_tracker_uri'] = 'https://github.com/BetterErrors/better_errors/issues'
+  else
+    puts "Your RubyGems does not support metadata. Update if you'd like to make a release."
   end
 end

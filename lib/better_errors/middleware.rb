@@ -33,7 +33,16 @@ module BetterErrors
     # Adds an address to the set of IP addresses allowed to access Better
     # Errors.
     def self.allow_ip!(addr)
-      ALLOWED_IPS << IPAddr.new(addr)
+      if addr == '*'
+        puts "WARNING: Allowing all ip's in BetterErrors is very dangerous and exposes " +
+             "your application and database to everyone. You should NOT allow this unless " +
+             "you are absolutely sure what you are doing."
+
+        ALLOWED_IPS << '*'
+      else
+        ALLOWED_IPS << IPAddr.new(addr)
+      end
+
     end
 
     allow_ip! "127.0.0.0/8"
@@ -63,10 +72,14 @@ module BetterErrors
   private
 
     def allow_ip?(env)
-      request = Rack::Request.new(env)
-      return true unless request.ip and !request.ip.strip.empty?
-      ip = IPAddr.new request.ip.split("%").first
-      ALLOWED_IPS.any? { |subnet| subnet.include? ip }
+      if ALLOWED_IPS.include?('*')
+        true
+      else
+        request = Rack::Request.new(env)
+        return true unless request.ip and !request.ip.strip.empty?
+        ip = IPAddr.new request.ip.split("%").first
+        ALLOWED_IPS.any? { |subnet| subnet.include? ip }
+      end
     end
 
     def better_errors_call(env)

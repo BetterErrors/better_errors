@@ -2,7 +2,8 @@ sudo: false
 language: ruby
 cache: bundler
 before_install:
-  - gem update --system
+  # Since rubygems 3.0+ only support Ruby 2.3+, we must install the old version for older Rubies.
+  - if [[ `ruby -v` == *"ruby 2.2"* ]]; then gem install rubygems-update -v '<3'; update_rubygems; else gem update --system; fi
   - gem update bundler
 notifications:
   webhooks:

@@ -8,14 +8,17 @@ before_install:
     if [[ "$BUNDLE_GEMFILE" =~ "rails42" ]]; then
       gem install rubygems-update -v '<2'
       update_rubygems
+      gem uninstall bundler --force --executables
+      gem install bundler -v "~> 1.3"
     elif [[ `ruby -v` == *"ruby 2.2"* ]]; then
       gem install rubygems-update -v '<3'
       update_rubygems
+      gem update bundler
     else
       gem update --system
+      gem update bundler
     fi
 
-  - gem update bundler
 notifications:
   webhooks:
     # With COVERALLS_PARALLEL, coverage information sent to coveralls will not be processed until

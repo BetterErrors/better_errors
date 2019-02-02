@@ -6,17 +6,17 @@ before_install:
   # Since Rails 4.2 only supports rubygems < 2, we must install an even older version for it.
   - >
     if [[ "$BUNDLE_GEMFILE" =~ "rails42" ]]; then
-      gem install rubygems-update -v '<2'
+      rvm @global do gem install rubygems-update -v '<2'
       update_rubygems
-      gem uninstall bundler --force --executables
-      gem install bundler -v "~> 1.3"
+      rvm @global do gem uninstall bundler --force --executables
+      rvm @global do gem install bundler -v "~> 1.3"
     elif [[ `ruby -v` == *"ruby 2.2"* ]]; then
-      gem install rubygems-update -v '<3'
+      rvm @global do gem install rubygems-update -v '<3'
       update_rubygems
-      gem update bundler
+      rvm @global do gem update bundler --force --executables
     else
-      gem update --system
-      gem update bundler
+      rvm @global do gem update --system
+      rvm @global do gem update bundler --force --executables
     fi
 
 notifications:

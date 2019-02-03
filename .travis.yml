@@ -13,10 +13,12 @@ before_install:
     elif [[ `ruby -v` == *"ruby 2.2"* ]]; then
       rvm @global do gem install rubygems-update -v '<3'
       update_rubygems
-      rvm @global do gem update bundler --force --executables
+      rvm @global do gem uninstall bundler --force --executables
+      rvm @global do gem install bundler
     else
       rvm @global do gem update --system
-      rvm @global do gem update bundler --force --executables
+      rvm @global do gem uninstall bundler --force --executables
+      rvm @global do gem install bundler
     fi
 
 notifications:

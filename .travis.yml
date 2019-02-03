@@ -1,26 +1,6 @@
 sudo: false
 language: ruby
 cache: bundler
-before_install:
-  # Since rubygems 3.0+ only supports Ruby 2.3+, we must install the old version for older Rubies.
-  # Since Rails 4.2 only supports rubygems < 2, we must install an even older version for it.
-  - >
-    if [[ "$BUNDLE_GEMFILE" =~ "rails42" ]]; then
-      rvm @global do gem install rubygems-update -v '<2'
-      update_rubygems
-      rvm @global do gem uninstall bundler --force --executables
-      rvm @global do gem install bundler -v "~> 1.3"
-    elif [[ `ruby -v` == *"ruby 2.2"* ]]; then
-      rvm @global do gem install rubygems-update -v '<3'
-      update_rubygems
-      rvm @global do gem uninstall bundler --force --executables
-      rvm @global do gem install bundler
-    else
-      rvm @global do gem update --system
-      rvm @global do gem uninstall bundler --force --executables
-      rvm @global do gem install bundler
-    fi
-
 notifications:
   webhooks:
     # With COVERALLS_PARALLEL, coverage information sent to coveralls will not be processed until

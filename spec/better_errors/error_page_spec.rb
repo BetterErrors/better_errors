@@ -121,6 +121,25 @@ module BetterErrors
                   expect(html).to include("object too large")
                 end
               end
+
+              context "fallbacks to class to_s when variable class is anonymous" do
+                let(:exception_binding) {
+                  @big_anonymous = Class.new do
+                    def initialize
+                      @content = 'A' * 1101
+                    end
+                  end.new
+
+                  binding
+                }
+                
+                it "shows the class to_s" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to include('<td class="name">' + '@big_anonymous</td>')
+                  expect(html).to include('object too large')
+                  expect(html).to match(/#&lt;Class:0x[[:xdigit:]]+&gt;#inspect/)
+                end
+              end
             end
           end
           context 'on a platform without ObjectSpace' do
@@ -182,6 +201,25 @@ module BetterErrors
                   expect(html).to_not include(content)
                   expect(html).to include("object too large")
                 end
+              end
+            end
+
+            context "fallbacks to class to_s when variable class is anonymous" do
+              let(:exception_binding) {
+                @big_anonymous = Class.new do
+                  def initialize
+                    @content = 'A' * 1101
+                  end
+                end.new
+
+                binding
+              }
+              
+              it "shows the class to_s" do
+                html = error_page.do_variables("index" => 0)[:html]
+                expect(html).to include('<td class="name">' + '@big_anonymous</td>')
+                expect(html).to include('object too large')
+                expect(html).to match(/#&lt;Class:0x[[:xdigit:]]+&gt;#inspect/)
               end
             end
           end

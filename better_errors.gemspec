@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec-its"
   s.add_development_dependency "yard"
   s.add_development_dependency "kramdown"
+  s.add_development_dependency "simplecov"
 
   s.add_dependency "erubi", ">= 1.0.0"
   s.add_dependency "coderay", ">= 1.0.0"

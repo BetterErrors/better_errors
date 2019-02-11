@@ -107,9 +107,9 @@ module BetterErrors
     def inspect_value(obj)
       InspectableValue.new(obj).to_html
     rescue BetterErrors::ValueLargerThanConfiguredMaximum
-      "<span class='unsupported'>(object too large. "\
-        "Modify #{CGI.escapeHTML(obj.class.name || obj.class.to_s)}#inspect "\
-        "or adjust BetterErrors.maximum_variable_inspect_size)</span>"
+      "<span class='unsupported'>(Object too large. "\
+        "#{obj.class.name ? "Modify #{CGI.escapeHTML(obj.class.name)}#inspect or a" : "A"}"\
+        "djust BetterErrors.maximum_variable_inspect_size if you need to see it.)</span>"
     rescue Exception => e
       "<span class='unsupported'>(exception #{CGI.escapeHTML(e.class.to_s)} was raised in inspect)</span>"
     end

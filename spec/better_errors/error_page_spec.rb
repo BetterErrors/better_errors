@@ -118,7 +118,26 @@ module BetterErrors
                 it "includes an indication that the variable was too large" do
                   html = error_page.do_variables("index" => 0)[:html]
                   expect(html).to_not include(content)
-                  expect(html).to include("object too large")
+                  expect(html).to include("Object too large")
+                end
+              end
+
+              context "when the variable's class is anonymous" do
+                let(:exception_binding) {
+                  @big_anonymous = Class.new do
+                    def initialize
+                      @content = 'A' * 1101
+                    end
+                  end.new
+
+                  binding
+                }
+
+                it "does not attempt to show the class name" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to include('<td class="name">' + '@big_anonymous</td>')
+                  expect(html).to include('Object too large')
+                  expect(html).to include('Adjust BetterErrors.maximum_variable_inspect_size')
                 end
               end
             end
@@ -180,8 +199,27 @@ module BetterErrors
                 it "includes an indication that the variable was too large" do
                   html = error_page.do_variables("index" => 0)[:html]
                   expect(html).to_not include(content)
-                  expect(html).to include("object too large")
+                  expect(html).to include("Object too large")
                 end
+              end
+            end
+
+            context "when the variable's class is anonymous" do
+              let(:exception_binding) {
+                @big_anonymous = Class.new do
+                  def initialize
+                    @content = 'A' * 1101
+                  end
+                end.new
+
+                binding
+              }
+
+              it "does not attempt to show the class name" do
+                html = error_page.do_variables("index" => 0)[:html]
+                expect(html).to include('<td class="name">' + '@big_anonymous</td>')
+                expect(html).to include('Object too large')
+                expect(html).to include('Adjust BetterErrors.maximum_variable_inspect_size')
               end
             end
           end
@@ -202,7 +240,7 @@ module BetterErrors
           it "includes the content of large variables" do
             html = error_page.do_variables("index" => 0)[:html]
             expect(html).to include(content)
-            expect(html).to_not include("object too large")
+            expect(html).to_not include("Object too large")
           end
         end
       else

@@ -40,6 +40,12 @@ module BetterErrors
       app.call("REMOTE_ADDR" => "77.55.33.11")
     end
 
+    it "shows to a whitelisted IPAddr" do
+      BetterErrors::Middleware.allow_ip! IPAddr.new('77.55.33.0/24')
+      expect(app).to receive :better_errors_call
+      app.call("REMOTE_ADDR" => "77.55.33.11")
+    end
+
     it "respects the X-Forwarded-For header" do
       expect(app).not_to receive :better_errors_call
       app.call(

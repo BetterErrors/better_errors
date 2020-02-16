@@ -81,6 +81,7 @@ module BetterErrors
     end
 
     def protected_app_call(env)
+      @error_page = nil
       @app.call env
     rescue Exception => ex
       @error_page = @handler.new ex, env

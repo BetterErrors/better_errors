@@ -105,7 +105,13 @@ module BetterErrors
     end
 
     def inspect_value(obj)
-      InspectableValue.new(obj).to_html
+      if BetterErrors.ignored_classes.include? obj.class.name
+        "<span class='unsupported'>(Class ignored. "\
+        "#{obj.class.name ? "Remove #{CGI.escapeHTML(obj.class.name)} from" : "Modify"}"\
+        " BetterErrors.ignored_classes if you need to see it.)</span>"
+      else
+        InspectableValue.new(obj).to_html
+      end
     rescue BetterErrors::ValueLargerThanConfiguredMaximum
       "<span class='unsupported'>(Object too large. "\
         "#{obj.class.name ? "Modify #{CGI.escapeHTML(obj.class.name)}#inspect or a" : "A"}"\

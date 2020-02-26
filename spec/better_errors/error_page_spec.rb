@@ -278,10 +278,11 @@ module BetterErrors
     end
 
     it "doesn't die if the source file is not a real filename" do
+      allow(exception).to receive(:__better_errors_bindings_stack).and_return([])
       allow(exception).to receive(:backtrace).and_return([
         "<internal:prelude>:10:in `spawn_rack_application'"
       ])
-      expect(response).notto have_tag('sds', text: /Source unavailable/)
+      expect(response).to have_tag('.frames li .location .filename', text: '<internal:prelude>')
     end
 
     context 'with an exception with blank lines' do

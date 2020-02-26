@@ -55,12 +55,24 @@ matrix:
       gemfile: gemfiles/rails42_boc.gemfile
     - rvm: 2.3.8
       gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails60.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails60_boc.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails60_haml.gemfile
     - rvm: 2.4.9
       gemfile: gemfiles/rails42.gemfile
     - rvm: 2.4.9
       gemfile: gemfiles/rails42_boc.gemfile
     - rvm: 2.4.9
       gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails60.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails60_boc.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails60_haml.gemfile
     - rvm: 2.5.7
       gemfile: gemfiles/rails42.gemfile
     - rvm: 2.5.7

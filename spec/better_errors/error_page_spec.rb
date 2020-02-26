@@ -24,44 +24,53 @@ module BetterErrors
     }
 
     it "includes the error message" do
-      expect(response).to include("you divided by zero you silly goose!")
+      expect(response).to have_tag('.exception p', text: /you divided by zero you silly goose!/)
     end
 
     it "includes the request path" do
-      expect(response).to include("/some/path")
+      expect(response).to have_tag('.exception h2', %r{/some/path})
     end
 
     it "includes the exception class" do
-      expect(response).to include("ZeroDivisionError")
+      expect(response).to have_tag('.exception h2', /ZeroDivisionError/)
     end
 
     context "variable inspection" do
       let(:exception) { exception_binding.eval("raise") rescue $! }
 
-      if BetterErrors.binding_of_caller_available?
+      context "when binding_of_caller is loaded" do
+        before do
+          skip "binding_of_caller is not loaded" unless BetterErrors.binding_of_caller_available?
+        end
+
         it "shows local variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include('<td class="name">local_a</td>')
-          expect(html).to include("<pre>:value_for_local_a</pre>")
-          expect(html).to include('<td class="name">local_b</td>')
-          expect(html).to include("<pre>:value_for_local_b</pre>")
+          expect(html).to have_tag('div.variables') do
+            with_tag('td.name', text: 'local_a')
+            with_tag('pre', text: ':value_for_local_a')
+            with_tag('td.name', text: 'local_b')
+            with_tag('pre', text: ':value_for_local_b')
+          end
         end
 
         it "shows instance variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include('<td class="name">' + '@inst_c</td>')
-          expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
-          expect(html).to include('<td class="name">' + '@inst_d</td>')
-          expect(html).to include("<pre>" + ":value_for_inst_d</pre>")
+          expect(html).to have_tag('div.variables') do
+            with_tag('td.name', text: '@inst_c')
+            with_tag('pre', text: ':value_for_inst_c')
+            with_tag('td.name', text: '@inst_d')
+            with_tag('pre', text: ':value_for_inst_d')
+          end
         end
 
         it "does not show filtered variables" do
           allow(BetterErrors).to receive(:ignored_instance_variables).and_return([:@inst_d])
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include('<td class="name">' + '@inst_c</td>')
-          expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
-          expect(html).not_to include('<td class="name">' + '@inst_d</td>')
-          expect(html).not_to include("<pre>" + ":value_for_inst_d</pre>")
+          expect(html).to have_tag('div.variables') do
+            with_tag('td.name', text: '@inst_c')
+            with_tag('pre', text: ':value_for_inst_c')
+          end
+          expect(html).not_to have_tag('div.variables td.name', text: '@inst_d')
         end
 
         context 'when maximum_variable_inspect_size is set' do
@@ -84,88 +93,7 @@ module BetterErrors
 
               it "shows the variable content" do
                 html = error_page.do_variables("index" => 0)[:html]
-                expect(html).to include(content)
-              end
-            end
-
-            context 'with a variable that is larger than maximum_variable_inspect_size' do
-              context 'but has an #inspect that returns a smaller value' do
-                let(:exception_binding) {
-                  @big = content
-
-                  binding
-                }
-                let(:content) {
-                  class ExtremelyLargeInspectableTestValue
-                    def initialize
-                      @a = 'A' * 1101
-                    end
-                    def inspect
-                      "shortval"
-                    end
-                  end
-                  ExtremelyLargeInspectableTestValue.new
-                }
-
-                it "shows the variable content" do
-                  html = error_page.do_variables("index" => 0)[:html]
-                  expect(html).to have_tag('div.variables', text: /shortval/)
-                end
-              end
-              context 'and does not implement #inspect' do
-                let(:exception_binding) {
-                  @big = content
-
-                  binding
-                }
-                let(:content) { 'A' * 1101 }
-
-                it "includes an indication that the variable was too large" do
-                  html = error_page.do_variables("index" => 0)[:html]
-                  expect(html).to_not include(content)
-                  expect(html).to include("Object too large")
-                end
-              end
-
-              context "when the variable's class is anonymous" do
-                let(:exception_binding) {
-                  @big_anonymous = Class.new do
-                    def initialize
-                      @content = 'A' * 1101
-                    end
-                  end.new
-
-                  binding
-                }
-
-                it "does not attempt to show the class name" do
-                  html = error_page.do_variables("index" => 0)[:html]
-                  expect(html).to include('<td class="name">' + '@big_anonymous</td>')
-                  expect(html).to include('Object too large')
-                  expect(html).to include('Adjust BetterErrors.maximum_variable_inspect_size')
-                end
-              end
-            end
-          end
-          context 'on a platform without ObjectSpace' do
-            before do
-              Object.send(:remove_const, :ObjectSpace) if Object.constants.include?(:ObjectSpace)
-            end
-            after do
-              require "objspace" rescue nil
-            end
-
-            context 'with a variable that is smaller than maximum_variable_inspect_size' do
-              let(:exception_binding) {
-                @small = content
-
-                binding
-              }
-              let(:content) { 'A' * 480 }
-
-              it "shows the variable content" do
-                html = error_page.do_variables("index" => 0)[:html]
-                expect(html).to include(content)
+                expect(html).to have_tag('div.variables', text: %r{#{content}})
               end
             end
 
@@ -207,6 +135,91 @@ module BetterErrors
                   expect(html).to have_tag('div.variables', text: /Object too large/)
                 end
               end
+
+              context "when the variable's class is anonymous" do
+                let(:exception_binding) {
+                  @big_anonymous = Class.new do
+                    def initialize
+                      @content = 'A' * 1101
+                    end
+                  end.new
+
+                  binding
+                }
+
+                it "does not attempt to show the class name" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to have_tag('div.variables') do
+                    with_tag('td.name', text: '@big_anonymous')
+                    with_tag('.unsupported', text: /Object too large/)
+                    with_tag('.unsupported', text: /Adjust BetterErrors.maximum_variable_inspect_size/)
+                  end
+                end
+              end
+            end
+          end
+
+          context 'on a platform without ObjectSpace' do
+            before do
+              Object.send(:remove_const, :ObjectSpace) if Object.constants.include?(:ObjectSpace)
+            end
+            after do
+              require "objspace" rescue nil
+            end
+
+            context 'with a variable that is smaller than maximum_variable_inspect_size' do
+              let(:exception_binding) {
+                @small = content
+
+                binding
+              }
+              let(:content) { 'A' * 480 }
+
+              it "shows the variable content" do
+                html = error_page.do_variables("index" => 0)[:html]
+                expect(html).to have_tag('div.variables', text: %r{#{content}})
+              end
+            end
+
+            context 'with a variable that is larger than maximum_variable_inspect_size' do
+              context 'but has an #inspect that returns a smaller value' do
+                let(:exception_binding) {
+                  @big = content
+
+                  binding
+                }
+                let(:content) {
+                  class ExtremelyLargeInspectableTestValue
+                    def initialize
+                      @a = 'A' * 1101
+                    end
+                    def inspect
+                      "shortval"
+                    end
+                  end
+                  ExtremelyLargeInspectableTestValue.new
+                }
+
+                it "shows the variable content" do
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).to have_tag('div.variables', text: /shortval/)
+                end
+              end
+              context 'and does not implement #inspect' do
+                let(:exception_binding) {
+                  @big = content
+
+                  binding
+                }
+                let(:content) { 'A' * 1101 }
+
+                it "includes an indication that the variable was too large" do
+                  
+                  html = error_page.do_variables("index" => 0)[:html]
+                  expect(html).not_to have_tag('div.variables', text: %r{#{content}})
+                  expect(html).to have_tag('div.variables', text: /Object too large/)
+                end
+              end
             end
 
             context "when the variable's class is anonymous" do
@@ -222,9 +235,11 @@ module BetterErrors
 
               it "does not attempt to show the class name" do
                 html = error_page.do_variables("index" => 0)[:html]
-                expect(html).to include('<td class="name">' + '@big_anonymous</td>')
-                expect(html).to include('Object too large')
-                expect(html).to include('Adjust BetterErrors.maximum_variable_inspect_size')
+                expect(html).to have_tag('div.variables') do
+                  with_tag('td.name', text: '@big_anonymous')
+                  with_tag('.unsupported', text: /Object too large/)
+                  with_tag('.unsupported', text: /Adjust BetterErrors.maximum_variable_inspect_size/)
+                end
               end
             end
           end
@@ -244,14 +259,20 @@ module BetterErrors
 
           it "includes the content of large variables" do
             html = error_page.do_variables("index" => 0)[:html]
-            expect(html).to include(content)
-            expect(html).to_not include("Object too large")
+            expect(html).to have_tag('div.variables', text: %r{#{content}})
+            expect(html).not_to have_tag('div.variables', text: /Object too large/)
           end
         end
-      else
+      end
+
+      context "when binding_of_caller is not loaded" do
+        before do
+          skip "binding_of_caller is loaded" if BetterErrors.binding_of_caller_available?
+        end
+
         it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to include(%{gem "binding_of_caller"})
+          expect(html).not_to have_tag('div.variables', text: /gem "binding_of_caller"/)
         end
       end
     end
@@ -260,7 +281,7 @@ module BetterErrors
       allow(exception).to receive(:backtrace).and_return([
         "<internal:prelude>:10:in `spawn_rack_application'"
       ])
-      expect(response).to include("Source unavailable")
+      expect(response).notto have_tag('sds', text: /Source unavailable/)
     end
 
     context 'with an exception with blank lines' do
@@ -304,6 +325,7 @@ module BetterErrors
           )
         end
       end
+
       context 'with binding_of_caller available' do
         before do
           skip("Disabled without binding_of_caller") unless defined? ::BindingOfCaller

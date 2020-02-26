@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rake", "~> 10.0"
   s.add_development_dependency "rspec", "~> 3.5"
+  s.add_development_dependency "rspec-html-matchers"
   s.add_development_dependency "rspec-its"
   s.add_development_dependency "yard"
   # kramdown 2.1 requires Ruby 2.3+

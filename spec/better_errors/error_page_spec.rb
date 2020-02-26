@@ -2,6 +2,11 @@ require "spec_helper"
 
 module BetterErrors
   describe ErrorPage do
+    # It's necessary to use HTML matchers here that are specific as possible.
+    # This is because if there's an exception within this file, the lines of code will be reflected in the
+    # generated HTML, so any strings being matched against the HTML content will be there if they're within 5
+    # lines of code of the exception that was raised.
+    
     let!(:exception) { raise ZeroDivisionError, "you divided by zero you silly goose!" rescue $! }
 
     let(:error_page) { ErrorPage.new exception, { "PATH_INFO" => "/some/path" } }
@@ -104,7 +109,7 @@ module BetterErrors
 
                 it "shows the variable content" do
                   html = error_page.do_variables("index" => 0)[:html]
-                  expect(html).to include("shortval")
+                  expect(html).to have_tag('div.variables', text: /shortval/)
                 end
               end
               context 'and does not implement #inspect' do
@@ -185,7 +190,7 @@ module BetterErrors
 
                 it "shows the variable content" do
                   html = error_page.do_variables("index" => 0)[:html]
-                  expect(html).to include("shortval")
+                  expect(html).to have_tag('div.variables', text: /shortval/)
                 end
               end
               context 'and does not implement #inspect' do
@@ -198,8 +203,8 @@ module BetterErrors
 
                 it "includes an indication that the variable was too large" do
                   html = error_page.do_variables("index" => 0)[:html]
-                  expect(html).to_not include(content)
-                  expect(html).to include("Object too large")
+                  expect(html).not_to have_tag('div.variables', text: %r{#{content}})
+                  expect(html).to have_tag('div.variables', text: /Object too large/)
                 end
               end
             end

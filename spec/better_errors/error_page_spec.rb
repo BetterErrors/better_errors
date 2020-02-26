@@ -104,7 +104,7 @@ module BetterErrors
                       "shortval"
                     end
                   end
-                  InspectableTestValue.new
+                  ExtremelyLargeInspectableTestValue.new
                 }
 
                 it "shows the variable content" do
@@ -185,7 +185,7 @@ module BetterErrors
                       "shortval"
                     end
                   end
-                  InspectableTestValue.new
+                  ExtremelyLargeInspectableTestValue.new
                 }
 
                 it "shows the variable content" do

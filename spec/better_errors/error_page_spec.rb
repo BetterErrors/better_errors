@@ -10,10 +10,10 @@ module BetterErrors
 
     let(:exception_binding) {
       local_a = :value_for_local_a
-      local_b = :value_for_local_b
+      local_b = "value_for_local_b"
 
       @inst_c = :value_for_inst_c
-      @inst_d = :value_for_inst_d
+      @inst_d = "value_for_inst_d"
 
       binding
     }
@@ -39,7 +39,7 @@ module BetterErrors
           expect(html).to include('<td class="name">local_a</td>')
           expect(html).to include("<pre>:value_for_local_a</pre>")
           expect(html).to include('<td class="name">local_b</td>')
-          expect(html).to include("<pre>:value_for_local_b</pre>")
+          expect(html).to include('<pre>"value_for_local_b"</pre>')
         end
 
         it "shows instance variables" do
@@ -47,7 +47,7 @@ module BetterErrors
           expect(html).to include('<td class="name">' + '@inst_c</td>')
           expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
           expect(html).to include('<td class="name">' + '@inst_d</td>')
-          expect(html).to include("<pre>" + ":value_for_inst_d</pre>")
+          expect(html).to include("<pre>" + '"value_for_inst_d"</pre>')
         end
 
         it "does not show filtered variables" do
@@ -56,7 +56,7 @@ module BetterErrors
           expect(html).to include('<td class="name">' + '@inst_c</td>')
           expect(html).to include("<pre>" + ":value_for_inst_c</pre>")
           expect(html).not_to include('<td class="name">' + '@inst_d</td>')
-          expect(html).not_to include("<pre>" + ":value_for_inst_d</pre>")
+          expect(html).not_to include("<pre>" + '"value_for_inst_d"</pre>')
         end
 
         it "does not inspect value of ignored classes" do
@@ -65,11 +65,11 @@ module BetterErrors
           expect(html).to include('<td class="name">local_a</td>')
           expect(html).not_to include("<pre>:value_for_local_a</pre>")
           expect(html).to include('<td class="name">local_b</td>')
-          expect(html).not_to include("<pre>:value_for_local_b</pre>")
+          expect(html).to include('<pre>"value_for_local_b"</pre>')
           expect(html).to include('<td class="name">' + '@inst_c</td>')
           expect(html).not_to include("<pre>" + ":value_for_inst_c</pre>")
           expect(html).to include('<td class="name">' + '@inst_d</td>')
-          expect(html).not_to include("<pre>" + ":value_for_inst_d</pre>")
+          expect(html).to include("<pre>" + '"value_for_inst_d"</pre>')
           expect(html).to include("(Class ignored. Remove Symbol from BetterErrors.ignored_classes if you need to see it.)")
         end
 

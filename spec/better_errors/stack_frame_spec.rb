@@ -97,7 +97,7 @@ module BetterErrors
       it "raises on non-NameErrors" do
         frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
         allow(frame).to receive(:get_local_variable).and_raise(ArgumentError)
-        expect { frame.local_variable("foo") }.to raise_error
+        expect { frame.local_variable("foo") }.to raise_error(ArgumentError)
       end
     end
 

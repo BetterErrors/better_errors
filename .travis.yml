@@ -1,4 +1,3 @@
-sudo: false
 language: ruby
 cache: bundler
 notifications:

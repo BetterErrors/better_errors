@@ -36,8 +36,8 @@ module BetterErrors
 
     def setup_backtrace_from_bindings
       @backtrace = exception.__better_errors_bindings_stack.map { |binding|
-        file = binding.eval "__FILE__"
-        line = binding.eval "__LINE__"
+        file = binding.source_location[0]
+        line = binding.source_location[1]
         name = binding.frame_description
         StackFrame.new(file, line, name, binding)
       }

@@ -93,62 +93,68 @@ module BetterErrors
         expect(status).to eq(500)
       end
 
-      if Exception.new.respond_to?(:cause)
-        context "cause" do
-          class OtherException < Exception
-            def initialize(message)
-              super(message)
+      context "when the exception has a cause" do
+        before do
+          pending "This Ruby does not support `cause`" unless Exception.new.respond_to?(:cause)
+        end
+
+        let(:app) {
+          Middleware.new(->env {
+            begin
+              raise "First Exception"
+            rescue
+              raise "Second Exception"
             end
-          end
+          })
+        }
 
-          it "shows Original Exception if it responds_to and has an cause" do
-            app = Middleware.new(->env {
-              begin
-                raise "Original Exception"
-              rescue
-                raise OtherException.new("Other Exception")
-              end
-            })
+        it "shows the exception as-is" do
+          status, _, body = app.call({})
 
-            status, _, body = app.call({})
+          expect(status).to eq(500)
+          expect(body.join).to match(/\n> Second Exception\n/)
+          expect(body.join).not_to match(/\n> First Exception\n/)
+        end
+      end
 
-            expect(status).to eq(500)
-            expect(body.join).not_to match(/\n> Other Exception\n/)
-            expect(body.join).to match(/\n> Original Exception\n/)
+      context "when the exception responds to #original_exception" do
+        class OriginalExceptionException < Exception
+          attr_reader :original_exception
+
+          def initialize(message, original_exception = nil)
+            super(message)
+            @original_exception = original_exception
           end
         end
-      else
-        context "original_exception" do
-          class OriginalExceptionException < Exception
-            attr_reader :original_exception
 
-            def initialize(message, original_exception = nil)
-              super(message)
-              @original_exception = original_exception
-            end
-          end
-
-          it "shows Original Exception if it responds_to and has an original_exception" do
-            app = Middleware.new(->env {
-              raise OriginalExceptionException.new("Other Exception", Exception.new("Original Exception"))
+        context 'and has one' do
+          let(:app) {
+            Middleware.new(->env {
+              raise OriginalExceptionException.new("Second Exception", Exception.new("First Exception"))
             })
+          }
 
+          it "shows the original exception instead of the last-raised one" do
             status, _, body = app.call({})
 
             expect(status).to eq(500)
-            expect(body.join).not_to match(/Other Exception/)
-            expect(body.join).to match(/Original Exception/)
+            expect(body.join).not_to match(/Second Exception/)
+            expect(body.join).to match(/First Exception/)
           end
+        end
 
-          it "won't crash if the exception responds_to but doesn't have an original_exception" do
-            app = Middleware.new(->env {
-              raise OriginalExceptionException.new("Other Exception")
+        context 'and does not have one' do
+          let(:app) {
+            Middleware.new(->env {
+              raise OriginalExceptionException.new("The Exception")
             })
+          }
 
+          it "shows the exception as-is" do
             status, _, body = app.call({})
 
             expect(status).to eq(500)
-            expect(body.join).to match(/Other Exception/)
+            expect(body.join).to match(/The Exception/)
           end
         end
       end

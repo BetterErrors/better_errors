@@ -4,9 +4,8 @@ module BetterErrors
     attr_reader :exception, :message, :backtrace
 
     def initialize(exception)
-      if exception.respond_to?(:cause)
-        exception = exception.cause if exception.cause
-      elsif exception.respond_to?(:original_exception) && exception.original_exception
+      if exception.respond_to?(:original_exception) && exception.original_exception
+        # This supports some specific Rails exceptions, and is not intended to act the same as `#cause`.
         exception = exception.original_exception
       end
 

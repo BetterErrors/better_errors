@@ -2,7 +2,7 @@ module BetterErrors
   # @private
   class CodeFormatter::HTML < CodeFormatter
     def source_unavailable
-      "<p class='unavailable'>Source is not available</p>"
+      "<p class='code-unavailable'>Source is not available</p>"
     end
 
     def formatted_lines

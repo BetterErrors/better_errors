@@ -41,7 +41,7 @@ describe BetterErrors do
     [:atom].each do |editor|
       it "uses atom:// scheme when set to #{editor.inspect}" do
         subject.editor = editor
-        subject.editor[].should start_with "atom://"
+        expect(subject.editor[]).to start_with "atom://"
       end
     end
 
@@ -82,7 +82,7 @@ describe BetterErrors do
       it "uses atom:// scheme when EDITOR=#{editor}" do
         ENV["EDITOR"] = editor
         subject.editor = subject.default_editor
-        subject.editor[].should start_with "atom://"
+        expect(subject.editor[]).to start_with "atom://"
       end
     end
 

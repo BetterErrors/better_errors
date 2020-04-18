@@ -69,7 +69,10 @@ module BetterErrors
     def local_variables
       return {} unless frame_binding
 
-      frame_binding.eval("local_variables").each_with_object({}) do |name, hash|
+      lv = frame_binding.eval("local_variables")
+      return {} unless lv
+
+      lv.each_with_object({}) do |name, hash|
         # Ruby 2.2's local_variables will include the hidden #$! variable if
         # called from within a rescue context. This is not a valid variable name,
         # so the local_variable_get method complains. This should probably be
@@ -94,7 +97,10 @@ module BetterErrors
     end
 
     def visible_instance_variables
-      frame_binding.eval("instance_variables") - BetterErrors.ignored_instance_variables
+      iv = frame_binding.eval("instance_variables")
+      return {} unless iv
+
+      iv - BetterErrors.ignored_instance_variables
     end
 
     def to_s

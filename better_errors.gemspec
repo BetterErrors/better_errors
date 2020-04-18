@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email         = ["charlie@charliesomerville.com"]
   s.description   = %q{Provides a better error page for Rails and other Rack apps. Includes source code inspection, a live REPL and local/instance variable inspection for all stack frames.}
   s.summary       = %q{Better error page for Rails and other Rack apps}
-  s.homepage      = "https://github.com/charliesome/better_errors"
+  s.homepage      = "https://github.com/BetterErrors/better_errors"
   s.license       = "MIT"
 
   s.files         = `git ls-files -z`.split("\x0").reject do |f|
@@ -22,9 +22,12 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rake", "~> 10.0"
   s.add_development_dependency "rspec", "~> 3.5"
+  s.add_development_dependency "rspec-html-matchers"
   s.add_development_dependency "rspec-its"
   s.add_development_dependency "yard"
-  s.add_development_dependency "kramdown"
+  # kramdown 2.1 requires Ruby 2.3+
+  s.add_development_dependency "kramdown", (RUBY_VERSION < '2.3' ? '< 2.0.0' : '> 2.0.0')
+  # simplecov and coveralls must not be included here. See the Gemfiles instead.
 
   s.add_dependency "erubi", ">= 1.0.0"
   s.add_dependency "coderay", ">= 1.0.0"
@@ -33,4 +36,12 @@ Gem::Specification.new do |s|
   # optional dependencies:
   # s.add_dependency "binding_of_caller"
   # s.add_dependency "pry"
+  
+  if s.respond_to?(:metadata)
+    s.metadata['changelog_uri'] = 'https://github.com/BetterErrors/better_errors/releases'
+    s.metadata['source_code_uri'] = 'https://github.com/BetterErrors/better_errors'
+    s.metadata['bug_tracker_uri'] = 'https://github.com/BetterErrors/better_errors/issues'
+  else
+    puts "Your RubyGems does not support metadata. Update if you'd like to make a release."
+  end
 end

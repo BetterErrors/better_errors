@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= exception_type %> at <%= request_path %></title>
+    <title><%= exception_type %> at <%= request_path %> - Better Errors</title>
 </head>
 <body>
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>
     <style type='text/css'>
-      <%== File.open(File.expand_path("templates/main.css", File.dirname(__FILE__))).read %>
+      <% if File.exist?(File.expand_path("templates/main.development.css", File.dirname(__FILE__))) %>
+        <%== File.open(File.expand_path("templates/main.development.css", File.dirname(__FILE__))).read %>
+      <% else %>
+        <%== File.open(File.expand_path("templates/main.css", File.dirname(__FILE__))).read %>
+      <% end %>
     </style>
 
     <%# IE8 compatibility crap %>

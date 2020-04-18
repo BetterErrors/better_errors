@@ -9,3 +9,6 @@
 
 /gemfiles/*.gemfile.lock
 /gemfiles/.bundle
+
+# This is the debug version of the file and should not be committed.
+lib/better_errors/templates/*.development.css

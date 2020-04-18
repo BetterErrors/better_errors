@@ -21,6 +21,7 @@ module BetterErrors
     { symbols: [:idea], sniff: /idea/i, url: "idea://open?file=%{file}&line=%{line}" },
     { symbols: [:rubymine], sniff: /mine/i, url: "x-mine://open?file=%{file}&line=%{line}" },
     { symbols: [:vscode, :code], sniff: /code/i, url: "vscode://file/%{file}:%{line}" },
+    { symbols: [:vscodium, :codium], sniff: /codium/i, url: "vscodium://file/%{file}:%{line}" },
     { symbols: [:atom], sniff: /atom/i,  url: "atom://core/open/file?filename=%{file}&line=%{line}" },
   ]
 

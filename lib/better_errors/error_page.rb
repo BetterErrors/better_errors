@@ -106,7 +106,7 @@ module BetterErrors
 
     def inspect_value(obj)
       if BetterErrors.ignored_classes.include? obj.class.name
-        "<span class='unsupported'>(Class ignored. "\
+        "<span class='unsupported'>(Instance of ignored class. "\
         "#{obj.class.name ? "Remove #{CGI.escapeHTML(obj.class.name)} from" : "Modify"}"\
         " BetterErrors.ignored_classes if you need to see it.)</span>"
       else

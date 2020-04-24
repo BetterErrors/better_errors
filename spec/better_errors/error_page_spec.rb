@@ -92,7 +92,7 @@ module BetterErrors
             end
             expect(html).to have_tag('div.variables tr') do
               with_tag('td.name', text: 'local_b')
-              with_tag('.unsupported', text: /Instance of ErrorPageTestIgnoredClass ignored/)
+              with_tag('.unsupported', text: /Instance of ignored class/)
               with_tag('.unsupported', text: /BetterErrors\.ignored_classes/)
             end
             expect(html).to have_tag('div.variables tr') do
@@ -101,7 +101,7 @@ module BetterErrors
             end
             expect(html).to have_tag('div.variables tr') do
               with_tag('td.name', text: '@inst_d')
-              with_tag('.unsupported', text: /Instance of ErrorPageTestIgnoredClass ignored./)
+              with_tag('.unsupported', text: /Instance of ignored class/)
               with_tag('.unsupported', text: /BetterErrors\.ignored_classes/)
             end
           end

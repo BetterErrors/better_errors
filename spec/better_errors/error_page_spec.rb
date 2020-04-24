@@ -1,5 +1,7 @@
 require "spec_helper"
 
+class ErrorPageTestIgnoredClass; end
+
 module BetterErrors
   describe ErrorPage do
     # It's necessary to use HTML matchers here that are specific as possible.
@@ -45,9 +47,11 @@ module BetterErrors
 
         it "shows local variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to have_tag('div.variables') do
+          expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: 'local_a')
             with_tag('pre', text: ':value_for_local_a')
+          end
+          expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: 'local_b')
             with_tag('pre', text: ':value_for_local_b')
           end
@@ -55,18 +59,58 @@ module BetterErrors
 
         it "shows instance variables" do
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to have_tag('div.variables') do
+          expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: '@inst_c')
             with_tag('pre', text: ':value_for_inst_c')
+          end
+          expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: '@inst_d')
             with_tag('pre', text: ':value_for_inst_d')
+          end
+        end
+
+        context 'when ignored_classes includes the class name of a local variable' do
+          before do
+            allow(BetterErrors).to receive(:ignored_classes).and_return(['ErrorPageTestIgnoredClass'])
+          end
+
+          let(:exception_binding) {
+            local_a = :value_for_local_a
+            local_b = ErrorPageTestIgnoredClass.new
+
+            @inst_c = :value_for_inst_c
+            @inst_d = ErrorPageTestIgnoredClass.new
+
+            binding
+          }
+
+          it "does not include that value" do
+            html = error_page.do_variables("index" => 0)[:html]
+            expect(html).to have_tag('div.variables tr') do
+              with_tag('td.name', text: 'local_a')
+              with_tag('pre', text: ':value_for_local_a')
+            end
+            expect(html).to have_tag('div.variables tr') do
+              with_tag('td.name', text: 'local_b')
+              with_tag('.unsupported', text: /Instance of ignored class/)
+              with_tag('.unsupported', text: /BetterErrors\.ignored_classes/)
+            end
+            expect(html).to have_tag('div.variables tr') do
+              with_tag('td.name', text: '@inst_c')
+              with_tag('pre', text: ':value_for_inst_c')
+            end
+            expect(html).to have_tag('div.variables tr') do
+              with_tag('td.name', text: '@inst_d')
+              with_tag('.unsupported', text: /Instance of ignored class/)
+              with_tag('.unsupported', text: /BetterErrors\.ignored_classes/)
+            end
           end
         end
 
         it "does not show filtered variables" do
           allow(BetterErrors).to receive(:ignored_instance_variables).and_return([:@inst_d])
           html = error_page.do_variables("index" => 0)[:html]
-          expect(html).to have_tag('div.variables') do
+          expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: '@inst_c')
             with_tag('pre', text: ':value_for_inst_c')
           end
@@ -149,7 +193,7 @@ module BetterErrors
 
                 it "does not attempt to show the class name" do
                   html = error_page.do_variables("index" => 0)[:html]
-                  expect(html).to have_tag('div.variables') do
+                  expect(html).to have_tag('div.variables tr') do
                     with_tag('td.name', text: '@big_anonymous')
                     with_tag('.unsupported', text: /Object too large/)
                     with_tag('.unsupported', text: /Adjust BetterErrors.maximum_variable_inspect_size/)
@@ -235,7 +279,7 @@ module BetterErrors
 
               it "does not attempt to show the class name" do
                 html = error_page.do_variables("index" => 0)[:html]
-                expect(html).to have_tag('div.variables') do
+                expect(html).to have_tag('div.variables tr') do
                   with_tag('td.name', text: '@big_anonymous')
                   with_tag('.unsupported', text: /Object too large/)
                   with_tag('.unsupported', text: /Adjust BetterErrors.maximum_variable_inspect_size/)

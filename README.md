@@ -93,6 +93,16 @@ See [the wiki for instructions on configuring the editor](https://github.com/Bet
 BetterErrors.maximum_variable_inspect_size = 100_000
 ```
 
+## Ignore inspection of variables with certain classes.
+
+```ruby
+# e.g. in config/initializers/better_errors.rb
+# This will stop BetterErrors from trying to inspect objects of these classes, which can cause
+# slow loading times and unneccessary database queries. Does not check inheritance chain, use
+# strings not contants.
+# default value: ['ActionDispatch::Request', 'ActionDispatch::Response']
+BetterErrors.ignored_classes = ['ActionDispatch::Request', 'ActionDispatch::Response']
+```
 
 ## Get in touch!
 

@@ -57,6 +57,10 @@ module BetterErrors
 
     def massage_syntax_error
       case exception.class.to_s
+      when "ActionView::Template::Error"
+        if exception.respond_to?(:file_name) && exception.respond_to?(:line_number)
+          backtrace.unshift(StackFrame.new(exception.file_name, exception.line_number.to_i, "view template"))
+        end
       when "Haml::SyntaxError", "Sprockets::Coffeelint::Error"
         if /\A(.+?):(\d+)/ =~ exception.backtrace.first
           backtrace.unshift(StackFrame.new($1, $2.to_i, ""))

@@ -18,7 +18,7 @@ module BetterErrors
       its(:message)   { is_expected.to eq "something went wrong!" }
     end
 
-    context "when the exception is a syntax error" do
+    context "when the exception is a SyntaxError" do
       let(:exception) { SyntaxError.new("foo.rb:123: you made a typo!") }
 
       its(:message) { is_expected.to eq "you made a typo!" }
@@ -47,6 +47,35 @@ module BetterErrors
       it "has the right filename and line number in the backtrace" do
         expect(subject.backtrace.first.filename).to eq("foo.rb")
         expect(subject.backtrace.first.line).to eq(123)
+      end
+    end
+
+    context "when the exception is an ActionView::Template::Error" do
+      before do
+        stub_const(
+          "ActionView::Template::Error",
+          Class.new(StandardError) do
+            def file_name
+              "app/views/foo/bar.haml"
+            end
+
+            def line_number
+              42
+            end
+          end
+        )
+      end
+
+      let(:exception) {
+        ActionView::Template::Error.new("undefined method `something!' for #<Class:0x00deadbeef>")
+      }
+
+      its(:message) { is_expected.to eq "undefined method `something!' for #<Class:0x00deadbeef>" }
+      its(:type)    { is_expected.to eq ActionView::Template::Error }
+
+      it "has the right filename and line number in the backtrace" do
+        expect(subject.backtrace.first.filename).to eq("app/views/foo/bar.haml")
+        expect(subject.backtrace.first.line).to eq(42)
       end
     end
 

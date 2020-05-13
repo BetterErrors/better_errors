@@ -2,7 +2,7 @@ module BetterErrors
   # @private
   class CodeFormatter::HTML < CodeFormatter
     def source_unavailable
-      "<p class='unavailable'>Source is not available</p>"
+      "<p class='code-unavailable'>Source is not available</p>"
     end
 
     def formatted_lines
@@ -15,7 +15,7 @@ module BetterErrors
     def formatted_nums
       each_line_of(highlighted_lines) { |highlight, current_line, str|
         class_name = highlight ? "highlight" : ""
-        sprintf '<span class="%s">%5d</span>', class_name, current_line
+        sprintf '<pre class="%s">%4d</pre>', class_name, current_line
       }
     end
 

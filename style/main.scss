@@ -1,0 +1,610 @@
+@import "syntax_highlighting";
+
+/* Basic reset */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  vertical-align: top;
+  text-align: left;
+}
+
+textarea {
+  resize: none;
+}
+
+body {
+  font-size: 10pt;
+}
+
+body, td, input, textarea {
+  font-family: helvetica neue, lucida grande, sans-serif;
+  line-height: 1.5;
+  color: #333;
+}
+
+html {
+  background: white;
+}
+
+.clearfix::after{
+  clear: both;
+  content: ".";
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+
+/* ---------------------------------------------------------------------
+ * Basic layout
+ * --------------------------------------------------------------------- */
+
+/* Small */
+@media screen and (max-width: 1100px) {
+  html {
+    overflow-y: scroll;
+  }
+
+  body {
+    margin: 0 20px;
+  }
+
+  header.exception {
+    margin: 0 -20px;
+  }
+
+  nav.frames {
+    padding: 0;
+    margin: 20px 0;
+  }
+
+  ul.frames {
+    max-height: 200px;
+  }
+}
+
+/* Wide */
+@media screen and (min-width: 1100px) {
+  header.exception {
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+  }
+
+  nav.frames,
+  .frame_info {
+    position: fixed;
+    top: 95px;
+    bottom: 0;
+
+    box-sizing: border-box;
+  }
+  
+  nav.frames {
+    width: 40%;
+    left: 0;
+  }
+
+  ul.frames {
+    position: absolute;
+    top: 36px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .frame_info {
+    right: 0;
+    left: 40%;
+
+    border-left: 5px solid #38a;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* ---------------------------------------------------------------------
+ * Header
+ * --------------------------------------------------------------------- */
+
+header.exception {
+  padding: 18px 20px;
+
+  height: 59px;
+  min-height: 59px;
+
+  overflow: hidden;
+
+  background-color: #20202a;
+  color: #aaa;
+  font-weight: 200;
+
+  -webkit-text-smoothing: antialiased;
+
+  h2 {
+    font-weight: 200;
+    font-size: 11pt;
+    strong {
+      font-weight: 700;
+      color: #d55;
+    }
+  }
+
+  h2,
+  p {
+    line-height: 1.4em;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+
+    @media screen and (max-width: 1100px) {
+      height: auto;
+
+      padding-right: 20px;
+      overflow-y: auto;
+      word-wrap: break-word;
+      height: auto;
+      max-height: 7em;
+    }
+  }
+
+  p {
+    font-weight: 200;
+    font-size: 20pt;
+    color: white;
+  }
+
+  &:hover {
+    height: auto;
+    z-index: 2;
+
+    h2,
+    p {
+      padding-right: 20px;
+      overflow-y: auto;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      height: auto;
+      max-height: 7.5em;
+    }
+  }
+}
+
+nav.segmented {
+  border-bottom: solid 1px #ddd;
+
+  text-align: center;
+
+  padding: 6px;
+
+  a {
+    display: inline-block;
+
+    height: 22px;
+    line-height: 22px;
+    padding: 0 10px;
+
+    text-decoration: none;
+    font-size: 8pt;
+    font-weight: bold;
+
+    color: #38a;
+    border: 1px solid #38a;
+
+    &:first-child {
+      border-right: 0;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    &:last-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    &.selected {
+      color: white;
+      background: #38a;
+    }
+
+    &.disabled {
+      text-decoration: line-through;
+      cursor: default;
+    }
+  }
+}
+
+ul.frames {
+  overflow: auto;
+
+  li {
+    padding: 7px 20px;
+    border-bottom: 1pt solid #eee;
+
+    cursor: pointer;
+    overflow: hidden;
+
+    .name,
+    .location {
+      overflow: hidden;
+      height: 1.5em;
+
+      white-space: nowrap;
+      word-wrap: none;
+      text-overflow: ellipsis;
+    }
+
+    .method {
+      color: #666;
+    }
+
+    .location {
+      font-size: 0.85em;
+      font-weight: 400;
+      color: #999;
+    }
+
+    .line {
+      font-weight: bold;
+    }
+
+    .chevron {
+      float: right;
+      margin-right: -10px;
+      color: #ccc;
+      font-size: 24px;
+      line-height: 34px;
+
+      @media screen and (max-width: 1100px) {
+        display: none;
+      }
+    }
+
+    &.selected {
+      background: #38a;
+
+      .name,
+      .method,
+      .location,
+      .chevron {
+        color: white;
+      }
+    }
+
+    /* Iconography */
+    padding-left: 60px;
+    position: relative;
+
+    .icon {
+      display: block;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      border-radius: 15px;
+
+      text-align: center;
+
+      background: white;
+      border: solid 2px #ccc;
+
+      font-size: 9pt;
+      font-weight: 200;
+      font-style: normal;
+
+      position: absolute;
+      top: 14px;
+      left: 20px;
+    }
+
+    .icon.application {
+      background: #808090;
+      border-color: #555;
+    }
+
+    .icon.application:before {
+      content: 'A';
+      color: white;
+    }
+
+    /* Responsiveness -- flow to single-line mode */
+    @media screen and (max-width: 1100px) {
+      padding-top: 6px;
+      padding-bottom: 6px;
+      padding-left: 36px;
+      line-height: 1.3;
+
+      .icon {
+        width: 11px;
+        height: 11px;
+        line-height: 11px;
+
+        top: 7px;
+        left: 10px;
+        font-size: 5pt;
+      }
+
+      .name,
+      .location {
+        display: inline-block;
+        line-height: 1.3;
+        height: 1.3em;
+      }
+
+      .name {
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------
+ * Monospace
+ * --------------------------------------------------------------------- */
+
+pre,
+code,
+.be-repl .command-line input,
+.be-repl .command-line .prompt,
+.be-repl .output .command,
+textarea,
+.code_linenums,
+.title .name,
+ul.frames li .method {
+  font-family: menlo, lucida console, monospace;
+}
+
+.trace_info {
+  @extend .clearfix;
+
+  .title {
+    background: #38a;
+    color: white;
+
+    overflow: hidden;
+    padding: 5px 10px;
+
+    @media screen and (min-width: 1100px) {
+      padding: 5px 10px 5px 0;
+    }
+
+    .name, .location {
+      font-size: 9pt;
+      line-height: 26px;
+      height: 26px;
+      overflow: hidden;
+    }
+
+    .location {
+      float: left;
+      font-weight: bold;
+      font-size: 10pt;
+
+      a {
+        color: white;
+        text-decoration: none;
+
+        .filename {
+          text-decoration: underline;
+        }
+
+        &:hover {
+          border-color:#666666;
+        }
+      }
+    }
+
+    .name {
+      float: right;
+      font-weight: 200;
+    }
+  }
+
+  .code_block {
+    @extend .clearfix;
+
+    background: #f1f1f1;
+    padding-bottom: 1px;
+
+    .code_linenums{
+      background:#f1f1f1;
+      padding-top:10px;
+      padding-bottom:9px;
+      float:left;
+
+      pre{
+        padding: 0 6px;
+      }
+    }
+
+    .code {
+      margin-bottom: -1px;
+      border-top-left-radius:2px;
+      padding: 10px 0;
+      overflow: auto;
+
+      pre {
+        padding-left:12px;
+      }
+    }
+
+    .code, .code_linenums {
+      pre {
+        font-size: 11px;
+        min-height: 16px;
+      }
+
+      .highlight {
+        background: rgba(220, 30, 30, 0.1);
+        -webkit-animation: highlight 400ms linear 1;
+        -moz-animation: highlight 400ms linear 1;
+        animation: highlight 400ms linear 1;
+      }
+    }
+
+    .code-unavailable {
+      padding: 20px 0 40px 0;
+      text-align: center;
+      color: #b99;
+      font-weight: bold;
+
+      &:before {
+        content: '\00d7';
+        display: block;
+
+        color: #daa;
+
+        text-align: center;
+        font-size: 40pt;
+        font-weight: normal;
+        margin-bottom: -10px;
+      }
+    }
+  }
+}
+
+@-webkit-keyframes highlight {
+  0%   { background: rgba(220, 30, 30, 0.3); }
+  100% { background: rgba(220, 30, 30, 0.1); }
+}
+@-moz-keyframes highlight {
+  0%   { background: rgba(220, 30, 30, 0.3); }
+  100% { background: rgba(220, 30, 30, 0.1); }
+}
+@keyframes highlight {
+  0%   { background: rgba(220, 30, 30, 0.3); }
+  100% { background: rgba(220, 30, 30, 0.1); }
+}
+
+h3 {
+  background-color: #38a;
+  color: white;
+  padding: 4px;
+  font-size: 8pt;
+
+  -webkit-font-smoothing: antialiased;
+}
+
+.be-console {
+  background-color: #002B36;
+  color: white;
+
+  .output {
+    max-height: 15rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+
+    &:not(.used) {
+      padding: 0;
+      border-bottom: 0;
+    }
+    @media screen and (min-height: 800px) {
+      max-height: 25rem;
+    }
+
+    pre, h4 {
+      font-size: 9pt;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      width: 100%;
+    }
+    h4 {
+      padding: 8px;
+      margin-top: 10px;
+      background-color: #555;
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    pre {
+      padding: 8px;
+    }
+  }
+
+  /* .command-line > span + input */
+  .command-line {
+    display: table;
+    padding: 8px 0;
+    background-color: #555;
+
+    .prompt,
+    input {
+      display: table-cell;
+      line-height: 12px;
+      font-size: 9pt;
+    }
+
+    .prompt {
+      width: 1%;
+      padding-right: 5px;
+      padding-left: 10px;
+      white-space: pre;
+    }
+
+    input {
+      width: 99%;
+    }
+  }
+
+  /* Input box */
+  input,
+  input:focus {
+    outline: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    margin: 0;
+    color: inherit;
+  }
+}
+
+.hint {
+  margin: 15px 0 20px 0;
+  font-size: 8pt;
+  color: #8080a0;
+  padding-left: 20px;
+}
+
+.variables {
+  h4 {
+    margin-top: 5px;
+    padding-left: 5px;
+
+    font-weight: bold;
+    font-size: 9pt;
+
+    word-wrap: break-word;
+  }
+
+  pre {
+    max-height: 15em;
+    overflow-y: auto;
+
+    font-size: 9pt;
+    word-wrap: break-word;
+    white-space: normal;
+
+    margin-left: 2rem;
+    border-bottom: 1px dotted #ddd;
+  }
+
+  /* "(object doesn't support inspect)" */
+  .unsupported {
+    display: block;
+    font-family: sans-serif;
+    color: #777;
+  }
+}
+

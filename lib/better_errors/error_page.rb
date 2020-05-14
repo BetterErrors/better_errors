@@ -28,6 +28,11 @@ module BetterErrors
 
     def render(template_name = "main")
       binding.eval(self.class.template(template_name).src)
+    rescue => e
+      # Fix the backtrace, which doesn't identify the template that failed (within Better Errors).
+      # We don't know the line number, so just injecting the template path has to be enough.
+      e.backtrace.unshift "#{self.class.template_path(template_name)}:0"
+      raise
     end
 
     def do_variables(opts)
@@ -59,7 +64,19 @@ module BetterErrors
     end
 
     def exception_message
-      exception.message.lstrip
+      exception.message.strip.gsub(/(\r?\n\s*\r?\n)+/, "\n")
+    end
+
+    def active_support_actions
+      return [] unless defined?(ActiveSupport::ActionableError)
+
+      ActiveSupport::ActionableError.actions(exception.type)
+    end
+
+    def action_dispatch_action_endpoint
+      return unless defined?(ActionDispatch::ActionableExceptions)
+
+      ActionDispatch::ActionableExceptions.endpoint
     end
 
     def application_frames
@@ -105,7 +122,13 @@ module BetterErrors
     end
 
     def inspect_value(obj)
-      InspectableValue.new(obj).to_html
+      if BetterErrors.ignored_classes.include? obj.class.name
+        "<span class='unsupported'>(Instance of ignored class. "\
+        "#{obj.class.name ? "Remove #{CGI.escapeHTML(obj.class.name)} from" : "Modify"}"\
+        " BetterErrors.ignored_classes if you need to see it.)</span>"
+      else
+        InspectableValue.new(obj).to_html
+      end
     rescue BetterErrors::ValueLargerThanConfiguredMaximum
       "<span class='unsupported'>(Object too large. "\
         "#{obj.class.name ? "Modify #{CGI.escapeHTML(obj.class.name)}#inspect or a" : "A"}"\

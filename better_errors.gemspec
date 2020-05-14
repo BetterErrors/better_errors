@@ -22,9 +22,11 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rake", "~> 10.0"
   s.add_development_dependency "rspec", "~> 3.5"
+  s.add_development_dependency "rspec-html-matchers"
   s.add_development_dependency "rspec-its"
   s.add_development_dependency "yard"
-  s.add_development_dependency "kramdown"
+  # kramdown 2.1 requires Ruby 2.3+
+  s.add_development_dependency "kramdown", (RUBY_VERSION < '2.3' ? '< 2.0.0' : '> 2.0.0')
   # simplecov and coveralls must not be included here. See the Gemfiles instead.
 
   s.add_dependency "erubi", ">= 1.0.0"

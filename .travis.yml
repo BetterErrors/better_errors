@@ -1,16 +1,5 @@
-sudo: false
 language: ruby
 cache: bundler
-before_install:
-  # Since Rails 4.2 only supports rubygems < 2, we must install an older version for it.
-  - >
-    if [[ "$BUNDLE_GEMFILE" =~ "rails42" ]]; then
-      rvm @global do gem install rubygems-update -v '<2'
-      update_rubygems
-      rvm @global do gem uninstall bundler --force --executables
-      rvm @global do gem install bundler -v "~> 1.3"
-    fi
-
 notifications:
   webhooks:
     # With COVERALLS_PARALLEL, coverage information sent to coveralls will not be processed until
@@ -19,23 +8,28 @@ notifications:
     - secure: "YnHYbTq51ySistjvOxsuNhyg4GLuUffEJstTYeGYXiBF7HG5h43IVYo8KNuLzwkgsOYBcNo+YMdQX7qCqJffSbhsr1FZRSzBmjFFxcyD4hu+ukM2theZ4mePVAZiePscYvQPRNY4hIb4d3egStJEytkalDhB3sOebF57tIaCssg="
 rvm:
   - 2.2.10
-  - 2.3.7
-  - 2.4.4
-  - 2.5.1
+  - 2.3.8
+  - 2.4.9
+  - 2.5.7
+  - 2.6.5
+  - 2.7.0
   - ruby-head
 gemfile:
   - gemfiles/rails42.gemfile
   - gemfiles/rails50.gemfile
   - gemfiles/rails51.gemfile
   - gemfiles/rails52.gemfile
+  - gemfiles/rails60.gemfile
   - gemfiles/rails42_haml.gemfile
   - gemfiles/rails50_haml.gemfile
   - gemfiles/rails51_haml.gemfile
   - gemfiles/rails52_haml.gemfile
+  - gemfiles/rails60_haml.gemfile
   - gemfiles/rails42_boc.gemfile
   - gemfiles/rails50_boc.gemfile
   - gemfiles/rails51_boc.gemfile
   - gemfiles/rails52_boc.gemfile
+  - gemfiles/rails60_boc.gemfile
   - gemfiles/rack.gemfile
   - gemfiles/rack_boc.gemfile
   - gemfiles/pry09.gemfile
@@ -48,15 +42,57 @@ matrix:
     - gemfile: gemfiles/pry010.gemfile
     - gemfile: gemfiles/pry011.gemfile
   exclude:
-    - rvm: 2.4.4
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails60.gemfile
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails60_boc.gemfile
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails60_haml.gemfile
+    - rvm: 2.3.8
       gemfile: gemfiles/rails42.gemfile
-    - rvm: 2.4.4
+    - rvm: 2.3.8
       gemfile: gemfiles/rails42_boc.gemfile
-    - rvm: 2.4.4
+    - rvm: 2.3.8
       gemfile: gemfiles/rails42_haml.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails60.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails60_boc.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails60_haml.gemfile
+    - rvm: 2.4.9
       gemfile: gemfiles/rails42.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.4.9
       gemfile: gemfiles/rails42_boc.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails60.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails60_boc.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails60_haml.gemfile
+    - rvm: 2.5.7
+      gemfile: gemfiles/rails42.gemfile
+    - rvm: 2.5.7
+      gemfile: gemfiles/rails42_boc.gemfile
+    - rvm: 2.5.7
+      gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: 2.6.5
+      gemfile: gemfiles/rails42.gemfile
+    - rvm: 2.6.5
+      gemfile: gemfiles/rails42_boc.gemfile
+    - rvm: 2.6.5
+      gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails42.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails42_boc.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails42.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails42_boc.gemfile
+    - rvm: ruby-head
       gemfile: gemfiles/rails42_haml.gemfile

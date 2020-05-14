@@ -21,6 +21,7 @@ module BetterErrors
     { symbols: [:idea], sniff: /idea/i, url: "idea://open?file=%{file}&line=%{line}" },
     { symbols: [:rubymine], sniff: /mine/i, url: "x-mine://open?file=%{file}&line=%{line}" },
     { symbols: [:vscode, :code], sniff: /code/i, url: "vscode://file/%{file}:%{line}" },
+    { symbols: [:vscodium, :codium], sniff: /codium/i, url: "vscodium://file/%{file}:%{line}" },
     { symbols: [:atom], sniff: /atom/i,  url: "atom://core/open/file?filename=%{file}&line=%{line}" },
   ]
 
@@ -54,9 +55,14 @@ module BetterErrors
     # the variable won't be returned.
     # @return int
     attr_accessor :maximum_variable_inspect_size
+
+    # List of classes that are excluded from inspection.
+    # @return [Array]
+    attr_accessor :ignored_classes
   end
   @ignored_instance_variables = []
   @maximum_variable_inspect_size = 100_000
+  @ignored_classes = ['ActionDispatch::Request', 'ActionDispatch::Response']
 
   # Returns a proc, which when called with a filename and line number argument,
   # returns a URL to open the filename and line in the selected editor.

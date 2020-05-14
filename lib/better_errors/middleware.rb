@@ -33,7 +33,7 @@ module BetterErrors
     # Adds an address to the set of IP addresses allowed to access Better
     # Errors.
     def self.allow_ip!(addr)
-      ALLOWED_IPS << IPAddr.new(addr)
+      ALLOWED_IPS << (addr.is_a?(IPAddr) ? addr : IPAddr.new(addr))
     end
 
     allow_ip! "127.0.0.0/8"

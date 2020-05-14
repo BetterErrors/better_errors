@@ -4,9 +4,8 @@ module BetterErrors
     attr_reader :exception, :message, :backtrace
 
     def initialize(exception)
-      if exception.respond_to?(:cause)
-        exception = exception.cause if exception.cause
-      elsif exception.respond_to?(:original_exception) && exception.original_exception
+      if exception.respond_to?(:original_exception) && exception.original_exception
+        # This supports some specific Rails exceptions, and is not intended to act the same as `#cause`.
         exception = exception.original_exception
       end
 
@@ -36,8 +35,13 @@ module BetterErrors
 
     def setup_backtrace_from_bindings
       @backtrace = exception.__better_errors_bindings_stack.map { |binding|
-        file = binding.eval "__FILE__"
-        line = binding.eval "__LINE__"
+        if binding.respond_to?(:source_location) # Ruby >= 2.6
+          file = binding.source_location[0]
+          line = binding.source_location[1]
+        else
+          file = binding.eval "__FILE__"
+          line = binding.eval "__LINE__"
+        end
         name = binding.frame_description
         StackFrame.new(file, line, name, binding)
       }
@@ -53,6 +57,10 @@ module BetterErrors
 
     def massage_syntax_error
       case exception.class.to_s
+      when "ActionView::Template::Error"
+        if exception.respond_to?(:file_name) && exception.respond_to?(:line_number)
+          backtrace.unshift(StackFrame.new(exception.file_name, exception.line_number.to_i, "view template"))
+        end
       when "Haml::SyntaxError", "Sprockets::Coffeelint::Error"
         if /\A(.+?):(\d+)/ =~ exception.backtrace.first
           backtrace.unshift(StackFrame.new($1, $2.to_i, ""))

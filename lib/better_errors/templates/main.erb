@@ -146,6 +146,14 @@
     }
 
     /* Heading */
+    header.exception .fix-actions {
+        margin-top: .5em;
+    }
+
+    header.exception .fix-actions input[type=submit] {
+        font-weight: bold;
+    }
+
     header.exception h2 {
         font-weight: 200;
         font-size: 11pt;
@@ -153,7 +161,7 @@
 
     header.exception h2,
     header.exception p {
-        line-height: 1.4em;
+        line-height: 1.5em;
         overflow: hidden;
         white-space: pre;
         text-overflow: ellipsis;
@@ -166,7 +174,7 @@
 
     header.exception p {
         font-weight: 200;
-        font-size: 20pt;
+        font-size: 17pt;
         color: white;
     }
 
@@ -744,6 +752,18 @@
         <header class="exception">
             <h2><strong><%= exception_type %></strong> <span>at <%= request_path %></span></h2>
             <p><%= exception_message %></p>
+            <% unless active_support_actions.empty? %>
+                <div class='fix-actions'>
+                    <% active_support_actions.each do |action, _| %>
+                        <form class="button_to" method="post" action="<%= action_dispatch_action_endpoint %>">
+                            <input type="submit" value="<%= action %>">
+                            <input type="hidden" name="action" value="<%= action %>">
+                            <input type="hidden" name="error" value="<%= exception_type %>">
+                            <input type="hidden" name="location" value="<%= request_path %>">
+                        </form>
+                    <% end %>
+                </div>
+            <% end %>
         </header>
     </div>
 

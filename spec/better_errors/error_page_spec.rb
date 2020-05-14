@@ -37,6 +37,44 @@ module BetterErrors
       expect(response).to have_tag('.exception h2', /ZeroDivisionError/)
     end
 
+    context 'when ActiveSupport::ActionableError is available' do
+      before do
+        skip "ActiveSupport missing on this platform" unless Object.constants.include?(:ActiveSupport)
+        skip "ActionableError missing on this platform" unless ActiveSupport.constants.include?(:ActionableError)
+      end
+
+      context 'when ActiveSupport provides one or more actions for this error type' do
+        let(:exception_class) {
+          Class.new(StandardError) do
+            include ActiveSupport::ActionableError
+
+            action "Do a thing" do
+              puts "Did a thing"
+            end
+          end
+        }
+        let(:exception) { exception_binding.eval("raise exception_class") rescue $! }
+
+        it "includes a fix-action form for each action" do
+          expect(response).to have_tag('.fix-actions') do
+            with_tag('form.button_to')
+            with_tag('form.button_to input[type=submit][value="Do a thing"]')
+          end
+        end
+      end
+
+      context 'when ActiveSupport does not provide any actions for this error type' do
+        let(:exception_class) {
+          Class.new(StandardError)
+        }
+        let(:exception) { exception_binding.eval("raise exception_class") rescue $! }
+
+        it "does not include a fix-action form" do
+          expect(response).not_to have_tag('.fix-actions')
+        end
+      end
+    end
+
     context "variable inspection" do
       let(:exception) { exception_binding.eval("raise") rescue $! }
 

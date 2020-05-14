@@ -12,9 +12,9 @@ module BetterErrors
       Erubi::Engine.new(File.read(template_path(template_name)), escape: true)
     end
 
-    def initialize(error_state, env)
+    def initialize(error_state, cause_index = 0)
       @error_state = error_state
-      @env = env
+      @cause_index = cause_index.to_i
       @start_time = Time.now.to_f
     end
 
@@ -50,10 +50,10 @@ module BetterErrors
     private
 
     attr_reader :error_state
-    attr_reader :env
+    attr_reader :cause_index
 
     def exception
-      error_state.whole_exception
+      @exception ||= error_state.exception_for_cause_index(cause_index)
     end
 
     def exception_id
@@ -66,6 +66,10 @@ module BetterErrors
 
     def exception_message
       exception.message
+    end
+
+    def exception_cause
+      exception.cause
     end
 
     def backtrace_frames

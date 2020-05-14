@@ -71,8 +71,10 @@ module BetterErrors
 
     def better_errors_call(env)
       case env["PATH_INFO"]
+      when %r{/__better_errors/cause/(?<cause_index>.+)\z}
+        show_error_page_for_cause_index(env, $~[:cause_index])
       when %r{/__better_errors/(?<id>.+?)/(?<method>\w+)\z}
-        internal_call env, $~
+        internal_call(env, $~[:id], $~[:method])
       when %r{/__better_errors/?\z}
         show_error_page env
       else
@@ -85,50 +87,78 @@ module BetterErrors
     rescue Exception => ex
       @error_state = ErrorState.new(ex, env)
       log_exception
-      show_error_page(env, ex)
+      show_error_page_with_exception_status_code env
     end
 
-    def show_error_page(env, exception=nil)
-      type, content = if @error_state
-        if text?(env)
-          [ 'plain', ErrorPage.new(@error_state, env).render('text') ]
-        else
-          [ 'html', ErrorPage.new(@error_state, env).render ]
-        end
-      else
-        [ 'html', no_errors_page ]
-      end
+    ##
+    # Responds with the error page and a 500 status code
+    # (or a different status if Rails provides a status code for the specific exception).
+    def show_error_page_with_exception_status_code(env)
+      type, content = error_page_type_and_content(env, ErrorPage.new(@error_state))
 
       status_code = 500
-      if defined?(ActionDispatch::ExceptionWrapper) && exception
-        status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
+      if defined?(ActionDispatch::ExceptionWrapper)
+        status_code = ActionDispatch::ExceptionWrapper.new(env, @error_state.top_exception).status_code
       end
 
       [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
     end
 
+    ##
+    # Responds with the error page and a 200 status code. Used when the user visits /__better_errors
+    def show_error_page(env)
+      type, content = error_page_type_and_content(env, ErrorPage.new(@error_state))
+
+      status_code = 200
+      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+    end
+
+    ##
+    # Responds with the error page for a specific exception cause index.
+    def show_error_page_for_cause_index(env, cause_index)
+      type, content = error_page_type_and_content(env, ErrorPage.new(@error_state, cause_index))
+
+      status_code = 500
+      if defined?(ActionDispatch::ExceptionWrapper)
+        status_code = ActionDispatch::ExceptionWrapper.new(env, @error_state.top_exception).status_code
+      end
+
+      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+    end
+
+    def error_page_type_and_content(env, error_page)
+      if @error_state
+        if text?(env)
+          [ 'plain', error_page.render('text') ]
+        else
+          [ 'html', error_page.render ]
+        end
+      else
+        [ 'html', no_errors_page ]
+      end
+    end
+
     def text?(env)
-      env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
-      !env["HTTP_ACCEPT"].to_s.include?('html')
+      env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" || !env["HTTP_ACCEPT"].to_s.include?('html')
     end
 
     def log_exception
       return unless BetterErrors.logger
 
       # TODO: recursively print exception with cause
-      message = "\n#{@error_state.whole_exception.type} - #{@error_state.whole_exception.message}:\n"
-      message += @error_state.whole_exception.cleaned_backtrace.map { |frame| "  #{frame}\n" }.join
+      message = "\n#{@error_state.top_exception.type} - #{@error_state.top_exception.message}:\n"
+      message += @error_state.top_exception.cleaned_backtrace.map { |frame| "  #{frame}\n" }.join
 
       BetterErrors.logger.fatal message
     end
 
-    def internal_call(env, opts)
+    def internal_call(env, error_id, method_name)
       return no_errors_json_response unless @error_state
-      return invalid_error_json_response if opts[:id] != @error_state.id
+      return invalid_error_json_response if error_id != @error_state.id
 
       env["rack.input"].rewind
-      error_page = ErrorPage.new(@error_state, env)
-      response = error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
+      error_page = ErrorPage.new(@error_state)
+      response = error_page.send("do_#{method_name}", JSON.parse(env["rack.input"].read))
       [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
     end
 

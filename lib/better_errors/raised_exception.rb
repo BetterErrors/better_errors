@@ -3,20 +3,25 @@ module BetterErrors
   class RaisedException
     attr_reader :exception
 
-    def initialize(exception)
+    def initialize(exception, cause_index = 0)
       if exception.respond_to?(:original_exception) && exception.original_exception
         # This supports some specific Rails exceptions, and is not intended to act the same as `#cause`.
         exception = exception.original_exception
       end
 
       @exception = exception
+      @cause_index = cause_index
 
       # FIXME: refactor massage_syntax_error so that it works without modifying instance variables
       # massage_syntax_error
     end
 
+    attr_reader :cause_index
+
     def cause
-      @cause ||= RaisedException.new(exception.cause)
+      return unless exception.cause
+
+      @cause ||= RaisedException.new(exception.cause, cause_index + 1)
     end
 
     def type

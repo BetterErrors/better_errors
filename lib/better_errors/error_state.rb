@@ -6,8 +6,8 @@ module BetterErrors
   # about it, and cache things used to access it, like REPL instances.
   # @private
   class ErrorState
-    def initialize(whole_exception, env)
-      @whole_exception = RaisedException.new(whole_exception)
+    def initialize(top_exception, env)
+      @top_exception = RaisedException.new(top_exception)
       @env = env
       @repls = []
     end
@@ -16,7 +16,17 @@ module BetterErrors
       @id ||= SecureRandom.hex(8)
     end
 
-    attr_reader :whole_exception
+    attr_reader :top_exception
+
+    def exception_for_cause_index(index)
+      begin
+        exception = top_exception
+        index.times do
+          exception = exception.cause if exception
+        end
+        exception
+      end
+    end
 
     def cached_repl_for(index)
       @repls[index] ||= yield

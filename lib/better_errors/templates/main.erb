@@ -744,6 +744,16 @@
         <header class="exception">
             <h2><strong><%= exception_type %></strong> <span>at <%= request_path %></span></h2>
             <p><%= exception_message %></p>
+            <% if exception_actions.any? %>
+                <% exception_actions.each do |action, _| %>
+                    <form class="button_to" method="post" action="<%= ActionDispatch::ActionableExceptions.endpoint %>">
+                        <input type="submit" value="<%= action %>">
+                        <input type="hidden" name="action" value="<%= action %>">
+                        <input type="hidden" name="error" value="<%= exception_type %>">
+                        <input type="hidden" name="location" value="<%= request_path %>">
+                    </form>
+                <% end %>
+            <% end %>
         </header>
     </div>
 

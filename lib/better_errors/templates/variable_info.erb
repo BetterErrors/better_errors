@@ -1,7 +1,14 @@
 <header class="trace_info clearfix">
     <div class="title">
         <h2 class="name"><%= @frame.name %></h2>
-        <div class="location"><span class="filename"><a href="<%= editor_url(@frame) %>" target="_blank"><%= @frame.pretty_path %></a></span></div>
+        <div class="location">
+          <span class="filename">
+            <a
+              href="<%= editor_url(@frame) %>"
+              <%= ENV.key?('BETTER_ERRORS_INSIDE_FRAME') ? "target=_blank" : '' %>
+            ><%= @frame.pretty_path %></a>
+          </span>
+        </div>
     </div>
     <div class="code_block clearfix">
         <%== html_formatted_code_block @frame %>

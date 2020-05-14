@@ -76,7 +76,37 @@ module BetterErrors
     end
 
     context "variable inspection" do
+      let(:html) { error_page.do_variables("index" => 0)[:html] }
       let(:exception) { exception_binding.eval("raise") rescue $! }
+
+      it 'includes an editor link for the full path of the current frame' do
+        expect(html).to have_tag('.location .filename') do
+          with_tag('a[href*="better_errors"]')
+        end
+      end
+
+      context 'when BETTER_ERRORS_INSIDE_FRAME is set in the environment' do
+        before do
+          ENV['BETTER_ERRORS_INSIDE_FRAME'] = '1'
+        end
+        after do
+          ENV['BETTER_ERRORS_INSIDE_FRAME'] = nil
+        end
+
+        it 'includes an editor link with target=_blank' do
+          expect(html).to have_tag('.location .filename') do
+            with_tag('a[href*="better_errors"][target="_blank"]')
+          end
+        end
+      end
+
+      context 'when BETTER_ERRORS_INSIDE_FRAME is not set in the environment' do
+        it 'includes an editor link without target=_blank' do
+          expect(html).to have_tag('.location .filename') do
+            with_tag('a[href*="better_errors"]:not([target="_blank"])')
+          end
+        end
+      end
 
       context "when binding_of_caller is loaded" do
         before do
@@ -84,7 +114,6 @@ module BetterErrors
         end
 
         it "shows local variables" do
-          html = error_page.do_variables("index" => 0)[:html]
           expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: 'local_a')
             with_tag('pre', text: ':value_for_local_a')
@@ -96,7 +125,6 @@ module BetterErrors
         end
 
         it "shows instance variables" do
-          html = error_page.do_variables("index" => 0)[:html]
           expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: '@inst_c')
             with_tag('pre', text: ':value_for_inst_c')
@@ -123,7 +151,6 @@ module BetterErrors
           }
 
           it "does not include that value" do
-            html = error_page.do_variables("index" => 0)[:html]
             expect(html).to have_tag('div.variables tr') do
               with_tag('td.name', text: 'local_a')
               with_tag('pre', text: ':value_for_local_a')
@@ -147,7 +174,6 @@ module BetterErrors
 
         it "does not show filtered variables" do
           allow(BetterErrors).to receive(:ignored_instance_variables).and_return([:@inst_d])
-          html = error_page.do_variables("index" => 0)[:html]
           expect(html).to have_tag('div.variables tr') do
             with_tag('td.name', text: '@inst_c')
             with_tag('pre', text: ':value_for_inst_c')
@@ -174,7 +200,6 @@ module BetterErrors
               let(:content) { 'A' * 480 }
 
               it "shows the variable content" do
-                html = error_page.do_variables("index" => 0)[:html]
                 expect(html).to have_tag('div.variables', text: %r{#{content}})
               end
             end
@@ -199,7 +224,6 @@ module BetterErrors
                 }
 
                 it "shows the variable content" do
-                  html = error_page.do_variables("index" => 0)[:html]
                   expect(html).to have_tag('div.variables', text: /shortval/)
                 end
               end
@@ -212,7 +236,6 @@ module BetterErrors
                 let(:content) { 'A' * 1101 }
 
                 it "includes an indication that the variable was too large" do
-                  html = error_page.do_variables("index" => 0)[:html]
                   expect(html).not_to have_tag('div.variables', text: %r{#{content}})
                   expect(html).to have_tag('div.variables', text: /Object too large/)
                 end
@@ -230,7 +253,6 @@ module BetterErrors
                 }
 
                 it "does not attempt to show the class name" do
-                  html = error_page.do_variables("index" => 0)[:html]
                   expect(html).to have_tag('div.variables tr') do
                     with_tag('td.name', text: '@big_anonymous')
                     with_tag('.unsupported', text: /Object too large/)
@@ -258,7 +280,6 @@ module BetterErrors
               let(:content) { 'A' * 480 }
 
               it "shows the variable content" do
-                html = error_page.do_variables("index" => 0)[:html]
                 expect(html).to have_tag('div.variables', text: %r{#{content}})
               end
             end
@@ -283,7 +304,6 @@ module BetterErrors
                 }
 
                 it "shows the variable content" do
-                  html = error_page.do_variables("index" => 0)[:html]
                   expect(html).to have_tag('div.variables', text: /shortval/)
                 end
               end
@@ -297,7 +317,6 @@ module BetterErrors
 
                 it "includes an indication that the variable was too large" do
                   
-                  html = error_page.do_variables("index" => 0)[:html]
                   expect(html).not_to have_tag('div.variables', text: %r{#{content}})
                   expect(html).to have_tag('div.variables', text: /Object too large/)
                 end
@@ -316,7 +335,6 @@ module BetterErrors
               }
 
               it "does not attempt to show the class name" do
-                html = error_page.do_variables("index" => 0)[:html]
                 expect(html).to have_tag('div.variables tr') do
                   with_tag('td.name', text: '@big_anonymous')
                   with_tag('.unsupported', text: /Object too large/)
@@ -340,7 +358,6 @@ module BetterErrors
           let(:content) { 'A' * 100_001 }
 
           it "includes the content of large variables" do
-            html = error_page.do_variables("index" => 0)[:html]
             expect(html).to have_tag('div.variables', text: %r{#{content}})
             expect(html).not_to have_tag('div.variables', text: /Object too large/)
           end
@@ -353,7 +370,6 @@ module BetterErrors
         end
 
         it "tells the user to add binding_of_caller to their gemfile to get fancy features" do
-          html = error_page.do_variables("index" => 0)[:html]
           expect(html).not_to have_tag('div.variables', text: /gem "binding_of_caller"/)
         end
       end

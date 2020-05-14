@@ -59,7 +59,7 @@ module BetterErrors
     end
 
     def exception_message
-      exception.message.lstrip
+      exception.message.strip.gsub(/(\r?\n\s*\r?\n)+/, "\n")
     end
 
     def active_support_actions

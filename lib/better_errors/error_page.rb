@@ -28,6 +28,11 @@ module BetterErrors
 
     def render(template_name = "main")
       binding.eval(self.class.template(template_name).src)
+    rescue => e
+      # Fix the backtrace, which doesn't identify the template that failed (within Better Errors).
+      # We don't know the line number, so just injecting the template path has to be enough.
+      e.backtrace.unshift "#{self.class.template_path(template_name)}:0"
+      raise
     end
 
     def do_variables(opts)

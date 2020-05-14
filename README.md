@@ -35,6 +35,28 @@ end
 
 _Note: If you discover that Better Errors isn't working - particularly after upgrading from version 0.5.0 or less - be sure to set `config.consider_all_requests_local = true` in `config/environments/development.rb`._
 
+### Optional: Set `EDITOR`
+
+For many reasons outside of Better Errors, you should have the `EDITOR` environment variable set to your preferred
+editor.
+Better Errors, like many other tools, will use that environment variable to show a link that opens your
+editor to the file and line from the console.
+
+By default the links will open TextMate-protocol links.
+
+To see if your editor is supported or to set up a different editor, see [the wiki](https://github.com/BetterErrors/better_errors/wiki/Link-to-your-editor).
+
+### Optional: Set `BETTER_ERRORS_INSIDE_FRAME`
+
+If your application is running inside of an iframe, or if you have a Content Security Policy that disallows links
+to other protocols, the editor links will not work.
+
+To work around this set `BETTER_ERRORS_INSIDE_FRAME=1` in the environment, and the links will include `target=_blank`,
+allowing the link to open regardless of the policy.
+
+_This works because it opens the editor from a new browser tab, escaping from the restrictions of your site._
+_Unfortunately it leaves behind an empty tab each time, so only use this if needed._
+
 ## Security
 
 **NOTE:** It is *critical* you put better\_errors only in the **development** section of your Gemfile.

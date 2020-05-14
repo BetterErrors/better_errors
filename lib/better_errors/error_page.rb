@@ -1,6 +1,5 @@
 require "cgi"
 require "json"
-require "securerandom"
 
 module BetterErrors
   # @private
@@ -13,17 +12,10 @@ module BetterErrors
       Erubi::Engine.new(File.read(template_path(template_name)), escape: true)
     end
 
-    attr_reader :exception, :env, :repls
-
-    def initialize(exception, env)
-      @exception = RaisedException.new(exception)
+    def initialize(error_state, env)
+      @error_state = error_state
       @env = env
       @start_time = Time.now.to_f
-      @repls = []
-    end
-
-    def id
-      @id ||= SecureRandom.hex(8)
     end
 
     def render(template_name = "main")
@@ -50,13 +42,22 @@ module BetterErrors
         return { error: "REPL unavailable in this stack frame" }
       end
 
-      @repls[index] ||= REPL.provider.new(binding, exception)
+      repl = error_state.cached_repl_for(index) { REPL.provider.new(binding, exception) }
 
-      eval_and_respond(index, code)
+      eval_and_respond(repl, code)
     end
 
-    def backtrace_frames
-      exception.backtrace
+    private
+
+    attr_reader :error_state
+    attr_reader :env
+
+    def exception
+      error_state.whole_exception
+    end
+
+    def exception_id
+      error_state.id
     end
 
     def exception_type
@@ -64,13 +65,15 @@ module BetterErrors
     end
 
     def exception_message
-      exception.message.strip.gsub(/(\r?\n\s*\r?\n)+/, "\n")
+      exception.message
+    end
+
+    def backtrace_frames
+      exception.backtrace
     end
 
     def active_support_actions
-      return [] unless defined?(ActiveSupport::ActionableError)
-
-      ActiveSupport::ActionableError.actions(exception.type)
+      exception.active_support_actions
     end
 
     def action_dispatch_action_endpoint
@@ -87,26 +90,24 @@ module BetterErrors
       application_frames.first || backtrace_frames.first
     end
 
-    private
-
     def editor_url(frame)
       BetterErrors.editor[frame.filename, frame.line]
     end
 
     def rack_session
-      env['rack.session']
+      error_state.rack_session
     end
 
     def rails_params
-      env['action_dispatch.request.parameters']
+      error_state.rails_params
     end
 
     def uri_prefix
-      env["SCRIPT_NAME"] || ""
+      error_state.uri_prefix
     end
 
     def request_path
-      env["PATH_INFO"]
+      error_state.request_path
     end
 
     def html_formatted_code_block(frame)
@@ -137,8 +138,8 @@ module BetterErrors
       "<span class='unsupported'>(exception #{CGI.escapeHTML(e.class.to_s)} was raised in inspect)</span>"
     end
 
-    def eval_and_respond(index, code)
-      result, prompt, prefilled_input = @repls[index].send_input(code)
+    def eval_and_respond(repl, code)
+      result, prompt, prefilled_input = repl.send_input(code)
 
       {
         highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil),

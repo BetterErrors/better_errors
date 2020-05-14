@@ -1,7 +1,7 @@
 # @private
 module BetterErrors
   class RaisedException
-    attr_reader :exception, :message, :backtrace
+    attr_reader :exception
 
     def initialize(exception)
       if exception.respond_to?(:original_exception) && exception.original_exception
@@ -10,31 +10,57 @@ module BetterErrors
       end
 
       @exception = exception
-      @message = exception.message
 
-      setup_backtrace
-      massage_syntax_error
+      # FIXME: refactor massage_syntax_error so that it works without modifying instance variables
+      # massage_syntax_error
+    end
+
+    def cause
+      @cause ||= RaisedException.new(exception.cause)
     end
 
     def type
       exception.class
     end
 
-  private
+    def frames
+      exception.backtrace
+    end
+
+    def message
+      exception.message.strip.gsub(/(\r?\n\s*\r?\n)+/, "\n")
+    end
+
+    def backtrace
+      @backtrace ||= if has_bindings?
+        backtrace_from_bindings
+      else
+        backtrace_from_backtrace
+      end
+    end
+
+    def cleaned_backtrace
+      if defined?(Rails) && defined?(Rails.backtrace_cleaner)
+        Rails.backtrace_cleaner.clean backtrace.map(&:to_s)
+      else
+        backtrace
+      end
+    end
+
+    def active_support_actions
+      return [] unless defined?(ActiveSupport::ActionableError)
+
+      ActiveSupport::ActionableError.actions(exception)
+    end
+
+    private
+
     def has_bindings?
       exception.respond_to?(:__better_errors_bindings_stack) && exception.__better_errors_bindings_stack.any?
     end
 
-    def setup_backtrace
-      if has_bindings?
-        setup_backtrace_from_bindings
-      else
-        setup_backtrace_from_backtrace
-      end
-    end
-
-    def setup_backtrace_from_bindings
-      @backtrace = exception.__better_errors_bindings_stack.map { |binding|
+    def backtrace_from_bindings
+      exception.__better_errors_bindings_stack.map { |binding|
         if binding.respond_to?(:source_location) # Ruby >= 2.6
           file = binding.source_location[0]
           line = binding.source_location[1]
@@ -47,8 +73,8 @@ module BetterErrors
       }
     end
 
-    def setup_backtrace_from_backtrace
-      @backtrace = (exception.backtrace || []).map { |frame|
+    def backtrace_from_backtrace
+      (exception.backtrace || []).map { |frame|
         if /\A(?<file>.*?):(?<line>\d+)(:in `(?<name>.*)')?/ =~ frame
           StackFrame.new(file, line.to_i, name)
         end

@@ -83,17 +83,17 @@ module BetterErrors
     def protected_app_call(env)
       @app.call env
     rescue Exception => ex
-      @error_page = @handler.new ex, env
+      @error_state = ErrorState.new(ex, env)
       log_exception
       show_error_page(env, ex)
     end
 
     def show_error_page(env, exception=nil)
-      type, content = if @error_page
+      type, content = if @error_state
         if text?(env)
-          [ 'plain', @error_page.render('text') ]
+          [ 'plain', ErrorPage.new(@error_state, env).render('text') ]
         else
-          [ 'html', @error_page.render ]
+          [ 'html', ErrorPage.new(@error_state, env).render ]
         end
       else
         [ 'html', no_errors_page ]
@@ -115,26 +115,20 @@ module BetterErrors
     def log_exception
       return unless BetterErrors.logger
 
-      message = "\n#{@error_page.exception_type} - #{@error_page.exception_message}:\n"
-      message += backtrace_frames.map { |frame| "  #{frame}\n" }.join
+      # TODO: recursively print exception with cause
+      message = "\n#{@error_state.whole_exception.type} - #{@error_state.whole_exception.message}:\n"
+      message += @error_state.whole_exception.cleaned_backtrace.map { |frame| "  #{frame}\n" }.join
 
       BetterErrors.logger.fatal message
     end
 
-    def backtrace_frames
-      if defined?(Rails) && defined?(Rails.backtrace_cleaner)
-        Rails.backtrace_cleaner.clean @error_page.backtrace_frames.map(&:to_s)
-      else
-        @error_page.backtrace_frames
-      end
-    end
-
     def internal_call(env, opts)
-      return no_errors_json_response unless @error_page
-      return invalid_error_json_response if opts[:id] != @error_page.id
+      return no_errors_json_response unless @error_state
+      return invalid_error_json_response if opts[:id] != @error_state.id
 
       env["rack.input"].rewind
-      response = @error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
+      error_page = ErrorPage.new(@error_state, env)
+      response = error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
       [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
     end
 

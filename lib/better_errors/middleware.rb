@@ -71,10 +71,10 @@ module BetterErrors
 
     def better_errors_call(env)
       case env["PATH_INFO"]
-      when %r{/__better_errors/cause/(?<cause_index>.+)\z}
+      when %r{/__better_errors/cause=(?<cause_index>.+)\z}
         show_error_page_for_cause_index(env, $~[:cause_index])
-      when %r{/__better_errors/(?<id>.+?)/(?<method>\w+)\z}
-        internal_call(env, $~[:id], $~[:method])
+      when %r{/__better_errors/id=(?<id>.+?)/cause=(?<cause_index>.+)/method=(?<method>\w+)\z}
+        internal_call(env, $~[:id], $~[:cause_index], $~[:method])
       when %r{/__better_errors/?\z}
         show_error_page env
       else
@@ -152,12 +152,12 @@ module BetterErrors
       BetterErrors.logger.fatal message
     end
 
-    def internal_call(env, error_id, method_name)
+    def internal_call(env, error_id, cause_index, method_name)
       return no_errors_json_response unless @error_state
       return invalid_error_json_response if error_id != @error_state.id
 
       env["rack.input"].rewind
-      error_page = ErrorPage.new(@error_state)
+      error_page = ErrorPage.new(@error_state, cause_index)
       response = error_page.send("do_#{method_name}", JSON.parse(env["rack.input"].read))
       [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
     end

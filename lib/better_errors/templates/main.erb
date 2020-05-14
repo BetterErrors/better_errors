@@ -799,7 +799,8 @@
 <script>
 (function() {
 
-    var OID = "<%= exception_id %>";
+    var OID = "<%= error_state_id %>";
+    var causeIndex = <%= exception.cause_index %>;
 
     var previousFrame = null;
     var previousFrameInfo = null;
@@ -808,7 +809,7 @@
 
     function apiCall(method, opts, cb) {
         var req = new XMLHttpRequest();
-        req.open("POST", "//" + window.location.host + <%== uri_prefix.gsub("<", "&lt;").inspect %> + "/__better_errors/" + OID + "/" + method, true);
+        req.open("POST", "//" + window.location.host + <%== uri_prefix.gsub("<", "&lt;").inspect %> + "/__better_errors/id=" + OID + "/cause=" + causeIndex + "/method=" + method, true);
         req.setRequestHeader("Content-Type", "application/json");
         req.send(JSON.stringify(opts));
         req.onreadystatechange = function() {

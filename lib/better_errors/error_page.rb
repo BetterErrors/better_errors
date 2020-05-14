@@ -56,7 +56,7 @@ module BetterErrors
       @exception ||= error_state.exception_for_cause_index(cause_index)
     end
 
-    def exception_id
+    def error_state_id
       error_state.id
     end
 

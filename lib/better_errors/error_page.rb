@@ -62,9 +62,16 @@ module BetterErrors
       exception.message.lstrip
     end
 
-    def exception_actions
+    def active_support_actions
       return [] unless defined?(ActiveSupport::ActionableError)
+
       ActiveSupport::ActionableError.actions(exception.type)
+    end
+
+    def action_dispatch_action_endpoint
+      return unless defined?(ActionDispatch::ActionableExceptions)
+
+      ActionDispatch::ActionableExceptions.endpoint
     end
 
     def application_frames

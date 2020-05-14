@@ -63,7 +63,7 @@ module BetterErrors
         end
       end
 
-      context 'when ActiveSupport does provide any actions for this error type' do
+      context 'when ActiveSupport does not provide any actions for this error type' do
         let(:exception_class) {
           Class.new(StandardError)
         }

@@ -7,13 +7,6 @@ notifications:
     # https://coveralls.zendesk.com/hc/en-us/articles/203484329-Parallel-Build-Webhook
     - secure: "YnHYbTq51ySistjvOxsuNhyg4GLuUffEJstTYeGYXiBF7HG5h43IVYo8KNuLzwkgsOYBcNo+YMdQX7qCqJffSbhsr1FZRSzBmjFFxcyD4hu+ukM2theZ4mePVAZiePscYvQPRNY4hIb4d3egStJEytkalDhB3sOebF57tIaCssg="
 rvm:
-  - 2.2.10
-  - 2.3.8
-  - 2.4.9
-  - 2.5.7
-  - 2.6.5
-  - 2.7.0
-  - ruby-head
   - truffleruby-head
 gemfile:
   - gemfiles/rails42.gemfile
@@ -97,3 +90,15 @@ matrix:
       gemfile: gemfiles/rails42_boc.gemfile
     - rvm: ruby-head
       gemfile: gemfiles/rails42_haml.gemfile
+    - rvm: truffleruby-head
+      gemfile: gemfiles/rails42_boc.gemfile
+    - rvm: truffleruby-head
+      gemfile: gemfiles/rails50_boc.gemfile
+    - rvm: truffleruby-head
+      gemfile: gemfiles/rails51_boc.gemfile
+    - rvm: truffleruby-head
+      gemfile: gemfiles/rails52_boc.gemfile
+    - rvm: truffleruby-head
+      gemfile: gemfiles/rails60_boc.gemfile
+    - rvm: truffleruby-head
+      gemfile: gemfiles/rack_boc.gemfile

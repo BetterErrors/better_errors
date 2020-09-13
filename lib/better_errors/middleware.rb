@@ -110,16 +110,17 @@ module BetterErrors
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 
-      headers = {
-        "Content-Type" => "text/#{type}; charset=utf-8",
-      }
-      response = Rack::Response.new(content, status_code, headers)
+      response = Rack::Response.new(content, status_code, { "Content-Type" => "text/#{type}; charset=utf-8" })
 
       unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
         response.set_cookie(CSRF_TOKEN_COOKIE_NAME, value: csrf_token, httponly: true, same_site: :strict)
       end
 
-      response.finish
+      # In older versions of Rack, the body returned here is actually a Rack::BodyProxy which seems to be a bug.
+      # (It contains status, headers and body and does not act like an array of strings.)
+      # Since we already have status code and body here, there's no need to use the ones in the Rack::Response.
+      (_status_code, headers, _body) = response.finish
+      [status_code, headers, [content]]
     end
 
     def text?(env)

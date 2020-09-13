@@ -800,6 +800,7 @@
 (function() {
 
     var OID = "<%= id %>";
+    var csrfToken = "<%= csrf_token %>";
 
     var previousFrame = null;
     var previousFrameInfo = null;
@@ -810,6 +811,7 @@
         var req = new XMLHttpRequest();
         req.open("POST", "//" + window.location.host + <%== uri_prefix.gsub("<", "&lt;").inspect %> + "/__better_errors/" + OID + "/" + method, true);
         req.setRequestHeader("Content-Type", "application/json");
+        opts.csrfToken = csrfToken;
         req.send(JSON.stringify(opts));
         req.onreadystatechange = function() {
             if(req.readyState == 4) {

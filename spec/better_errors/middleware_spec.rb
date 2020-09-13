@@ -161,7 +161,7 @@ module BetterErrors
 
       it "returns ExceptionWrapper's status_code" do
         ad_ew = double("ActionDispatch::ExceptionWrapper")
-        allow(ad_ew).to receive('new').with({}, exception) { double("ExceptionWrapper", status_code: 404) }
+        allow(ad_ew).to receive('new').with(anything, exception) { double("ExceptionWrapper", status_code: 404) }
         stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
 
         status, headers, body = app.call({})
@@ -229,18 +229,17 @@ module BetterErrors
     context "requesting the variables for a specific frame" do
       let(:env) { {} }
       let(:result) {
-        app.call(
-          "PATH_INFO" => "/__better_errors/#{id}/#{method}",
-          # This is a POST request, and this is the body of the request.
-          "rack.input" => StringIO.new('{"index": 0}'),
-        )
+        app.call(request_env)
       }
+      let(:request_env) {
+        Rack::MockRequest.env_for("/__better_errors/#{id}/variables", input: StringIO.new(JSON.dump(request_body_data)))
+      }
+      let(:request_body_data) { {"index": 0} }
       let(:status) { result[0] }
       let(:headers) { result[1] }
       let(:body) { result[2].join }
       let(:json_body) { JSON.parse(body) }
       let(:id) { 'abcdefg' }
-      let(:method) { 'variables' }
 
       context 'when no errors have been recorded' do
         it 'returns a JSON error' do
@@ -291,14 +290,44 @@ module BetterErrors
           end
         end
 
-        context 'and it matches the request', :focus do
+        context 'and its ID matches the requested ID' do
           let(:id) { error_page.id }
 
-          it 'returns a JSON error' do
-            expect(error_page).to receive(:do_variables).and_return(html: "<content>")
-            expect(json_body).to match(
-              'html' => '<content>',
-            )
+          context 'when the body csrfToken matches the CSRF token cookie' do
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken123"
+            end
+
+            it 'returns the HTML content' do
+              expect(error_page).to receive(:do_variables).and_return(html: "<content>")
+              expect(json_body).to match(
+                'html' => '<content>',
+              )
+            end
+          end
+
+          context 'when the body csrfToken does not match the CSRF token cookie' do
+            let(:request_body_data) { {"index": 0, "csrfToken": "csrfToken123"} }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken456"
+            end
+
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
+          end
+
+          context 'when there is no CSRF token in the request' do
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
           end
         end
       end

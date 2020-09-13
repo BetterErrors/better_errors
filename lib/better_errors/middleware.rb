@@ -178,14 +178,14 @@ module BetterErrors
         "The application has been restarted since this page loaded, " +
           "or the framework is reloading all gems before each request "
       end
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
         error: 'No exception information available',
         explanation: explanation,
       )]]
     end
 
     def invalid_error_json_response
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
         error: "Session expired",
         explanation: "This page was likely opened from a previous exception, " +
           "and the exception is no longer available in memory.",
@@ -193,7 +193,7 @@ module BetterErrors
     end
 
     def invalid_csrf_token_json_response
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
         error: "Invalid CSRF Token",
         explanation: "The browser session might have been cleared, " +
           "or something went wrong.",

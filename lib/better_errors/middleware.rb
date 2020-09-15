@@ -156,6 +156,8 @@ module BetterErrors
       body = JSON.parse(request.body.read)
       return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME] == body['csrfToken']
 
+      return not_acceptable_json_response unless request.content_type == 'application/json'
+
       response = @error_page.send("do_#{opts[:method]}", body)
       [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(response)]]
     end
@@ -198,6 +200,13 @@ module BetterErrors
         error: "Invalid CSRF Token",
         explanation: "The browser session might have been cleared, " +
           "or something went wrong.",
+      )]]
+    end
+
+    def not_acceptable_json_response
+      [406, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Request not acceptable",
+        explanation: "The internal request did not match an acceptable content type.",
       )]]
     end
   end

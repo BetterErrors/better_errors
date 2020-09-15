@@ -356,11 +356,30 @@ module BetterErrors
               request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken123"
             end
 
-            it 'returns the HTML content' do
-              expect(error_page).to receive(:do_variables).and_return(html: "<content>")
-              expect(json_body).to match(
-                'html' => '<content>',
-              )
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns JSON containing the HTML content' do
+                expect(error_page).to receive(:do_variables).and_return(html: "<content>")
+                expect(json_body).to match(
+                  'html' => '<content>',
+                )
+              end
+            end
+
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['HTTP_CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns a JSON error' do
+                expect(json_body).to match(
+                  'error' => 'Request not acceptable',
+                  'explanation' => /did not match an acceptable content type/,
+                )
+              end
             end
           end
 

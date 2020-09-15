@@ -294,7 +294,7 @@ module BetterErrors
       let(:request_env) {
         Rack::MockRequest.env_for("/__better_errors/#{id}/variables", input: StringIO.new(JSON.dump(request_body_data)))
       }
-      let(:request_body_data) { {"index": 0} }
+      let(:request_body_data) { { "index" => 0 } }
       let(:json_body) { JSON.parse(body) }
       let(:id) { 'abcdefg' }
 
@@ -384,7 +384,7 @@ module BetterErrors
           end
 
           context 'when the body csrfToken does not match the CSRF token cookie' do
-            let(:request_body_data) { {"index": 0, "csrfToken": "csrfToken123"} }
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
             before do
               request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken456"
             end
@@ -406,6 +406,150 @@ module BetterErrors
             end
           end
         end
+      end
+    end
+
+    context "requesting eval for a specific frame" do
+      let(:env) { {} }
+      let(:response_env) {
+        app.call(request_env)
+      }
+      let(:request_env) {
+        Rack::MockRequest.env_for("/__better_errors/#{id}/eval", input: StringIO.new(JSON.dump(request_body_data)))
+      }
+      let(:request_body_data) { { "index" => 0, source: "do_a_thing" } }
+      let(:json_body) { JSON.parse(body) }
+      let(:id) { 'abcdefg' }
+
+      context 'when no errors have been recorded' do
+        it 'returns a JSON error' do
+          expect(json_body).to match(
+            'error' => 'No exception information available',
+            'explanation' => /application has been restarted/,
+          )
+        end
+
+        context 'when Middleman is in use' do
+          let!(:middleman) { class_double("Middleman").as_stubbed_const }
+          it 'returns a JSON error' do
+            expect(json_body['explanation'])
+              .to match(/Middleman reloads all dependencies/)
+          end
+        end
+
+        context 'when Shotgun is in use' do
+          let!(:shotgun) { class_double("Shotgun").as_stubbed_const }
+
+          it 'returns a JSON error' do
+            expect(json_body['explanation'])
+              .to match(/The shotgun gem/)
+          end
+
+          context 'when Hanami is also in use' do
+            let!(:hanami) { class_double("Hanami").as_stubbed_const }
+            it 'returns a JSON error' do
+              expect(json_body['explanation'])
+                .to match(/--no-code-reloading/)
+            end
+          end
+        end
+      end
+
+      context 'when an error has been recorded' do
+        let(:error_page) { ErrorPage.new(exception, env) }
+        before do
+          app.instance_variable_set('@error_page', error_page)
+        end
+
+        context 'but it does not match the request' do
+          it 'returns a JSON error' do
+            expect(json_body).to match(
+              'error' => 'Session expired',
+              'explanation' => /no longer available in memory/,
+            )
+          end
+        end
+
+        context 'and its ID matches the requested ID' do
+          let(:id) { error_page.id }
+
+          context 'when the body csrfToken matches the CSRF token cookie' do
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken123"
+            end
+
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns JSON containing the eval result' do
+                expect(error_page).to receive(:do_eval).and_return(prompt: '#', result: "much_stuff_here")
+                expect(json_body).to match(
+                  'prompt' => '#',
+                  'result' => 'much_stuff_here',
+                )
+              end
+            end
+
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['HTTP_CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns a JSON error' do
+                expect(json_body).to match(
+                  'error' => 'Request not acceptable',
+                  'explanation' => /did not match an acceptable content type/,
+                )
+              end
+            end
+          end
+
+          context 'when the body csrfToken does not match the CSRF token cookie' do
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken456"
+            end
+
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
+          end
+
+          context 'when there is no CSRF token in the request' do
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
+          end
+        end
+      end
+    end
+
+    context "requesting an invalid internal method" do
+      let(:env) { {} }
+      let(:response_env) {
+        app.call(request_env)
+      }
+      let(:request_env) {
+        Rack::MockRequest.env_for("/__better_errors/#{id}/invalid", input: StringIO.new(JSON.dump(request_body_data)))
+      }
+      let(:request_body_data) { { "index" => 0 } }
+      let(:json_body) { JSON.parse(body) }
+      let(:id) { 'abcdefg' }
+
+      it 'returns a JSON error' do
+        expect(json_body).to match(
+          'error' => 'Not found',
+          'explanation' => /recognized internal call/,
+        )
       end
     end
   end

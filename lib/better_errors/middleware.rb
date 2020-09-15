@@ -1,5 +1,6 @@
 require "json"
 require "ipaddr"
+require "securerandom"
 require "set"
 require "rack"
 
@@ -38,6 +39,8 @@ module BetterErrors
 
     allow_ip! "127.0.0.0/8"
     allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
+
+    CSRF_TOKEN_COOKIE_NAME = 'BetterErrors-CSRF-Token'
 
     # A new instance of BetterErrors::Middleware
     #
@@ -89,11 +92,14 @@ module BetterErrors
     end
 
     def show_error_page(env, exception=nil)
+      request = Rack::Request.new(env)
+      csrf_token = request.cookies[CSRF_TOKEN_COOKIE_NAME] || SecureRandom.uuid
+
       type, content = if @error_page
         if text?(env)
           [ 'plain', @error_page.render('text') ]
         else
-          [ 'html', @error_page.render ]
+          [ 'html', @error_page.render('main', csrf_token) ]
         end
       else
         [ 'html', no_errors_page ]
@@ -104,12 +110,22 @@ module BetterErrors
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 
-      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+      response = Rack::Response.new(content, status_code, { "Content-Type" => "text/#{type}; charset=utf-8" })
+
+      unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
+        response.set_cookie(CSRF_TOKEN_COOKIE_NAME, value: csrf_token, httponly: true, same_site: :strict)
+      end
+
+      # In older versions of Rack, the body returned here is actually a Rack::BodyProxy which seems to be a bug.
+      # (It contains status, headers and body and does not act like an array of strings.)
+      # Since we already have status code and body here, there's no need to use the ones in the Rack::Response.
+      (_status_code, headers, _body) = response.finish
+      [status_code, headers, [content]]
     end
 
     def text?(env)
       env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
-      !env["HTTP_ACCEPT"].to_s.include?('html')
+        !env["HTTP_ACCEPT"].to_s.include?('html')
     end
 
     def log_exception
@@ -133,9 +149,15 @@ module BetterErrors
       return no_errors_json_response unless @error_page
       return invalid_error_json_response if opts[:id] != @error_page.id
 
-      env["rack.input"].rewind
-      response = @error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
+      request = Rack::Request.new(env)
+      return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
+
+      request.body.rewind
+      body = JSON.parse(request.body.read)
+      return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME] == body['csrfToken']
+
+      response = @error_page.send("do_#{opts[:method]}", body)
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(response)]]
     end
 
     def no_errors_page
@@ -157,17 +179,25 @@ module BetterErrors
         "The application has been restarted since this page loaded, " +
           "or the framework is reloading all gems before each request "
       end
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
         error: 'No exception information available',
         explanation: explanation,
       )]]
     end
 
     def invalid_error_json_response
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
         error: "Session expired",
         explanation: "This page was likely opened from a previous exception, " +
           "and the exception is no longer available in memory.",
+      )]]
+    end
+
+    def invalid_csrf_token_json_response
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Invalid CSRF Token",
+        explanation: "The browser session might have been cleared, " +
+          "or something went wrong.",
       )]]
     end
   end

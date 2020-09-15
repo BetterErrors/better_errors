@@ -10,12 +10,32 @@ module BetterErrors
     its(:message)   { is_expected.to eq "whoops" }
     its(:type)      { is_expected.to eq RuntimeError }
 
-    context "when the exception wraps another exception" do
+    context 'when the exception is an ActionView::Template::Error that responds to #cause (Rails 6+)' do
+      before do
+        stub_const(
+          "ActionView::Template::Error",
+          Class.new(StandardError) do
+            def cause
+              RuntimeError.new("something went wrong!")
+            end
+          end
+        )
+      end
+      let(:exception) {
+        ActionView::Template::Error.new("undefined method `something!' for #<Class:0x00deadbeef>")
+      }
+
+      its(:message) { is_expected.to eq "something went wrong!" }
+      its(:type) { is_expected.to eq RuntimeError }
+    end
+
+    context 'when the exception is a Rails < 6 exception that has an #original_exception' do
       let(:original_exception) { RuntimeError.new("something went wrong!") }
       let(:exception) { double(:original_exception => original_exception) }
 
       its(:exception) { is_expected.to eq original_exception }
-      its(:message)   { is_expected.to eq "something went wrong!" }
+      its(:message) { is_expected.to eq "something went wrong!" }
+      its(:type) { is_expected.to eq RuntimeError }
     end
 
     context "when the exception is a SyntaxError" do
@@ -50,35 +70,20 @@ module BetterErrors
       end
     end
 
-    context "when the exception is an ActionView::Template::Error" do
-      before do
-        stub_const(
-          "ActionView::Template::Error",
-          Class.new(StandardError) do
-            def file_name
-              "app/views/foo/bar.haml"
-            end
-
-            def line_number
-              42
-            end
-          end
-        )
-      end
-
-      let(:exception) {
-        ActionView::Template::Error.new("undefined method `something!' for #<Class:0x00deadbeef>")
-      }
-
-      its(:message) { is_expected.to eq "undefined method `something!' for #<Class:0x00deadbeef>" }
-      its(:type)    { is_expected.to eq ActionView::Template::Error }
-
-      it "has the right filename and line number in the backtrace" do
-        expect(subject.backtrace.first.filename).to eq("app/views/foo/bar.haml")
-        expect(subject.backtrace.first.line).to eq(42)
-      end
-    end
-
+    # context "when the exception is an ActionView::Template::Error" do
+    #
+    #   let(:exception) {
+    #     ActionView::Template::Error.new("undefined method `something!' for #<Class:0x00deadbeef>")
+    #   }
+    #
+    #   its(:message) { is_expected.to eq "undefined method `something!' for #<Class:0x00deadbeef>" }
+    #
+    #   it "has the right filename and line number in the backtrace" do
+    #     expect(subject.backtrace.first.filename).to eq("app/views/foo/bar.haml")
+    #     expect(subject.backtrace.first.line).to eq(42)
+    #   end
+    # end
+    #
     context "when the exception is a Coffeelint syntax error" do
       before do
         stub_const("Sprockets::Coffeelint::Error", Class.new(SyntaxError))

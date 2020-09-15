@@ -75,7 +75,7 @@ module BetterErrors
     def better_errors_call(env)
       case env["PATH_INFO"]
       when %r{/__better_errors/(?<id>.+?)/(?<method>\w+)\z}
-        internal_call env, $~
+        internal_call(env, $~[:id], $~[:method])
       when %r{/__better_errors/?\z}
         show_error_page env
       else
@@ -145,9 +145,10 @@ module BetterErrors
       end
     end
 
-    def internal_call(env, opts)
+    def internal_call(env, id, method)
+      return not_found_json_response unless %w[variables eval].include?(method)
       return no_errors_json_response unless @error_page
-      return invalid_error_json_response if opts[:id] != @error_page.id
+      return invalid_error_json_response if id != @error_page.id
 
       request = Rack::Request.new(env)
       return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
@@ -156,7 +157,9 @@ module BetterErrors
       body = JSON.parse(request.body.read)
       return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME] == body['csrfToken']
 
-      response = @error_page.send("do_#{opts[:method]}", body)
+      return not_acceptable_json_response unless request.content_type == 'application/json'
+
+      response = @error_page.send("do_#{method}", body)
       [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(response)]]
     end
 
@@ -198,6 +201,20 @@ module BetterErrors
         error: "Invalid CSRF Token",
         explanation: "The browser session might have been cleared, " +
           "or something went wrong.",
+      )]]
+    end
+
+    def not_found_json_response
+      [404, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Not found",
+        explanation: "Not a recognized internal call.",
+      )]]
+    end
+
+    def not_acceptable_json_response
+      [406, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Request not acceptable",
+        explanation: "The internal request did not match an acceptable content type.",
       )]]
     end
   end

@@ -4,8 +4,18 @@ module BetterErrors
     attr_reader :exception, :message, :backtrace
 
     def initialize(exception)
-      if exception.respond_to?(:original_exception) && exception.original_exception
-        # This supports some specific Rails exceptions, and is not intended to act the same as `#cause`.
+      if exception.class.name == "ActionView::Template::Error" && exception.respond_to?(:cause)
+        # Rails 6+ exceptions of this type wrap the "real" exception, and the real exception
+        # is actually more useful than the ActionView-provided wrapper. Once Better Errors
+        # supports showing all exceptions in the cause stack, this should go away. Or perhaps
+        # this can be changed to provide guidance by showing the second error in the cause stack
+        # under this condition.
+        exception = exception.cause if exception.cause
+      elsif exception.respond_to?(:original_exception) && exception.original_exception
+        # This supports some specific Rails exceptions, and this is not intended to act the same as
+        # the Ruby's {Exception#cause}.
+        # It's possible this should only support ActionView::Template::Error, but by not changing
+        # this we're preserving longstanding behavior of Better Errors with Rails < 6.
         exception = exception.original_exception
       end
 
@@ -57,10 +67,6 @@ module BetterErrors
 
     def massage_syntax_error
       case exception.class.to_s
-      when "ActionView::Template::Error"
-        if exception.respond_to?(:file_name) && exception.respond_to?(:line_number)
-          backtrace.unshift(StackFrame.new(exception.file_name, exception.line_number.to_i, "view template"))
-        end
       when "Haml::SyntaxError", "Sprockets::Coffeelint::Error"
         if /\A(.+?):(\d+)/ =~ exception.backtrace.first
           backtrace.unshift(StackFrame.new($1, $2.to_i, ""))

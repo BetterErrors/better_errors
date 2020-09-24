@@ -209,13 +209,13 @@ module BetterErrors
       context 'when a CSRF token cookie is not specified' do
         it 'includes a newly-generated CSRF token cookie' do
           expect(headers).to include(
-            'Set-Cookie' => /BetterErrors-CSRF-Token=[-a-z0-9]+; HttpOnly; SameSite=Strict/
+            'Set-Cookie' => /BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=[-a-z0-9]+; path=\/; HttpOnly; SameSite=Strict/,
           )
         end
       end
 
       context 'when a CSRF token cookie is specified' do
-        let(:response_env) { app.call({ 'HTTP_COOKIE' => 'BetterErrors-CSRF-Token=abc123' }) }
+        let(:response_env) { app.call({ 'HTTP_COOKIE' => "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=abc123" }) }
 
         it 'does not set a new CSRF token cookie' do
           expect(headers).not_to include('Set-Cookie')
@@ -230,14 +230,14 @@ module BetterErrors
         end
 
         it 'includes the newly-generated CSRF token in the body of the page' do
-          matches = headers['Set-Cookie'].match(/BetterErrors-CSRF-Token=(?<tok>[-a-z0-9]+); HttpOnly; SameSite=Strict/)
+          matches = headers['Set-Cookie'].match(/BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=(?<tok>[-a-z0-9]+); path=\/; HttpOnly; SameSite=Strict/)
           expect(body).to include(matches[:tok])
         end
 
         context 'when a CSRF token cookie is specified' do
           let(:response_env) {
             app.call({
-              'HTTP_COOKIE' => 'BetterErrors-CSRF-Token=csrfTokenGHI',
+              'HTTP_COOKIE' => "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfTokenGHI",
               "HTTP_ACCEPT" => "text/html,application/xhtml+xml;q=0.9,*/*",
             })
           }
@@ -353,7 +353,7 @@ module BetterErrors
           context 'when the body csrfToken matches the CSRF token cookie' do
             let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
             before do
-              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken123"
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken123"
             end
 
             context 'when the Content-Type of the request is application/json' do
@@ -386,7 +386,7 @@ module BetterErrors
           context 'when the body csrfToken does not match the CSRF token cookie' do
             let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
             before do
-              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken456"
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken456"
             end
 
             it 'returns a JSON error' do
@@ -476,7 +476,7 @@ module BetterErrors
           context 'when the body csrfToken matches the CSRF token cookie' do
             let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
             before do
-              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken123"
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken123"
             end
 
             context 'when the Content-Type of the request is application/json' do
@@ -510,7 +510,7 @@ module BetterErrors
           context 'when the body csrfToken does not match the CSRF token cookie' do
             let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
             before do
-              request_env["HTTP_COOKIE"] = "BetterErrors-CSRF-Token=csrfToken456"
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken456"
             end
 
             it 'returns a JSON error' do

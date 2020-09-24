@@ -113,7 +113,7 @@ module BetterErrors
       response = Rack::Response.new(content, status_code, { "Content-Type" => "text/#{type}; charset=utf-8" })
 
       unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
-        response.set_cookie(CSRF_TOKEN_COOKIE_NAME, value: csrf_token, httponly: true, same_site: :strict)
+        response.set_cookie(CSRF_TOKEN_COOKIE_NAME, value: csrf_token, path: "/", httponly: true, same_site: :strict)
       end
 
       # In older versions of Rack, the body returned here is actually a Rack::BodyProxy which seems to be a bug.

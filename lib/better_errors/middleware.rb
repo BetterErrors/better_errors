@@ -40,7 +40,7 @@ module BetterErrors
     allow_ip! "127.0.0.0/8"
     allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
 
-    CSRF_TOKEN_COOKIE_NAME = "BetterErrors-#{VERSION}-CSRF-Token"
+    CSRF_TOKEN_COOKIE_NAME = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token"
 
     # A new instance of BetterErrors::Middleware
     #

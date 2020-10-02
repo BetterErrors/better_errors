@@ -3,6 +3,7 @@ require "erubi"
 require "coderay"
 require "uri"
 
+require "better_errors/version"
 require "better_errors/code_formatter"
 require "better_errors/inspectable_value"
 require "better_errors/error_page"
@@ -10,7 +11,6 @@ require "better_errors/middleware"
 require "better_errors/raised_exception"
 require "better_errors/repl"
 require "better_errors/stack_frame"
-require "better_errors/version"
 
 module BetterErrors
   POSSIBLE_EDITOR_PRESETS = [

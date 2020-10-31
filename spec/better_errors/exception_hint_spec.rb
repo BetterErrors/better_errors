@@ -33,6 +33,12 @@ RSpec.describe BetterErrors::ExceptionHint do
         it { is_expected.to eq("Something is `nil` when it probably shouldn't be.") }
       end
 
+      context 'on an unnamed object type' do
+        let(:val) { Class.new }
+
+        it { is_expected.to be_nil }
+      end
+
       context "on other values" do
         let(:val) { 42 }
 

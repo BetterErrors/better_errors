@@ -1,0 +1,9 @@
+source "https://rubygems.org"
+
+gem 'rack', RUBY_VERSION < '2.2.2' ? '~> 1.6' : '~> 2.0'
+gem "binding_of_caller"
+gem "pry", "~> 0.10.0"
+
+gem 'coveralls', require: false
+
+gemspec path: "../"

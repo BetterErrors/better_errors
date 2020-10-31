@@ -10,7 +10,7 @@ module BetterErrors
     end
 
     def self.template(template_name)
-      Erubis::EscapedEruby.new(File.read(template_path(template_name)))
+      Erubi::Engine.new(File.read(template_path(template_name)), escape: true)
     end
 
     attr_reader :exception, :env, :repls
@@ -26,8 +26,13 @@ module BetterErrors
       @id ||= SecureRandom.hex(8)
     end
 
-    def render(template_name = "main")
-      self.class.template(template_name).result binding
+    def render(template_name = "main", csrf_token = nil)
+      binding.eval(self.class.template(template_name).src)
+    rescue => e
+      # Fix the backtrace, which doesn't identify the template that failed (within Better Errors).
+      # We don't know the line number, so just injecting the template path has to be enough.
+      e.backtrace.unshift "#{self.class.template_path(template_name)}:0"
+      raise
     end
 
     def do_variables(opts)
@@ -41,21 +46,41 @@ module BetterErrors
       index = opts["index"].to_i
       code = opts["source"]
 
-      unless binding = backtrace_frames[index].frame_binding
+      unless (binding = backtrace_frames[index].frame_binding)
         return { error: "REPL unavailable in this stack frame" }
       end
 
-      result, prompt, prefilled_input =
-        (@repls[index] ||= REPL.provider.new(binding)).send_input(code)
+      @repls[index] ||= REPL.provider.new(binding, exception)
 
-      { result: result,
-        prompt: prompt,
-        prefilled_input: prefilled_input,
-        highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil) }
+      eval_and_respond(index, code)
     end
 
     def backtrace_frames
       exception.backtrace
+    end
+
+    def exception_type
+      exception.type
+    end
+
+    def exception_message
+      exception.message.strip.gsub(/(\r?\n\s*\r?\n)+/, "\n")
+    end
+
+    def exception_hint
+      exception.hint
+    end
+
+    def active_support_actions
+      return [] unless defined?(ActiveSupport::ActionableError)
+
+      ActiveSupport::ActionableError.actions(exception.type)
+    end
+
+    def action_dispatch_action_endpoint
+      return unless defined?(ActionDispatch::ActionableExceptions)
+
+      ActionDispatch::ActionableExceptions.endpoint
     end
 
     def application_frames
@@ -66,7 +91,8 @@ module BetterErrors
       application_frames.first || backtrace_frames.first
     end
 
-  private
+    private
+
     def editor_url(frame)
       BetterErrors.editor[frame.filename, frame.line]
     end
@@ -100,11 +126,30 @@ module BetterErrors
     end
 
     def inspect_value(obj)
-      CGI.escapeHTML(obj.inspect)
-    rescue NoMethodError
-      "<span class='unsupported'>(object doesn't support inspect)</span>"
-    rescue Exception
-      "<span class='unsupported'>(exception was raised in inspect)</span>"
+      if BetterErrors.ignored_classes.include? obj.class.name
+        "<span class='unsupported'>(Instance of ignored class. "\
+        "#{obj.class.name ? "Remove #{CGI.escapeHTML(obj.class.name)} from" : "Modify"}"\
+        " BetterErrors.ignored_classes if you need to see it.)</span>"
+      else
+        InspectableValue.new(obj).to_html
+      end
+    rescue BetterErrors::ValueLargerThanConfiguredMaximum
+      "<span class='unsupported'>(Object too large. "\
+        "#{obj.class.name ? "Modify #{CGI.escapeHTML(obj.class.name)}#inspect or a" : "A"}"\
+        "djust BetterErrors.maximum_variable_inspect_size if you need to see it.)</span>"
+    rescue Exception => e
+      "<span class='unsupported'>(exception #{CGI.escapeHTML(e.class.to_s)} was raised in inspect)</span>"
+    end
+
+    def eval_and_respond(index, code)
+      result, prompt, prefilled_input = @repls[index].send_input(code)
+
+      {
+        highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil),
+        prefilled_input:   prefilled_input,
+        prompt:            prompt,
+        result:            result
+      }
     end
   end
 end

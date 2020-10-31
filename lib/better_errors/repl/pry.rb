@@ -30,9 +30,13 @@ module BetterErrors
         ensure
           @buffer = ""
         end
+
+        def print(*args)
+          @buffer << args.join(' ')
+        end
       end
 
-      def initialize(binding)
+      def initialize(binding, exception)
         @fiber = Fiber.new do
           @pry.repl binding
         end
@@ -40,7 +44,13 @@ module BetterErrors
         @output = BetterErrors::REPL::Pry::Output.new
         @pry = ::Pry.new input: @input, output: @output
         @pry.hooks.clear_all if defined?(@pry.hooks.clear_all)
+        store_last_exception exception
         @fiber.resume
+      end
+
+      def store_last_exception(exception)
+        return unless defined? ::Pry::LastException
+        @pry.instance_variable_set(:@last_exception, ::Pry::LastException.new(exception.exception))
       end
 
       def send_input(str)

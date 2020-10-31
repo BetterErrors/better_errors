@@ -1,5 +1,6 @@
 require "json"
 require "ipaddr"
+require "securerandom"
 require "set"
 require "rack"
 
@@ -33,11 +34,13 @@ module BetterErrors
     # Adds an address to the set of IP addresses allowed to access Better
     # Errors.
     def self.allow_ip!(addr)
-      ALLOWED_IPS << IPAddr.new(addr)
+      ALLOWED_IPS << (addr.is_a?(IPAddr) ? addr : IPAddr.new(addr))
     end
 
     allow_ip! "127.0.0.0/8"
     allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
+
+    CSRF_TOKEN_COOKIE_NAME = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token"
 
     # A new instance of BetterErrors::Middleware
     #
@@ -72,7 +75,7 @@ module BetterErrors
     def better_errors_call(env)
       case env["PATH_INFO"]
       when %r{/__better_errors/(?<id>.+?)/(?<method>\w+)\z}
-        internal_call env, $~
+        internal_call(env, $~[:id], $~[:method])
       when %r{/__better_errors/?\z}
         show_error_page env
       else
@@ -89,53 +92,130 @@ module BetterErrors
     end
 
     def show_error_page(env, exception=nil)
+      request = Rack::Request.new(env)
+      csrf_token = request.cookies[CSRF_TOKEN_COOKIE_NAME] || SecureRandom.uuid
+
       type, content = if @error_page
         if text?(env)
           [ 'plain', @error_page.render('text') ]
         else
-          [ 'html', @error_page.render ]
+          [ 'html', @error_page.render('main', csrf_token) ]
         end
       else
         [ 'html', no_errors_page ]
       end
 
       status_code = 500
-      if defined? ActionDispatch::ExceptionWrapper
+      if defined?(ActionDispatch::ExceptionWrapper) && exception
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 
-      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+      response = Rack::Response.new(content, status_code, { "Content-Type" => "text/#{type}; charset=utf-8" })
+
+      unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
+        response.set_cookie(CSRF_TOKEN_COOKIE_NAME, value: csrf_token, path: "/", httponly: true, same_site: :strict)
+      end
+
+      # In older versions of Rack, the body returned here is actually a Rack::BodyProxy which seems to be a bug.
+      # (It contains status, headers and body and does not act like an array of strings.)
+      # Since we already have status code and body here, there's no need to use the ones in the Rack::Response.
+      (_status_code, headers, _body) = response.finish
+      [status_code, headers, [content]]
     end
 
     def text?(env)
       env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
-      !env["HTTP_ACCEPT"].to_s.include?('html')
+        !env["HTTP_ACCEPT"].to_s.include?('html')
     end
 
     def log_exception
       return unless BetterErrors.logger
 
-      message = "\n#{@error_page.exception.type} - #{@error_page.exception.message}:\n"
-      @error_page.backtrace_frames.each do |frame|
-        message << "  #{frame}\n"
-      end
+      message = "\n#{@error_page.exception_type} - #{@error_page.exception_message}:\n"
+      message += backtrace_frames.map { |frame| "  #{frame}\n" }.join
 
       BetterErrors.logger.fatal message
     end
 
-    def internal_call(env, opts)
-      if opts[:id] != @error_page.id
-        return [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(error: "Session expired")]]
+    def backtrace_frames
+      if defined?(Rails) && defined?(Rails.backtrace_cleaner)
+        Rails.backtrace_cleaner.clean @error_page.backtrace_frames.map(&:to_s)
+      else
+        @error_page.backtrace_frames
       end
+    end
 
-      env["rack.input"].rewind
-      response = @error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
+    def internal_call(env, id, method)
+      return not_found_json_response unless %w[variables eval].include?(method)
+      return no_errors_json_response unless @error_page
+      return invalid_error_json_response if id != @error_page.id
+
+      request = Rack::Request.new(env)
+      return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
+
+      request.body.rewind
+      body = JSON.parse(request.body.read)
+      return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME] == body['csrfToken']
+
+      return not_acceptable_json_response unless request.content_type == 'application/json'
+
+      response = @error_page.send("do_#{method}", body)
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(response)]]
     end
 
     def no_errors_page
       "<h1>No errors</h1><p>No errors have been recorded yet.</p><hr>" +
       "<code>Better Errors v#{BetterErrors::VERSION}</code>"
+    end
+
+    def no_errors_json_response
+      explanation = if defined? Middleman
+        "Middleman reloads all dependencies for each request, " +
+          "which breaks Better Errors."
+      elsif defined?(Shotgun) && defined?(Hanami)
+        "Hanami is likely running with code-reloading enabled, which is the default. " +
+          "You can disable this by running hanami with the `--no-code-reloading` option."
+      elsif defined? Shotgun
+        "The shotgun gem causes everything to be reloaded for every request. " +
+          "You can disable shotgun in the Gemfile temporarily to use Better Errors."
+      else
+        "The application has been restarted since this page loaded, " +
+          "or the framework is reloading all gems before each request "
+      end
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: 'No exception information available',
+        explanation: explanation,
+      )]]
+    end
+
+    def invalid_error_json_response
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Session expired",
+        explanation: "This page was likely opened from a previous exception, " +
+          "and the exception is no longer available in memory.",
+      )]]
+    end
+
+    def invalid_csrf_token_json_response
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Invalid CSRF Token",
+        explanation: "The browser session might have been cleared, " +
+          "or something went wrong.",
+      )]]
+    end
+
+    def not_found_json_response
+      [404, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Not found",
+        explanation: "Not a recognized internal call.",
+      )]]
+    end
+
+    def not_acceptable_json_response
+      [406, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Request not acceptable",
+        explanation: "The internal request did not match an acceptable content type.",
+      )]]
     end
   end
 end

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= exception.type %> at <%= request_path %></title>
+    <title><%= exception_type %> at <%= request_path %></title>
 </head>
 <body>
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>
@@ -146,6 +146,14 @@
     }
 
     /* Heading */
+    header.exception .fix-actions {
+        margin-top: .5em;
+    }
+
+    header.exception .fix-actions input[type=submit] {
+        font-weight: bold;
+    }
+
     header.exception h2 {
         font-weight: 200;
         font-size: 11pt;
@@ -153,7 +161,7 @@
 
     header.exception h2,
     header.exception p {
-        line-height: 1.4em;
+        line-height: 1.5em;
         overflow: hidden;
         white-space: pre;
         text-overflow: ellipsis;
@@ -166,7 +174,7 @@
 
     header.exception p {
         font-weight: 200;
-        font-size: 20pt;
+        font-size: 17pt;
         color: white;
     }
 
@@ -394,7 +402,7 @@
      * Monospace
      * --------------------------------------------------------------------- */
 
-    pre, code, .repl input, .repl .prompt span, textarea, .code_linenums {
+    pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums {
         font-family: menlo, lucida console, monospace;
         font-size: 8pt;
     }
@@ -460,7 +468,7 @@
         font-weight: 200;
     }
 
-    .code, .console, .unavailable {
+    .code, .be-console, .unavailable {
         background: #fff;
         padding: 5px;
 
@@ -532,13 +540,13 @@
     }
 
     /* REPL shell */
-    .console {
+    .be-console {
         padding: 0 1px 10px 1px;
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 2px;
     }
 
-    .console pre {
+    .be-console pre {
         padding: 10px 10px 0 10px;
         max-height: 400px;
         overflow-x: none;
@@ -548,30 +556,31 @@
         white-space: pre-wrap;
     }
 
-    /* .prompt > span + input */
-    .console .prompt {
+    /* .command-line > span + input */
+    .be-console .command-line {
         display: table;
         width: 100%;
     }
 
-    .console .prompt span,
-    .console .prompt input {
+    .be-console .command-line span,
+    .be-console .command-line input {
         display: table-cell;
     }
 
-    .console .prompt span {
+    .be-console .command-line span {
         width: 1%;
         padding-right: 5px;
         padding-left: 10px;
+        white-space: pre;
     }
 
-    .console .prompt input {
+    .be-console .command-line input {
         width: 99%;
     }
 
     /* Input box */
-    .console input,
-    .console input:focus {
+    .be-console input,
+    .be-console input:focus {
         outline: 0;
         border: 0;
         padding: 0;
@@ -669,14 +678,14 @@
 
     nav.sidebar::-webkit-scrollbar,
     .inset pre::-webkit-scrollbar,
-    .console pre::-webkit-scrollbar,
+    .be-console pre::-webkit-scrollbar,
     .code::-webkit-scrollbar {
         width: 10px;
         height: 10px;
     }
 
     .inset pre::-webkit-scrollbar-thumb,
-    .console pre::-webkit-scrollbar-thumb,
+    .be-console pre::-webkit-scrollbar-thumb,
     .code::-webkit-scrollbar-thumb {
         background: #ccc;
         border-radius: 5px;
@@ -692,7 +701,7 @@
         background: -webkit-linear-gradient(left, #aaa, #999);
     }
 
-    .console pre:hover::-webkit-scrollbar-thumb,
+    .be-console pre:hover::-webkit-scrollbar-thumb,
     .inset pre:hover::-webkit-scrollbar-thumb,
     .code:hover::-webkit-scrollbar-thumb {
         background: #888;
@@ -720,21 +729,43 @@
               if(document.styleSheets[i].href)
                   document.styleSheets[i].disabled = true;
           }
-          document.addEventListener("page:restore", function restoreCSS(e) {
-              for(var i=0; i < document.styleSheets.length; i++) {
-                  document.styleSheets[i].disabled = false;
-              }
-              document.removeEventListener("page:restore", restoreCSS, false);
-          });
+          if (window.Turbolinks.controller) {
+              // Turbolinks > 5 (see https://github.com/turbolinks/turbolinks/issues/6)
+              document.addEventListener("turbolinks:load", function restoreCSS(e) {
+                  for(var i=0; i < document.styleSheets.length; i++) {
+                      document.styleSheets[i].disabled = false;
+                  }
+                  document.removeEventListener("turbolinks:load", restoreCSS, false);
+              });
+          } else {
+              document.addEventListener("page:restore", function restoreCSS(e) {
+                  for(var i=0; i < document.styleSheets.length; i++) {
+                      document.styleSheets[i].disabled = false;
+                  }
+                  document.removeEventListener("page:restore", restoreCSS, false);
+              });
+          }
       }
     </script>
 
     <div class='top'>
         <header class="exception">
-            <h2><strong><%= exception.type %></strong> <span>at <%= request_path %></span></h2>
-            <p><%= exception.message %></p>
-            <% if exception.hint %>
-              <h2>Hint: <%= exception.hint %></h2>
+            <h2><strong><%= exception_type %></strong> <span>at <%= request_path %></span></h2>
+            <p><%= exception_message %></p>
+            <% unless active_support_actions.empty? %>
+                <div class='fix-actions'>
+                    <% active_support_actions.each do |action, _| %>
+                        <form class="button_to" method="post" action="<%= action_dispatch_action_endpoint %>">
+                            <input type="submit" value="<%= action %>">
+                            <input type="hidden" name="action" value="<%= action %>">
+                            <input type="hidden" name="error" value="<%= exception_type %>">
+                            <input type="hidden" name="location" value="<%= request_path %>">
+                        </form>
+                    <% end %>
+                </div>
+            <% end %>
+            <% if exception_hint %>
+              <h2>Hint: <%= exception_hint %></h2>
             <% end %>
         </header>
     </div>
@@ -772,6 +803,7 @@
 (function() {
 
     var OID = "<%= id %>";
+    var csrfToken = "<%= csrf_token %>";
 
     var previousFrame = null;
     var previousFrameInfo = null;
@@ -780,8 +812,9 @@
 
     function apiCall(method, opts, cb) {
         var req = new XMLHttpRequest();
-        req.open("POST", <%== uri_prefix.gsub("<", "&lt;").inspect %> + "/__better_errors/" + OID + "/" + method, true);
+        req.open("POST", "//" + window.location.host + <%== uri_prefix.gsub("<", "&lt;").inspect %> + "/__better_errors/" + OID + "/" + method, true);
         req.setRequestHeader("Content-Type", "application/json");
+        opts.csrfToken = csrfToken;
         req.send(JSON.stringify(opts));
         req.onreadystatechange = function() {
             if(req.readyState == 4) {
@@ -812,7 +845,7 @@
     REPL.prototype.install = function(containerElement) {
         this.container = containerElement;
 
-        this.promptElement  = this.container.querySelector(".prompt span");
+        this.promptElement  = this.container.querySelector(".command-line .prompt");
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
 
@@ -927,7 +960,7 @@
 
         el.style.display = "block";
 
-        var replInput = el.querySelector('.console input');
+        var replInput = el.querySelector('.be-console input');
         if (replInput) replInput.focus();
     }
 
@@ -941,17 +974,20 @@
             apiCall("variables", { "index": index }, function(response) {
                 el.loaded = true;
                 if(response.error) {
-                    el.innerHTML = "<span class='error'>" + escapeHTML(response.error) + "</span>";
+                    el.innerHTML = "<h2 class='error'>" + escapeHTML(response.error) + "</h2>";
+                    if(response.explanation) {
+                      el.innerHTML += "<p class='explanation'>" + escapeHTML(response.explanation) + "</p>";
+                    }
+                    el.innerHTML += "<p><a target='_new' href='https://github.com/BetterErrors/better_errors'>More about Better Errors</a></p>";
                 } else {
                     el.innerHTML = response.html;
 
-                    var repl = el.querySelector(".repl .console");
+                    var repl = el.querySelector(".be-repl .be-console");
                     if(repl) {
                         new REPL(index).install(repl);
                     }
-
-                    switchTo(el);
                 }
+                switchTo(el);
             });
         }
     }

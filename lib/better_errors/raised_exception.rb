@@ -4,7 +4,18 @@ module BetterErrors
     attr_reader :exception, :message, :backtrace, :hint
 
     def initialize(exception)
-      if exception.respond_to?(:original_exception) && exception.original_exception
+      if exception.class.name == "ActionView::Template::Error" && exception.respond_to?(:cause)
+        # Rails 6+ exceptions of this type wrap the "real" exception, and the real exception
+        # is actually more useful than the ActionView-provided wrapper. Once Better Errors
+        # supports showing all exceptions in the cause stack, this should go away. Or perhaps
+        # this can be changed to provide guidance by showing the second error in the cause stack
+        # under this condition.
+        exception = exception.cause if exception.cause
+      elsif exception.respond_to?(:original_exception) && exception.original_exception
+        # This supports some specific Rails exceptions, and this is not intended to act the same as
+        # the Ruby's {Exception#cause}.
+        # It's possible this should only support ActionView::Template::Error, but by not changing
+        # this we're preserving longstanding behavior of Better Errors with Rails < 6.
         exception = exception.original_exception
       end
 
@@ -35,8 +46,13 @@ module BetterErrors
 
     def setup_backtrace_from_bindings
       @backtrace = exception.__better_errors_bindings_stack.map { |binding|
-        file = binding.eval "__FILE__"
-        line = binding.eval "__LINE__"
+        if binding.respond_to?(:source_location) # Ruby >= 2.6
+          file = binding.source_location[0]
+          line = binding.source_location[1]
+        else
+          file = binding.eval "__FILE__"
+          line = binding.eval "__LINE__"
+        end
         name = binding.frame_description
         StackFrame.new(file, line, name, binding)
       }

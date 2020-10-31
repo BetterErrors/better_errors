@@ -1,15 +1,16 @@
 require "pp"
-require "erubis"
+require "erubi"
 require "coderay"
 require "uri"
 
+require "better_errors/version"
 require "better_errors/code_formatter"
+require "better_errors/inspectable_value"
 require "better_errors/error_page"
 require "better_errors/middleware"
 require "better_errors/raised_exception"
 require "better_errors/repl"
 require "better_errors/stack_frame"
-require "better_errors/version"
 
 module BetterErrors
   POSSIBLE_EDITOR_PRESETS = [
@@ -17,6 +18,11 @@ module BetterErrors
     { symbols: [:macvim, :mvim],        sniff: /vim/i,   url: proc { |file, line| "mvim://open?url=file://#{file}&line=#{line}" } },
     { symbols: [:sublime, :subl, :st],  sniff: /subl/i,  url: "subl://open?url=file://%{file}&line=%{line}" },
     { symbols: [:textmate, :txmt, :tm], sniff: /mate/i,  url: "txmt://open?url=file://%{file}&line=%{line}" },
+    { symbols: [:idea], sniff: /idea/i, url: "idea://open?file=%{file}&line=%{line}" },
+    { symbols: [:rubymine], sniff: /mine/i, url: "x-mine://open?file=%{file}&line=%{line}" },
+    { symbols: [:vscode, :code], sniff: /code/i, url: "vscode://file/%{file}:%{line}" },
+    { symbols: [:vscodium, :codium], sniff: /codium/i, url: "vscodium://file/%{file}:%{line}" },
+    { symbols: [:atom], sniff: /atom/i,  url: "atom://core/open/file?filename=%{file}&line=%{line}" },
   ]
 
   class << self
@@ -44,8 +50,19 @@ module BetterErrors
     # The ignored instance variables.
     # @return [Array]
     attr_accessor :ignored_instance_variables
+
+    # The maximum variable payload size. If variable.inspect exceeds this,
+    # the variable won't be returned.
+    # @return int
+    attr_accessor :maximum_variable_inspect_size
+
+    # List of classes that are excluded from inspection.
+    # @return [Array]
+    attr_accessor :ignored_classes
   end
   @ignored_instance_variables = []
+  @maximum_variable_inspect_size = 100_000
+  @ignored_classes = ['ActionDispatch::Request', 'ActionDispatch::Response']
 
   # Returns a proc, which when called with a filename and line number argument,
   # returns a URL to open the filename and line in the selected editor.
@@ -68,6 +85,7 @@ module BetterErrors
   #   * `:textmate`, `:txmt`, `:tm`
   #   * `:sublime`, `:subl`, `:st`
   #   * `:macvim`
+  #   * `:atom`
   #
   #   @param [Symbol] sym
   #
@@ -117,7 +135,7 @@ module BetterErrors
   # Enables experimental Pry support in the inline REPL
   #
   # If you encounter problems while using Pry, *please* file a bug report at
-  # https://github.com/charliesome/better_errors/issues
+  # https://github.com/BetterErrors/better_errors/issues
   def self.use_pry!
     REPL::PROVIDERS.unshift const: :Pry, impl: "better_errors/repl/pry"
   end

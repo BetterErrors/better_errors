@@ -1,17 +1,24 @@
 <header class="trace_info clearfix">
     <div class="title">
         <h2 class="name"><%= @frame.name %></h2>
-        <div class="location"><span class="filename"><a href="<%= editor_url(@frame) %>"><%= @frame.pretty_path %></a></span></div>
+        <div class="location">
+          <span class="filename">
+            <a
+              href="<%= editor_url(@frame) %>"
+              <%= ENV.key?('BETTER_ERRORS_INSIDE_FRAME') ? "target=_blank" : '' %>
+            ><%= @frame.pretty_path %></a>
+          </span>
+        </div>
     </div>
     <div class="code_block clearfix">
         <%== html_formatted_code_block @frame %>
     </div>
 
     <% if BetterErrors.binding_of_caller_available? && @frame.frame_binding %>
-        <div class="repl">
-            <div class="console">
+        <div class="be-repl">
+            <div class="be-console">
                 <pre></pre>
-                <div class="prompt"><span>&gt;&gt;</span> <input/></div>
+                <div class="command-line"><span class='prompt'>&gt;&gt;</span> <input tabindex="1"/></div>
             </div>
         </div>
     <% end %>
@@ -45,26 +52,28 @@
     </div>
 </div>
 
-<div class="sub">
-    <h3>Local Variables</h3>
-    <div class='inset variables'>
-        <table class="var_table">
-            <% @frame.local_variables.each do |name, value| %>
-                <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
-            <% end %>
-        </table>
+<% if BetterErrors.binding_of_caller_available? && @frame.frame_binding %>
+    <div class="sub">
+        <h3>Local Variables</h3>
+        <div class='inset variables'>
+            <table class="var_table">
+                <% @frame.local_variables.each do |name, value| %>
+                    <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
+                <% end %>
+            </table>
+        </div>
     </div>
-</div>
 
-<div class="sub">
-    <h3>Instance Variables</h3>
-    <div class="inset variables">
-        <table class="var_table">
-            <% @frame.instance_variables.each do |name, value| %>
-                <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
-            <% end %>
-        </table>
+    <div class="sub">
+        <h3>Instance Variables</h3>
+        <div class="inset variables">
+            <table class="var_table">
+                <% @frame.instance_variables.each do |name, value| %>
+                    <tr><td class="name"><%= name %></td><td><pre><%== inspect_value value %></pre></td></tr>
+                <% end %>
+            </table>
+        </div>
     </div>
-</div>
 
-<!-- <%= Time.now.to_f - @var_start_time %> seconds -->
+    <!-- <%= Time.now.to_f - @var_start_time %> seconds -->
+<% end %>

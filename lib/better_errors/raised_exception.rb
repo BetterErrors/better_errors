@@ -1,3 +1,5 @@
+require 'better_errors/exception_hint'
+
 # @private
 module BetterErrors
   class RaisedException
@@ -81,27 +83,7 @@ module BetterErrors
     end
 
     def setup_hint
-      case exception
-      when NoMethodError
-        matches = /\Aundefined method `([^']+)' for ([^:]+):(\w+)\z/.match(message)
-        if matches
-          method = matches[1]
-          val = matches[2]
-          klass = matches[3]
-
-          if val == "nil"
-            @hint = "Something is `nil` when it probably shouldn't be."
-          else
-            @hint = "`#{method}` is being called on a `#{klass}`, which probably isn't the type you were expecting."
-          end
-        end
-      when NameError
-        matches = /\Aundefined local variable or method `([^']+)' for/.match(message)
-        if matches
-          method_or_var = matches[1]
-          @hint = "`#{method_or_var}` is probably misspelled."
-        end
-      end
+      @hint = ExceptionHint.new(exception).hint
     end
   end
 end

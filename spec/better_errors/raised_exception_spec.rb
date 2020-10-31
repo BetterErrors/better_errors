@@ -4,7 +4,12 @@ require "rspec/its"
 module BetterErrors
   describe RaisedException do
     let(:exception) { RuntimeError.new("whoops") }
-    subject { RaisedException.new(exception) }
+    subject(:described_instance) { RaisedException.new(exception) }
+
+    before do
+      allow(BetterErrors::ExceptionHint).to receive(:new).and_return(exception_hint)
+    end
+    let(:exception_hint) { instance_double(BetterErrors::ExceptionHint, hint: nil) }
 
     its(:exception) { is_expected.to eq exception }
     its(:message)   { is_expected.to eq "whoops" }
@@ -104,40 +109,20 @@ module BetterErrors
       end
     end
 
-    context "when the exception is a NameError" do
-      let(:exception) {
-        begin
-          foo
-        rescue NameError => e
-          e
-        end
-      }
+    describe '#hint' do
+      subject(:hint) { described_instance.hint }
 
-      its(:type) { should == NameError }
-      its(:hint) { should == "`foo` is probably misspelled." }
-    end
-
-    context "when the exception is a NoMethodError" do
-      let(:exception) {
-        begin
-          val.foo
-        rescue NoMethodError => e
-          e
-        end
-      }
-
-      context "on `nil`" do
-        let(:val) { nil }
-
-        its(:type) { should == NoMethodError }
-        its(:hint) { should == "Something is `nil` when it probably shouldn't be." }
+      it 'uses ExceptionHint to get a hint for the exception' do
+        hint
+        expect(BetterErrors::ExceptionHint).to have_received(:new).with(exception)
       end
 
-      context "on other values" do
-        let(:val) { 42 }
+      context "when ExceptionHint returns a string" do
+        let(:exception_hint) { instance_double(BetterErrors::ExceptionHint, hint: "Hint text") }
 
-        its(:type) { should == NoMethodError }
-        its(:hint) { should == "`foo` is being called on a `Fixnum`, which probably isn't the type you were expecting." }
+        it 'returns the value from ExceptionHint' do
+          expect(hint).to eq("Hint text")
+        end
       end
     end
   end

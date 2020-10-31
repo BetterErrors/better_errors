@@ -147,8 +147,8 @@ module BetterErrors
 
         it "shows the exception as-is" do
           expect(status).to eq(500)
-          expect(body).to match(/\n> Second Exception\n/)
-          expect(body).not_to match(/\n> First Exception\n/)
+          expect(body).to match(/\nSecond Exception\n/)
+          expect(body).not_to match(/\nFirst Exception\n/)
         end
       end
 

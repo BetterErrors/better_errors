@@ -91,7 +91,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: vendor/bundle
-        key: ${{ runner.os }}-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}-${{ hashFiles('gemfiles/*.gemfile') }}
+        key: ${{ runner.os }}-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}-${{ hashFiles(format('gemfiles/{0}.gemfile', matrix.gemfile)) }}
         restore-keys: |
           ${{ runner.os }}-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}
           ${{ runner.os }}-ruby-${{ matrix.ruby }}

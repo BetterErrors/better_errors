@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         ruby:
           - 2.2
@@ -42,7 +42,9 @@ jobs:
           - rails60_boc
           - rack
           - rack_boc
-          - pry09
+          # - pry09
+          # - pry10
+          # - pry11
         exclude:
           - { ruby: 2.2,              gemfile: rails60 }
           - { ruby: 2.2,              gemfile: rails60_boc }

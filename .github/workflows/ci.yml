@@ -11,12 +11,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    continue-on-error: ${{ matrix.experimental }}
-
     strategy:
       fail-fast: true
       matrix:
-        experimental: [false]
         ruby:
           - 2.2.10
           - 2.3.8
@@ -47,56 +44,39 @@ jobs:
           - rack_boc
           - pry09
         exclude:
-          - { ruby: 2.2.10,           gemfile: rails60,            experimental: false }
-          - { ruby: 2.2.10,           gemfile: rails60_boc,        experimental: false }
-          - { ruby: 2.2.10,           gemfile: rails60_haml,       experimental: false }
-          - { ruby: 2.3.8,            gemfile: rails42,            experimental: false }
-          - { ruby: 2.3.8,            gemfile: rails42_boc,        experimental: false }
-          - { ruby: 2.3.8,            gemfile: rails42_haml,       experimental: false }
-          - { ruby: 2.3.8,            gemfile: rails60,            experimental: false }
-          - { ruby: 2.3.8,            gemfile: rails60_boc,        experimental: false }
-          - { ruby: 2.3.8,            gemfile: rails60_haml,       experimental: false }
-          - { ruby: 2.4.9,            gemfile: rails42,            experimental: false }
-          - { ruby: 2.4.9,            gemfile: rails42_boc,        experimental: false }
-          - { ruby: 2.4.9,            gemfile: rails42_haml,       experimental: false }
-          - { ruby: 2.4.9,            gemfile: rails60,            experimental: false }
-          - { ruby: 2.4.9,            gemfile: rails60_boc,        experimental: false }
-          - { ruby: 2.4.9,            gemfile: rails60_haml,       experimental: false }
-          - { ruby: 2.5.8,            gemfile: rails42,            experimental: false }
-          - { ruby: 2.5.8,            gemfile: rails42_boc,        experimental: false }
-          - { ruby: 2.5.8,            gemfile: rails42_haml,       experimental: false }
-          - { ruby: 2.6.6,            gemfile: rails42,            experimental: false }
-          - { ruby: 2.6.6,            gemfile: rails42_boc,        experimental: false }
-          - { ruby: 2.6.6,            gemfile: rails42_haml,       experimental: false }
-          - { ruby: 2.7.2,            gemfile: rails42,            experimental: false }
-          - { ruby: 2.7.2,            gemfile: rails42_boc,        experimental: false }
-          - { ruby: 2.7.2,            gemfile: rails42_haml,       experimental: false }
-          - { ruby: ruby-head,        gemfile: rails42,            experimental: false }
-          - { ruby: ruby-head,        gemfile: rails42_boc,        experimental: false }
-          - { ruby: ruby-head,        gemfile: rails42_haml,       experimental: false }
-          - { ruby: truffleruby-head, gemfile: rails42_boc,        experimental: false }
-          - { ruby: truffleruby-head, gemfile: rails50_boc,        experimental: false }
-          - { ruby: truffleruby-head, gemfile: rails51_boc,        experimental: false }
-          - { ruby: truffleruby-head, gemfile: rails52_boc,        experimental: false }
-          - { ruby: truffleruby-head, gemfile: rails60_boc,        experimental: false }
-          - { ruby: truffleruby-head, gemfile: rack_boc,           experimental: false }
-        include:
-          - { ruby: 2.2.10,           gemfile: pry010,             experimental: true }
-          - { ruby: 2.3.8,            gemfile: pry010,             experimental: true }
-          - { ruby: 2.4.9,            gemfile: pry010,             experimental: true }
-          - { ruby: 2.5.8,            gemfile: pry010,             experimental: true }
-          - { ruby: 2.6.6,            gemfile: pry010,             experimental: true }
-          - { ruby: 2.7.2,            gemfile: pry010,             experimental: true }
-          - { ruby: ruby-head,        gemfile: pry010,             experimental: true }
-          - { ruby: truffleruby-head, gemfile: pry010,             experimental: true }
-          - { ruby: 2.2.10,           gemfile: pry011,             experimental: true }
-          - { ruby: 2.3.8,            gemfile: pry011,             experimental: true }
-          - { ruby: 2.4.9,            gemfile: pry011,             experimental: true }
-          - { ruby: 2.5.8,            gemfile: pry011,             experimental: true }
-          - { ruby: 2.6.6,            gemfile: pry011,             experimental: true }
-          - { ruby: 2.7.2,            gemfile: pry011,             experimental: true }
-          - { ruby: ruby-head,        gemfile: pry011,             experimental: true }
-          - { ruby: truffleruby-head, gemfile: pry011,             experimental: true }
+          - { ruby: 2.2.10,           gemfile: rails60 }
+          - { ruby: 2.2.10,           gemfile: rails60_boc }
+          - { ruby: 2.2.10,           gemfile: rails60_haml }
+          - { ruby: 2.3.8,            gemfile: rails42 }
+          - { ruby: 2.3.8,            gemfile: rails42_boc }
+          - { ruby: 2.3.8,            gemfile: rails42_haml }
+          - { ruby: 2.3.8,            gemfile: rails60 }
+          - { ruby: 2.3.8,            gemfile: rails60_boc }
+          - { ruby: 2.3.8,            gemfile: rails60_haml }
+          - { ruby: 2.4.9,            gemfile: rails42 }
+          - { ruby: 2.4.9,            gemfile: rails42_boc }
+          - { ruby: 2.4.9,            gemfile: rails42_haml }
+          - { ruby: 2.4.9,            gemfile: rails60 }
+          - { ruby: 2.4.9,            gemfile: rails60_boc }
+          - { ruby: 2.4.9,            gemfile: rails60_haml }
+          - { ruby: 2.5.8,            gemfile: rails42 }
+          - { ruby: 2.5.8,            gemfile: rails42_boc }
+          - { ruby: 2.5.8,            gemfile: rails42_haml }
+          - { ruby: 2.6.6,            gemfile: rails42 }
+          - { ruby: 2.6.6,            gemfile: rails42_boc }
+          - { ruby: 2.6.6,            gemfile: rails42_haml }
+          - { ruby: 2.7.2,            gemfile: rails42 }
+          - { ruby: 2.7.2,            gemfile: rails42_boc }
+          - { ruby: 2.7.2,            gemfile: rails42_haml }
+          - { ruby: ruby-head,        gemfile: rails42 }
+          - { ruby: ruby-head,        gemfile: rails42_boc }
+          - { ruby: ruby-head,        gemfile: rails42_haml }
+          - { ruby: truffleruby-head, gemfile: rails42_boc }
+          - { ruby: truffleruby-head, gemfile: rails50_boc }
+          - { ruby: truffleruby-head, gemfile: rails51_boc }
+          - { ruby: truffleruby-head, gemfile: rails52_boc }
+          - { ruby: truffleruby-head, gemfile: rails60_boc }
+          - { ruby: truffleruby-head, gemfile: rack_boc }
 
     steps:
     - uses: actions/checkout@v2

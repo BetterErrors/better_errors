@@ -15,14 +15,14 @@ jobs:
       fail-fast: true
       matrix:
         ruby:
-          - 2.2.10
-          - 2.3.8
-          - 2.4.9
-          - 2.5.8
-          - 2.6.6
-          - 2.7.2
-          - ruby-head
-          - truffleruby-head
+          - 2.2
+          - 2.3
+          - 2.4
+          - 2.5
+          - 2.6
+          - 2.7
+          # - ruby-head
+          - truffleruby
         gemfile:
           # These are located in the gemfiles/ folder
           - rails42
@@ -44,39 +44,39 @@ jobs:
           - rack_boc
           - pry09
         exclude:
-          - { ruby: 2.2.10,           gemfile: rails60 }
-          - { ruby: 2.2.10,           gemfile: rails60_boc }
-          - { ruby: 2.2.10,           gemfile: rails60_haml }
-          - { ruby: 2.3.8,            gemfile: rails42 }
-          - { ruby: 2.3.8,            gemfile: rails42_boc }
-          - { ruby: 2.3.8,            gemfile: rails42_haml }
-          - { ruby: 2.3.8,            gemfile: rails60 }
-          - { ruby: 2.3.8,            gemfile: rails60_boc }
-          - { ruby: 2.3.8,            gemfile: rails60_haml }
-          - { ruby: 2.4.9,            gemfile: rails42 }
-          - { ruby: 2.4.9,            gemfile: rails42_boc }
-          - { ruby: 2.4.9,            gemfile: rails42_haml }
-          - { ruby: 2.4.9,            gemfile: rails60 }
-          - { ruby: 2.4.9,            gemfile: rails60_boc }
-          - { ruby: 2.4.9,            gemfile: rails60_haml }
-          - { ruby: 2.5.8,            gemfile: rails42 }
-          - { ruby: 2.5.8,            gemfile: rails42_boc }
-          - { ruby: 2.5.8,            gemfile: rails42_haml }
-          - { ruby: 2.6.6,            gemfile: rails42 }
-          - { ruby: 2.6.6,            gemfile: rails42_boc }
-          - { ruby: 2.6.6,            gemfile: rails42_haml }
-          - { ruby: 2.7.2,            gemfile: rails42 }
-          - { ruby: 2.7.2,            gemfile: rails42_boc }
-          - { ruby: 2.7.2,            gemfile: rails42_haml }
-          - { ruby: ruby-head,        gemfile: rails42 }
-          - { ruby: ruby-head,        gemfile: rails42_boc }
-          - { ruby: ruby-head,        gemfile: rails42_haml }
-          - { ruby: truffleruby-head, gemfile: rails42_boc }
-          - { ruby: truffleruby-head, gemfile: rails50_boc }
-          - { ruby: truffleruby-head, gemfile: rails51_boc }
-          - { ruby: truffleruby-head, gemfile: rails52_boc }
-          - { ruby: truffleruby-head, gemfile: rails60_boc }
-          - { ruby: truffleruby-head, gemfile: rack_boc }
+          - { ruby: 2.2,              gemfile: rails60 }
+          - { ruby: 2.2,              gemfile: rails60_boc }
+          - { ruby: 2.2,              gemfile: rails60_haml }
+          - { ruby: 2.3,              gemfile: rails42 }
+          - { ruby: 2.3,              gemfile: rails42_boc }
+          - { ruby: 2.3,              gemfile: rails42_haml }
+          - { ruby: 2.3,              gemfile: rails60 }
+          - { ruby: 2.3,              gemfile: rails60_boc }
+          - { ruby: 2.3,              gemfile: rails60_haml }
+          - { ruby: 2.4,              gemfile: rails42 }
+          - { ruby: 2.4,              gemfile: rails42_boc }
+          - { ruby: 2.4,              gemfile: rails42_haml }
+          - { ruby: 2.4,              gemfile: rails60 }
+          - { ruby: 2.4,              gemfile: rails60_boc }
+          - { ruby: 2.4,              gemfile: rails60_haml }
+          - { ruby: 2.5,              gemfile: rails42 }
+          - { ruby: 2.5,              gemfile: rails42_boc }
+          - { ruby: 2.5,              gemfile: rails42_haml }
+          - { ruby: 2.6,              gemfile: rails42 }
+          - { ruby: 2.6,              gemfile: rails42_boc }
+          - { ruby: 2.6,              gemfile: rails42_haml }
+          - { ruby: 2.7,              gemfile: rails42 }
+          - { ruby: 2.7,              gemfile: rails42_boc }
+          - { ruby: 2.7,              gemfile: rails42_haml }
+          # - { ruby: ruby-head,        gemfile: rails42 }
+          # - { ruby: ruby-head,        gemfile: rails42_boc }
+          # - { ruby: ruby-head,        gemfile: rails42_haml }
+          - { ruby: truffleruby,      gemfile: rails42_boc }
+          - { ruby: truffleruby,      gemfile: rails50_boc }
+          - { ruby: truffleruby,      gemfile: rails51_boc }
+          - { ruby: truffleruby,      gemfile: rails52_boc }
+          - { ruby: truffleruby,      gemfile: rails60_boc }
+          - { ruby: truffleruby,      gemfile: rack_boc }
 
     steps:
     - uses: actions/checkout@v2

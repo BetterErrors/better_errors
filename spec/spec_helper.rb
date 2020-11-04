@@ -2,19 +2,21 @@ $: << File.expand_path("../../lib", __FILE__)
 
 ENV["EDITOR"] = nil
 
-# Ruby 2.4.0 and 2.4.1 has a bug with its Coverage module that causes segfaults.
-# https://bugs.ruby-lang.org/issues/13305
-# 2.4.2 should include this patch.
-if ENV['CI']
-  unless RUBY_VERSION == '2.4.0' || RUBY_VERSION == '2.4.1'
-    require 'coveralls'
-    Coveralls.wear! do
-      add_filter 'spec/'
-    end
-  end
-else
-  require 'simplecov'
-  SimpleCov.start
+require 'simplecov'
+require 'simplecov-lcov'
+
+SimpleCov::Formatter::LcovFormatter.config do |c|
+  c.report_with_single_file = true
+  c.single_report_path = 'coverage/lcov.info'
+end
+SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
+  [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::LcovFormatter,
+  ]
+)
+SimpleCov.start do
+  add_filter 'spec/'
 end
 
 require 'bundler/setup'

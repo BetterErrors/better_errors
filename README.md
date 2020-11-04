@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/BetterErrors/better_errors.svg)](https://travis-ci.org/BetterErrors/better_errors)
+[![Build Status](https://github.com/BetterErrors/better_errors/workflows/CI/badge.svg?event=push&branch=master)](https://github.com/BetterErrors/better_errors/actions?query=branch%3Amaster)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6bc3e7d6118d47e6959b16690b815909)](https://www.codacy.com/app/BetterErrors/better_errors?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BetterErrors/better_errors&amp;utm_campaign=Badge_Grade)
-[![Coverage](https://coveralls.io/repos/github/BetterErrors/better_errors/badge.svg?branch=master)](https://coveralls.io/github/BetterErrors/better_errors?branch=master)
+[![Test Coverage](https://coveralls.io/repos/github/BetterErrors/better_errors/badge.svg?branch=master)](https://coveralls.io/github/BetterErrors/better_errors?branch=master)
 [![Gem Version](https://img.shields.io/gem/v/better_errors.svg)](https://rubygems.org/gems/better_errors)
 
 # Better Errors

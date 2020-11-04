@@ -4,6 +4,7 @@ gem 'rack', RUBY_VERSION < '2.2.2' ? '~> 1.6' : '~> 2.0'
 gem "binding_of_caller"
 gem "pry", "~> 0.10.0"
 
-gem 'coveralls', require: false
+gem 'simplecov',      require: false
+gem 'simplecov-lcov', require: false
 
 gemspec path: "../"

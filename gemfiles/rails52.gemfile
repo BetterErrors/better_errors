@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "rails", "~> 5.2.0"
 gem 'i18n', '< 1.5.2' if RUBY_VERSION < '2.3'
 
-gem 'coveralls', require: false
+gem 'simplecov',      require: false
+gem 'simplecov-lcov', require: false
 
 gemspec path: "../"

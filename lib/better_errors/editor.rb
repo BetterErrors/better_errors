@@ -61,6 +61,12 @@ module BetterErrors
     #
     # @return [Symbol]
     def self.default_editor
+      editor_from_environment_formatting_string ||
+        editor_from_environment_editor ||
+        for_symbol(:textmate)
+    end
+
+    def self.editor_from_environment_editor
       editor_command = ENV["EDITOR"] || ENV["BETTER_ERRORS_EDITOR"]
       if editor_command
         editor = editor_from_command(editor_command)
@@ -70,12 +76,17 @@ module BetterErrors
       else
         puts "Since there is no EDITOR or BETTER_ERRORS_EDITOR environment variable, using Textmate by default."
       end
-      for_symbol(:textmate)
     end
 
     def self.editor_from_command(editor_command)
       env_preset = KNOWN_EDITORS.find { |preset| editor_command =~ preset[:sniff] }
       for_formatting_string(env_preset[:url]) if env_preset
+    end
+
+    def self.editor_from_environment_formatting_string
+      return unless ENV['BETTER_ERRORS_EDITOR_URL']
+
+      for_formatting_string(ENV['BETTER_ERRORS_EDITOR_URL'])
     end
   end
 end

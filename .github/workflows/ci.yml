@@ -20,7 +20,7 @@ jobs:
           - 2.6
           - 2.7
           # - ruby-head
-          - truffleruby-head
+          # - truffleruby-head
         gemfile:
           # These are located in the gemfiles/ folder
           - rails42

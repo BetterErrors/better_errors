@@ -595,6 +595,9 @@
         color: #8080a0;
         padding-left: 20px;
     }
+    .console-has-been-used .live-console-hint {
+        display: none;
+    }
 
     .hint:before {
         content: '\25b2';
@@ -817,6 +820,28 @@
         return html.replace(/&/, "&amp;").replace(/</g, "&lt;");
     }
 
+    function hasConsoleBeenUsedPreviously() {
+      return !!document.cookie.split('; ').find(function(cookie) {
+          return cookie.startsWith('BetterErrors-has-used-console=');
+      });
+    }
+
+    var consoleHasBeenUsed = hasConsoleBeenUsedPreviously();
+
+    function consoleWasJustUsed() {
+        if (consoleHasBeenUsed) {
+            return;
+        }
+
+        hideConsoleHint();
+        consoleHasBeenUsed = true;
+        document.cookie = "BetterErrors-has-used-console=true;path=/;max-age=31536000;samesite"
+    }
+
+    function hideConsoleHint() {
+        document.querySelector('body').className += " console-has-been-used";
+    }
+
     function REPL(index) {
         this.index = index;
 
@@ -838,30 +863,19 @@
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
 
-        this.hasUsedConsole = document.cookie.split('; ').find(function(cookie) {
-            return cookie.startsWith('BetterErrors-has-used-console=');
-        });
-        if (this.hasUsedConsole) {
-            this.hideConsoleHint();
+        if (consoleHasBeenUsed) {
+            hideConsoleHint();
         }
 
         var self = this;
         this.inputElement.onkeydown = function(ev) {
             self.onKeyDown(ev);
-            if (!self.hasUsedConsole) {
-                self.hideConsoleHint();
-                self.hasUsedConsole = true;
-                document.cookie = "BetterErrors-has-used-console=true;path=/;max-age=31536000;samesite"
-            }
+            consoleWasJustUsed();
         };
 
         this.setPrompt(">>");
 
         REPL.all[this.index] = this;
-    };
-
-    REPL.prototype.hideConsoleHint = function() {
-        document.querySelector('#live-shell-hint').style["display"] = "none";
     };
 
     REPL.prototype.focus = function() {

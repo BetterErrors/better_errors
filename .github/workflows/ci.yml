@@ -89,11 +89,11 @@ jobs:
 
     - uses: actions/cache@v2
       with:
-        path: vendor/bundle
-        key: ${{ runner.os }}-branch-${{ github.ref }}-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}-${{ hashFiles(format('gemfiles/{0}.gemfile', matrix.gemfile)) }}
+        path: gemfiles/vendor/bundle
+        key: v3-${{ runner.os }}-branch-${{ github.ref }}-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}-${{ hashFiles(format('gemfiles/{0}.gemfile', matrix.gemfile)) }}
         restore-keys: |
-          ${{ runner.os }}-branch-${{ github.ref }}-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}
-          ${{ runner.os }}-branch-master-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}
+          v3-${{ runner.os }}-branch-${{ github.ref }}-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}
+          v3-${{ runner.os }}-branch-master-ruby-${{ matrix.ruby }}-gemfile-${{ matrix.gemfile }}
 
     - name: Bundle install
       run: |

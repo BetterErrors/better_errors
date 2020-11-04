@@ -56,8 +56,8 @@ module BetterErrors
       end
     end
 
-    # Automatically sniffs a default editor preset based on the EDITOR
-    # environment variable.
+    # Automatically sniffs a default editor preset based on
+    # environment variables.
     #
     # @return [Symbol]
     def self.default_editor
@@ -67,12 +67,15 @@ module BetterErrors
     end
 
     def self.editor_from_environment_editor
-      editor_command = ENV["EDITOR"] || ENV["BETTER_ERRORS_EDITOR"]
-      if editor_command
-        editor = editor_from_command(editor_command)
+      if ENV["BETTER_ERRORS_EDITOR"]
+        editor = editor_from_command(ENV["BETTER_ERRORS_EDITOR"])
         return editor if editor
-
-        puts "Since EDITOR or BETTER_ERRORS_EDITOR environment variable are not recognized, using Textmate by default."
+        puts "BETTER_ERRORS_EDITOR environment variable is not recognized as a supported Better Errors editor."
+      end
+      if ENV["EDITOR"]
+        editor = editor_from_command(ENV["EDITOR"])
+        return editor if editor
+        puts "EDITOR environment variable is not recognized as a supported Better Errors editor. Using TextMate by default."
       else
         puts "Since there is no EDITOR or BETTER_ERRORS_EDITOR environment variable, using Textmate by default."
       end

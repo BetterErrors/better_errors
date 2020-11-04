@@ -105,9 +105,7 @@ module BetterErrors
   #   @param [Proc] proc
   #
   def self.editor=(editor)
-    if editor.respond_to? :url
-      @editor = editor
-    elsif editor.is_a? Symbol
+    if editor.is_a? Symbol
       @editor = Editor.for_symbol(editor)
       raise(ArgumentError, "Symbol #{editor} is not a symbol in the list of supported errors.") unless editor
     elsif editor.is_a? String

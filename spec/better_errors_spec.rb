@@ -1,112 +1,55 @@
 require "spec_helper"
 
-describe BetterErrors do
-  context ".editor" do
-    it "defaults to textmate" do
-      expect(subject.editor["foo.rb", 123]).to eq("txmt://open?url=file://foo.rb&line=123")
-    end
+RSpec.describe BetterErrors do
+  describe ".editor" do
+    context "when set to a specific value" do
+      before do
+        allow(BetterErrors::Editor).to receive(:for_symbol).and_return(:editor_from_symbol)
+        allow(BetterErrors::Editor).to receive(:for_formatting_string).and_return(:editor_from_formatting_string)
+        allow(BetterErrors::Editor).to receive(:for_proc).and_return(:editor_from_proc)
+      end
 
-    it "url escapes the filename" do
-      expect(subject.editor["&.rb", 0]).to eq("txmt://open?url=file://%26.rb&line=0")
-    end
+      context "when the value is a string" do
+        it "uses BetterErrors::Editor.for_formatting_string to set the value" do
+          subject.editor = "thing://%{file}"
+          expect(BetterErrors::Editor).to have_received(:for_formatting_string).with("thing://%{file}")
+          expect(subject.editor).to eq(:editor_from_formatting_string)
+        end
+      end
 
-    [:emacs, :emacsclient].each do |editor|
-      it "uses emacs:// scheme when set to #{editor.inspect}" do
-        subject.editor = editor
-        expect(subject.editor[]).to start_with "emacs://"
+      context "when the value is a Proc" do
+        it "uses BetterErrors::Editor.for_proc to set the value" do
+          my_proc = proc { "thing" }
+          subject.editor = my_proc
+          expect(BetterErrors::Editor).to have_received(:for_proc).with(my_proc)
+          expect(subject.editor).to eq(:editor_from_proc)
+        end
+      end
+
+      context "when the value is a symbol" do
+        it "uses BetterErrors::Editor.for_symbol to set the value" do
+          subject.editor = :subl
+          expect(BetterErrors::Editor).to have_received(:for_symbol).with(:subl)
+          expect(subject.editor).to eq(:editor_from_symbol)
+        end
+      end
+
+      context "when set to something else" do
+        it "raises an ArgumentError" do
+          expect { subject.editor = Class.new }.to raise_error(ArgumentError)
+        end
       end
     end
 
-    [:macvim, :mvim].each do |editor|
-      it "uses mvim:// scheme when set to #{editor.inspect}" do
-        subject.editor = editor
-        expect(subject.editor[]).to start_with "mvim://"
+    context "when no value has been set" do
+      before do
+        BetterErrors.instance_variable_set('@editor', nil)
+        allow(BetterErrors::Editor).to receive(:default_editor).and_return(:default_editor)
       end
-    end
 
-    [:sublime, :subl, :st].each do |editor|
-      it "uses subl:// scheme when set to #{editor.inspect}" do
-        subject.editor = editor
-        expect(subject.editor[]).to start_with "subl://"
-      end
-    end
-
-    [:textmate, :txmt, :tm].each do |editor|
-      it "uses txmt:// scheme when set to #{editor.inspect}" do
-        subject.editor = editor
-        expect(subject.editor[]).to start_with "txmt://"
-      end
-    end
-
-    [:atom].each do |editor|
-      it "uses atom:// scheme when set to #{editor.inspect}" do
-        subject.editor = editor
-        expect(subject.editor[]).to start_with "atom://"
-      end
-    end
-
-    ["emacsclient", "/usr/local/bin/emacsclient"].each do |editor|
-      it "uses emacs:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "emacs://"
-      end
-    end
-
-    ["mvim -f", "/usr/local/bin/mvim -f"].each do |editor|
-      it "uses mvim:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "mvim://"
-      end
-    end
-
-    ["subl -w", "/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"].each do |editor|
-      it "uses subl:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "subl://"
-      end
-    end
-
-    ["mate -w", "/usr/bin/mate -w"].each do |editor|
-      it "uses txmt:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "txmt://"
-      end
-    end
-
-
-    ["atom -w", "/usr/bin/atom -w"].each do |editor|
-      it "uses atom:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "atom://"
-      end
-    end
-
-    ["mine"].each do |editor|
-      it "uses x-mine:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "x-mine://"
-      end
-    end
-
-    ["idea"].each do |editor|
-      it "uses idea:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "idea://"
-      end
-    end
-
-    ["vscode", "code"].each do |editor|
-      it "uses vscode:// scheme when EDITOR=#{editor}" do
-        ENV["EDITOR"] = editor
-        subject.editor = subject.default_editor
-        expect(subject.editor[]).to start_with "vscode://"
+      it "uses BetterErrors::Editor.default_editor to set the default value" do
+          expect(subject.editor).to eq(:default_editor)
+          expect(BetterErrors::Editor).to have_received(:default_editor)
       end
     end
   end

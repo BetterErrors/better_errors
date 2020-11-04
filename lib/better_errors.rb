@@ -11,20 +11,9 @@ require "better_errors/middleware"
 require "better_errors/raised_exception"
 require "better_errors/repl"
 require "better_errors/stack_frame"
+require "better_errors/editor"
 
 module BetterErrors
-  POSSIBLE_EDITOR_PRESETS = [
-    { symbols: [:emacs, :emacsclient],  sniff: /emacs/i, url: "emacs://open?url=file://%{file}&line=%{line}" },
-    { symbols: [:macvim, :mvim],        sniff: /vim/i,   url: proc { |file, line| "mvim://open?url=file://#{file}&line=#{line}" } },
-    { symbols: [:sublime, :subl, :st],  sniff: /subl/i,  url: "subl://open?url=file://%{file}&line=%{line}" },
-    { symbols: [:textmate, :txmt, :tm], sniff: /mate/i,  url: "txmt://open?url=file://%{file}&line=%{line}" },
-    { symbols: [:idea], sniff: /idea/i, url: "idea://open?file=%{file}&line=%{line}" },
-    { symbols: [:rubymine], sniff: /mine/i, url: "x-mine://open?file=%{file}&line=%{line}" },
-    { symbols: [:vscode, :code], sniff: /code/i, url: "vscode://file/%{file}:%{line}" },
-    { symbols: [:vscodium, :codium], sniff: /codium/i, url: "vscodium://file/%{file}:%{line}" },
-    { symbols: [:atom], sniff: /atom/i,  url: "atom://core/open/file?filename=%{file}&line=%{line}" },
-  ]
-
   class << self
     # The path to the root of the application. Better Errors uses this property
     # to determine if a file in a backtrace should be considered an application
@@ -64,17 +53,18 @@ module BetterErrors
   @maximum_variable_inspect_size = 100_000
   @ignored_classes = ['ActionDispatch::Request', 'ActionDispatch::Response']
 
-  # Returns a proc, which when called with a filename and line number argument,
+  # Returns an object which responds to #url, which when called with
+  # a filename and line number argument,
   # returns a URL to open the filename and line in the selected editor.
   #
   # Generates TextMate URLs by default.
   #
-  #   BetterErrors.editor["/some/file", 123]
+  #   BetterErrors.editor.url("/some/file", 123)
   #     # => txmt://open?url=file:///some/file&line=123
   #
   # @return [Proc]
   def self.editor
-    @editor
+    @editor ||= default_editor
   end
 
   # Configures how Better Errors generates open-in-editor URLs.
@@ -115,20 +105,15 @@ module BetterErrors
   #   @param [Proc] proc
   #
   def self.editor=(editor)
-    POSSIBLE_EDITOR_PRESETS.each do |config|
-      if config[:symbols].include?(editor)
-        return self.editor = config[:url]
-      end
-    end
-
-    if editor.is_a? String
-      self.editor = proc { |file, line| editor % { file: URI.encode_www_form_component(file), line: line } }
+    if editor.is_a? Symbol
+      @editor = Editor.for_symbol(editor)
+      raise(ArgumentError, "Symbol #{editor} is not a symbol in the list of supported errors.") unless editor
+    elsif editor.is_a? String
+      @editor = Editor.for_formatting_string(editor)
+    elsif editor.respond_to? :call
+      @editor = Editor.for_proc(editor)
     else
-      if editor.respond_to? :call
-        @editor = editor
-      else
-        raise TypeError, "Expected editor to be a valid editor key, a format string or a callable."
-      end
+      raise ArgumentError, "Expected editor to be a valid editor key, a format string or a callable."
     end
   end
 
@@ -145,12 +130,8 @@ module BetterErrors
   #
   # @return [Symbol]
   def self.default_editor
-    POSSIBLE_EDITOR_PRESETS.detect(-> { {} }) { |config|
-      ENV["EDITOR"] =~ config[:sniff]
-    }[:url] || :textmate
+    Editor.default_editor
   end
-
-  BetterErrors.editor = default_editor
 end
 
 begin

@@ -94,7 +94,7 @@ module BetterErrors
     private
 
     def editor_url(frame)
-      BetterErrors.editor[frame.filename, frame.line]
+      BetterErrors.editor.url(frame.filename, frame.line)
     end
 
     def rack_session

@@ -1,6 +1,7 @@
 $: << File.expand_path("../../lib", __FILE__)
 
 ENV["EDITOR"] = nil
+ENV["BETTER_ERRORS"] = nil
 
 require 'simplecov'
 require 'simplecov-lcov'

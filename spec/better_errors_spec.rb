@@ -33,6 +33,12 @@ RSpec.describe BetterErrors do
           expect(subject.editor).to eq(:editor_from_symbol)
         end
       end
+
+      context "when set to something else" do
+        it "raises an ArgumentError" do
+          expect { subject.editor = Class.new }.to raise_error(ArgumentError)
+        end
+      end
     end
 
     context "when no value has been set" do

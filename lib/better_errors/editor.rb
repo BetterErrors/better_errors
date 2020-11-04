@@ -24,12 +24,6 @@ module BetterErrors
       new url_proc
     end
 
-    def self.for_symbol(symbol)
-      KNOWN_EDITORS.each do |preset|
-        return for_formatting_string(preset[:url]) if preset[:symbols].include?(symbol)
-      end
-    end
-
     # Automatically sniffs a default editor preset based on
     # environment variables.
     #
@@ -37,7 +31,7 @@ module BetterErrors
     def self.default_editor
       editor_from_environment_formatting_string ||
         editor_from_environment_editor ||
-        for_symbol(:textmate)
+        editor_from_symbol(:textmate)
     end
 
     def self.editor_from_environment_editor
@@ -64,6 +58,12 @@ module BetterErrors
       return unless ENV['BETTER_ERRORS_EDITOR_URL']
 
       for_formatting_string(ENV['BETTER_ERRORS_EDITOR_URL'])
+    end
+
+    def self.editor_from_symbol(symbol)
+      KNOWN_EDITORS.each do |preset|
+        return for_formatting_string(preset[:url]) if preset[:symbols].include?(symbol)
+      end
     end
 
     def initialize(url_proc)

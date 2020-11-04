@@ -15,59 +15,6 @@ RSpec.describe BetterErrors::Editor do
     end
   end
 
-  describe ".for_symbol" do
-    subject { described_class.for_symbol(symbol) }
-
-    [:atom].each do |symbol|
-      context "when symbol is '#{symbol}'" do
-        let(:symbol) { symbol }
-
-        it "uses atom:// scheme" do
-          expect(subject.url("file", 42)).to start_with("atom://")
-        end
-      end
-    end
-
-    [:emacs, :emacsclient].each do |symbol|
-      context "when symbol is '#{symbol}'" do
-        let(:symbol) { symbol }
-        it "uses emacs:// scheme" do
-          expect(subject.url("file", 42)).to start_with("emacs://")
-        end
-      end
-    end
-
-    [:macvim, :mvim].each do |symbol|
-      context "when symbol is '#{symbol}'" do
-        let(:symbol) { symbol }
-
-        it "uses mvim:// scheme" do
-          expect(subject.url("file", 42)).to start_with("mvim://")
-        end
-      end
-    end
-
-    [:sublime, :subl, :st].each do |symbol|
-      context "when symbol is '#{symbol}'" do
-        let(:symbol) { symbol }
-
-        it "uses subl:// scheme" do
-          expect(subject.url("file", 42)).to start_with("subl://")
-        end
-      end
-    end
-
-    [:textmate, :txmt, :tm].each do |symbol|
-      context "when symbol is '#{symbol}'" do
-        let(:symbol) { symbol }
-
-        it "uses txmt:// scheme" do
-          expect(subject.url("file", 42)).to start_with("txmt://")
-        end
-      end
-    end
-  end
-
   describe ".default_editor" do
     subject(:default_editor) { described_class.default_editor }
     before do
@@ -226,6 +173,59 @@ RSpec.describe BetterErrors::Editor do
 
         it "uses vscode:// scheme" do
           expect(subject.url("file", 42)).to start_with("vscode://")
+        end
+      end
+    end
+  end
+
+  describe ".editor_from_symbol" do
+    subject { described_class.editor_from_symbol(symbol) }
+
+    [:atom].each do |symbol|
+      context "when symbol is '#{symbol}'" do
+        let(:symbol) { symbol }
+
+        it "uses atom:// scheme" do
+          expect(subject.url("file", 42)).to start_with("atom://")
+        end
+      end
+    end
+
+    [:emacs, :emacsclient].each do |symbol|
+      context "when symbol is '#{symbol}'" do
+        let(:symbol) { symbol }
+        it "uses emacs:// scheme" do
+          expect(subject.url("file", 42)).to start_with("emacs://")
+        end
+      end
+    end
+
+    [:macvim, :mvim].each do |symbol|
+      context "when symbol is '#{symbol}'" do
+        let(:symbol) { symbol }
+
+        it "uses mvim:// scheme" do
+          expect(subject.url("file", 42)).to start_with("mvim://")
+        end
+      end
+    end
+
+    [:sublime, :subl, :st].each do |symbol|
+      context "when symbol is '#{symbol}'" do
+        let(:symbol) { symbol }
+
+        it "uses subl:// scheme" do
+          expect(subject.url("file", 42)).to start_with("subl://")
+        end
+      end
+    end
+
+    [:textmate, :txmt, :tm].each do |symbol|
+      context "when symbol is '#{symbol}'" do
+        let(:symbol) { symbol }
+
+        it "uses txmt:// scheme" do
+          expect(subject.url("file", 42)).to start_with("txmt://")
         end
       end
     end

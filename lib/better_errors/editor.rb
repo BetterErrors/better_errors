@@ -1,7 +1,7 @@
 require "uri"
 
 module BetterErrors
-  module Editor
+  class Editor
     KNOWN_EDITORS = [
       { symbols: [:atom], sniff: /atom/i, url: "atom://core/open/file?filename=%{file}&line=%{line}" },
       { symbols: [:emacs, :emacsclient], sniff: /emacs/i, url: "emacs://open?url=file://%{file}&line=%{line}" },
@@ -14,40 +14,14 @@ module BetterErrors
       { symbols: [:vscodium, :codium], sniff: /codium/i, url: "vscodium://file/%{file}:%{line}" },
     ]
 
-    class UsingFormattingString
-      def initialize(url_formatting_string)
-        @url_formatting_string = url_formatting_string
-      end
-
-      def url(file, line)
-        url_formatting_string % { file: URI.encode_www_form_component(file), file_unencoded: file, line: line }
-      end
-
-      private
-
-      attr_reader :url_formatting_string
-    end
-
-    class UsingProc
-      def initialize(url_proc)
-        @url_proc = url_proc
-      end
-
-      def url(file, line)
-        url_proc.call(file, line)
-      end
-
-      private
-
-      attr_reader :url_proc
-    end
-
     def self.for_formatting_string(formatting_string)
-      UsingFormattingString.new(formatting_string)
+      new proc { |file, line|
+        formatting_string % { file: URI.encode_www_form_component(file), file_unencoded: file, line: line }
+      }
     end
 
     def self.for_proc(url_proc)
-      UsingProc.new(url_proc)
+      new url_proc
     end
 
     def self.for_symbol(symbol)
@@ -91,5 +65,17 @@ module BetterErrors
 
       for_formatting_string(ENV['BETTER_ERRORS_EDITOR_URL'])
     end
+
+    def initialize(url_proc)
+      @url_proc = url_proc
+    end
+
+    def url(file, line)
+      url_proc.call(file, line)
+    end
+
+    private
+
+    attr_reader :url_proc
   end
 end

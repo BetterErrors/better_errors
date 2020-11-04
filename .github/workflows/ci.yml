@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [ master ]
+  schedule:
+    - cron: '0 0 12,26 * *' # roughly every two weeks to run on new Ruby versions
   pull_request:
     branches: [ master ]
 

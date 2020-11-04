@@ -849,15 +849,31 @@
         this.inputElement   = this.container.querySelector("input");
         this.outputElement  = this.container.querySelector("pre");
 
+        this.hasUsedConsole = document.cookie.split('; ').find(function(cookie) {
+            return cookie.startsWith('BetterErrors-has-used-console=');
+        });
+        if (this.hasUsedConsole) {
+            this.hideConsoleHint();
+        }
+
         var self = this;
         this.inputElement.onkeydown = function(ev) {
             self.onKeyDown(ev);
+            if (!self.hasUsedConsole) {
+                self.hideConsoleHint();
+                self.hasUsedConsole = true;
+                document.cookie = "BetterErrors-has-used-console=true;path=/;max-age=31536000;samesite"
+            }
         };
 
         this.setPrompt(">>");
 
         REPL.all[this.index] = this;
-    }
+    };
+
+    REPL.prototype.hideConsoleHint = function() {
+        document.querySelector('#live-shell-hint').style["display"] = "none";
+    };
 
     REPL.prototype.focus = function() {
         this.inputElement.focus();

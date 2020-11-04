@@ -4,7 +4,12 @@ require "rspec/its"
 module BetterErrors
   describe RaisedException do
     let(:exception) { RuntimeError.new("whoops") }
-    subject { RaisedException.new(exception) }
+    subject(:described_instance) { RaisedException.new(exception) }
+
+    before do
+      allow(BetterErrors::ExceptionHint).to receive(:new).and_return(exception_hint)
+    end
+    let(:exception_hint) { instance_double(BetterErrors::ExceptionHint, hint: nil) }
 
     its(:exception) { is_expected.to eq exception }
     its(:message)   { is_expected.to eq "whoops" }
@@ -101,6 +106,23 @@ module BetterErrors
       it "has the right filename and line number in the backtrace" do
         expect(subject.backtrace.first.filename).to eq("app/assets/javascripts/files/index.coffee")
         expect(subject.backtrace.first.line).to eq(11)
+      end
+    end
+
+    describe '#hint' do
+      subject(:hint) { described_instance.hint }
+
+      it 'uses ExceptionHint to get a hint for the exception' do
+        hint
+        expect(BetterErrors::ExceptionHint).to have_received(:new).with(exception)
+      end
+
+      context "when ExceptionHint returns a string" do
+        let(:exception_hint) { instance_double(BetterErrors::ExceptionHint, hint: "Hint text") }
+
+        it 'returns the value from ExceptionHint' do
+          expect(hint).to eq("Hint text")
+        end
       end
     end
   end

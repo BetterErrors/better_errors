@@ -67,6 +67,10 @@ module BetterErrors
       exception.message.strip.gsub(/(\r?\n\s*\r?\n)+/, "\n")
     end
 
+    def exception_hint
+      exception.hint
+    end
+
     def active_support_actions
       return [] unless defined?(ActiveSupport::ActionableError)
 

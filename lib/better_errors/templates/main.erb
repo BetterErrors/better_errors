@@ -90,7 +90,7 @@
         nav.sidebar,
         .frame_info {
             position: fixed;
-            top: 95px;
+            top: 102px;
             bottom: 0;
 
             box-sizing: border-box;
@@ -102,7 +102,7 @@
         nav.sidebar {
             width: 40%;
             left: 20px;
-            top: 115px;
+            top: 122px;
             bottom: 20px;
         }
 
@@ -131,7 +131,7 @@
     header.exception {
         padding: 18px 20px;
 
-        height: 59px;
+        height: 66px;
         min-height: 59px;
 
         overflow: hidden;
@@ -763,6 +763,9 @@
                         </form>
                     <% end %>
                 </div>
+            <% end %>
+            <% if exception_hint %>
+              <h2>Hint: <%= exception_hint %></h2>
             <% end %>
         </header>
     </div>

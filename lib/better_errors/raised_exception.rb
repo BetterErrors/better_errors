@@ -1,7 +1,9 @@
+require 'better_errors/exception_hint'
+
 # @private
 module BetterErrors
   class RaisedException
-    attr_reader :exception, :message, :backtrace
+    attr_reader :exception, :message, :backtrace, :hint
 
     def initialize(exception)
       if exception.class.name == "ActionView::Template::Error" && exception.respond_to?(:cause)
@@ -23,6 +25,7 @@ module BetterErrors
       @message = exception.message
 
       setup_backtrace
+      setup_hint
       massage_syntax_error
     end
 
@@ -77,6 +80,10 @@ module BetterErrors
           @message = $3
         end
       end
+    end
+
+    def setup_hint
+      @hint = ExceptionHint.new(exception).hint
     end
   end
 end

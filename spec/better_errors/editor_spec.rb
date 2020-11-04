@@ -230,4 +230,41 @@ RSpec.describe BetterErrors::Editor do
       end
     end
   end
+
+  describe "#url" do
+    subject(:url) { described_instance.url("/full/path/to/lib/file.rb", 42) }
+    let(:described_instance) { described_class.for_formatting_string("%{file_unencoded}")}
+    before do
+      ENV['BETTER_ERRORS_VIRTUAL_PATH'] = virtual_path
+      ENV['BETTER_ERRORS_HOST_PATH'] = host_path
+    end
+    let(:virtual_path) { nil }
+    let(:host_path) { nil }
+
+    context "when $BETTER_ERRORS_VIRTUAL_PATH is set" do
+      let(:virtual_path) { "/full/path/to" }
+
+      context "when $BETTER_ERRORS_HOST_PATH is not set" do
+        let(:host_path) { nil }
+
+        it "removes the VIRTUAL_PATH prefix, making the path relative" do
+          expect(url).to eq("lib/file.rb")
+        end  
+      end
+
+      context "when $BETTER_ERRORS_HOST_PATH is set" do
+        let(:host_path) { '/Users/myname/Code' }
+
+        it "replaces the VIRTUAL_PATH prefix with the HOST_PATH" do
+          expect(url).to eq("/Users/myname/Code/lib/file.rb")
+        end  
+      end
+    end
+
+    context "when $BETTER_ERRORS_VIRTUAL_PATH is not set" do
+      it "does not alter file paths" do
+        expect(url).to eq("/full/path/to/lib/file.rb")
+      end
+    end
+  end
 end

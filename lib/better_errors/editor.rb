@@ -70,12 +70,30 @@ module BetterErrors
       @url_proc = url_proc
     end
 
-    def url(file, line)
+    def url(raw_path, line)
+      if virtual_path && raw_path.start_with?(virtual_path)
+        if host_path
+          file = raw_path.sub(%r{\A#{virtual_path}}, host_path)
+        else
+          file = raw_path.sub(%r{\A#{virtual_path}/}, '')
+        end
+      else
+        file = raw_path
+      end
+        
       url_proc.call(file, line)
     end
 
     private
 
     attr_reader :url_proc
+
+    def virtual_path
+      @virtual_path ||= ENV['BETTER_ERRORS_VIRTUAL_PATH']
+    end
+
+    def host_path
+      @host_path ||= ENV['BETTER_ERRORS_HOST_PATH']
+    end
   end
 end

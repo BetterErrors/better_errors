@@ -8,9 +8,7 @@ on:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
@@ -22,7 +20,7 @@ jobs:
           - 2.6
           - 2.7
           # - ruby-head
-          - truffleruby
+          - truffleruby-head
         gemfile:
           # These are located in the gemfiles/ folder
           - rails42
@@ -73,14 +71,15 @@ jobs:
           # - { ruby: ruby-head,        gemfile: rails42 }
           # - { ruby: ruby-head,        gemfile: rails42_boc }
           # - { ruby: ruby-head,        gemfile: rails42_haml }
-          - { ruby: truffleruby,      gemfile: rails42_boc }
-          - { ruby: truffleruby,      gemfile: rails50_boc }
-          - { ruby: truffleruby,      gemfile: rails51_boc }
-          - { ruby: truffleruby,      gemfile: rails52_boc }
-          - { ruby: truffleruby,      gemfile: rails60_boc }
-          - { ruby: truffleruby,      gemfile: rack_boc }
+          - { ruby: truffleruby-head, gemfile: rails42_boc }
+          - { ruby: truffleruby-head, gemfile: rails50_boc }
+          - { ruby: truffleruby-head, gemfile: rails51_boc }
+          - { ruby: truffleruby-head, gemfile: rails52_boc }
+          - { ruby: truffleruby-head, gemfile: rails60_boc }
+          - { ruby: truffleruby-head, gemfile: rack_boc }
 
     steps:
+
     - uses: actions/checkout@v2
 
     - name: Set up Ruby

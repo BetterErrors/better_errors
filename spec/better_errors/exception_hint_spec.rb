@@ -43,8 +43,9 @@ RSpec.describe BetterErrors::ExceptionHint do
         let(:val) { 42 }
 
         it {
-          is_expected.to eq("`foo` is being called on a `Integer` object"\
-            ", which might not be the type of object you were expecting.")
+          is_expected.to match(
+            /`foo` is being called on a `(Integer|Fixnum)` object, which might not be the type of object you were expecting./
+          )
         }
       end
     end

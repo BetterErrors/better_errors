@@ -106,7 +106,7 @@ module BetterErrors
   #
   def self.editor=(editor)
     if editor.is_a? Symbol
-      @editor = Editor.for_symbol(editor)
+      @editor = Editor.editor_from_symbol(editor)
       raise(ArgumentError, "Symbol #{editor} is not a symbol in the list of supported errors.") unless editor
     elsif editor.is_a? String
       @editor = Editor.for_formatting_string(editor)

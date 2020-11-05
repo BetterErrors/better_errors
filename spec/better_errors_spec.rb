@@ -4,7 +4,7 @@ RSpec.describe BetterErrors do
   describe ".editor" do
     context "when set to a specific value" do
       before do
-        allow(BetterErrors::Editor).to receive(:for_symbol).and_return(:editor_from_symbol)
+        allow(BetterErrors::Editor).to receive(:editor_from_symbol).and_return(:editor_from_symbol)
         allow(BetterErrors::Editor).to receive(:for_formatting_string).and_return(:editor_from_formatting_string)
         allow(BetterErrors::Editor).to receive(:for_proc).and_return(:editor_from_proc)
       end
@@ -27,9 +27,9 @@ RSpec.describe BetterErrors do
       end
 
       context "when the value is a symbol" do
-        it "uses BetterErrors::Editor.for_symbol to set the value" do
+        it "uses BetterErrors::Editor.editor_from_symbol to set the value" do
           subject.editor = :subl
-          expect(BetterErrors::Editor).to have_received(:for_symbol).with(:subl)
+          expect(BetterErrors::Editor).to have_received(:editor_from_symbol).with(:subl)
           expect(subject.editor).to eq(:editor_from_symbol)
         end
       end

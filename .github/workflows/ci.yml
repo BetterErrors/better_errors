@@ -31,16 +31,19 @@ jobs:
           - rails51
           - rails52
           - rails60
+          - rails61
           - rails42_haml
           - rails50_haml
           - rails51_haml
           - rails52_haml
           - rails60_haml
+          - rails61_haml
           - rails42_boc
           - rails50_boc
           - rails51_boc
           - rails52_boc
           - rails60_boc
+          - rails61_boc
           - rack
           - rack_boc
           # - pry09
@@ -50,18 +53,27 @@ jobs:
           - { ruby: 2.2,              gemfile: rails60 }
           - { ruby: 2.2,              gemfile: rails60_boc }
           - { ruby: 2.2,              gemfile: rails60_haml }
+          - { ruby: 2.2,              gemfile: rails61 }
+          - { ruby: 2.2,              gemfile: rails61_boc }
+          - { ruby: 2.2,              gemfile: rails61_haml }
           - { ruby: 2.3,              gemfile: rails42 }
           - { ruby: 2.3,              gemfile: rails42_boc }
           - { ruby: 2.3,              gemfile: rails42_haml }
           - { ruby: 2.3,              gemfile: rails60 }
           - { ruby: 2.3,              gemfile: rails60_boc }
           - { ruby: 2.3,              gemfile: rails60_haml }
+          - { ruby: 2.3,              gemfile: rails61 }
+          - { ruby: 2.3,              gemfile: rails61_boc }
+          - { ruby: 2.3,              gemfile: rails61_haml }
           - { ruby: 2.4,              gemfile: rails42 }
           - { ruby: 2.4,              gemfile: rails42_boc }
           - { ruby: 2.4,              gemfile: rails42_haml }
           - { ruby: 2.4,              gemfile: rails60 }
           - { ruby: 2.4,              gemfile: rails60_boc }
           - { ruby: 2.4,              gemfile: rails60_haml }
+          - { ruby: 2.4,              gemfile: rails61 }
+          - { ruby: 2.4,              gemfile: rails61_boc }
+          - { ruby: 2.4,              gemfile: rails61_haml }
           - { ruby: 2.5,              gemfile: rails42 }
           - { ruby: 2.5,              gemfile: rails42_boc }
           - { ruby: 2.5,              gemfile: rails42_haml }

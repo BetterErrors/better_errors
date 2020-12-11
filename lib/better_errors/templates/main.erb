@@ -420,7 +420,7 @@
      * Display area
      * --------------------------------------------------------------------- */
 
-    .no-javascript-notice {
+    p.no-javascript-notice {
       margin-bottom: 1em;
       padding: 1em;
       border: 2px solid #e00;
@@ -770,7 +770,7 @@
 
     <p class='no-inline-style-notice'>
         <strong>
-            Better Errors can't apply inline style,
+            Better Errors can't apply inline style<span class='no-javascript-notice'> (or run Javascript)</span>,
             possibly because you have a Content Security Policy along with Turbolinks.
             But you can
             <a href='/__better_errors' target="_blank">open the interactive console in a new tab/window</a>.
@@ -849,6 +849,11 @@
 
     document.querySelector('body').classList.remove("better-errors-javascript-not-loaded");
     document.querySelector('body').classList.add("better-errors-javascript-loaded");
+
+    var noJSNotices = document.querySelectorAll('.no-javascript-notice');
+    for(var i = 0; i < noJSNotices.length; i++) {
+        noJSNotices[i].remove();
+    }
 
     function apiCall(method, opts, cb) {
         var req = new XMLHttpRequest();

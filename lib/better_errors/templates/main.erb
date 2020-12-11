@@ -3,7 +3,7 @@
 <head>
     <title><%= exception_type %> at <%= request_path %></title>
 </head>
-<body>
+<body class="better-errors-javascript-not-loaded">
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>
     <style>
     /* Basic reset */
@@ -232,6 +232,10 @@
      * Navigation
      * --------------------------------------------------------------------- */
 
+    .better-errors-javascript-not-loaded .backtrace .tabs {
+        display: none;
+    }
+
     nav.tabs {
         border-bottom: solid 1px #ddd;
 
@@ -416,6 +420,18 @@
      * Display area
      * --------------------------------------------------------------------- */
 
+    .no-javascript-notice {
+      margin-bottom: 1em;
+      padding: 1em;
+      border: 2px solid #e00;
+    }
+    .better-errors-javascript-loaded .no-javascript-notice {
+        display: none;
+    }
+    .no-inline-style-notice {
+        display: none;
+    }
+
     .trace_info {
         background: #fff;
         padding: 6px;
@@ -471,6 +487,10 @@
     .trace_info .title .name {
         float: right;
         font-weight: 200;
+    }
+
+    .better-errors-javascript-not-loaded .be-repl {
+        display: none;
     }
 
     .code, .be-console, .unavailable {
@@ -601,6 +621,9 @@
         padding-left: 20px;
     }
     .console-has-been-used .live-console-hint {
+        display: none;
+    }
+    .better-errors-javascript-not-loaded .live-console-hint {
         display: none;
     }
 
@@ -745,6 +768,15 @@
       }
     </script>
 
+    <p class='no-inline-style-notice'>
+        <strong>
+            Better Errors can't apply inline style,
+            possibly because you have a Content Security Policy along with Turbolinks.
+            But you can
+            <a href='/__better_errors' target="_blank">open the interactive console in a new tab/window</a>.
+        </strong>
+    </p>
+
     <div class='top'>
         <header class="exception">
             <h2><strong><%= exception_type %></strong> <span>at <%= request_path %></span></h2>
@@ -791,9 +823,18 @@
             </ul>
         </nav>
 
-        <% backtrace_frames.each_with_index do |frame, index| %>
-            <div class="frame_info" id="frame_info_<%= index %>"></div>
-        <% end %>
+        <div class="frameInfos">
+            <div class="frame_info current" data-frame-idx="0">
+                <p class='no-javascript-notice'>
+                    Better Errors can't run Javascript here<span class='no-inline-style-notice'> (or apply inline style)</span>,
+                    possibly because you have a Content Security Policy along with Turbolinks.
+                    But you can
+                    <a href='/__better_errors' target="_blank">open the interactive console in a new tab/window</a>.
+                </p>
+                <!-- this is enough information to show something in case JS doesn't get to load -->
+                <%== ErrorPage.render_template('variable_info', first_frame_variable_info) %>
+            </div>
+        </div>
     </section>
 </body>
 <script nonce="<%= csp_nonce %>">
@@ -803,9 +844,11 @@
     var csrfToken = "<%= csrf_token %>";
 
     var previousFrame = null;
-    var previousFrameInfo = null;
     var allFrames = document.querySelectorAll("ul.frames li");
-    var allFrameInfos = document.querySelectorAll(".frame_info");
+    var frameInfos = document.querySelector(".frameInfos");
+
+    document.querySelector('body').classList.remove("better-errors-javascript-not-loaded");
+    document.querySelector('body').classList.add("better-errors-javascript-loaded");
 
     function apiCall(method, opts, cb) {
         var req = new XMLHttpRequest();
@@ -979,10 +1022,10 @@
     };
 
     function switchTo(el) {
-        if(previousFrameInfo) {
-            previousFrameInfo.className = "frame_info";
+        var currentFrameInfo = document.querySelectorAll('.frame_info.current');
+        for(var i = 0; i < currentFrameInfo.length; i++) {
+            currentFrameInfo[i].className = "frame_info";
         }
-        previousFrameInfo = el;
 
         el.className = "frame_info current";
 
@@ -991,7 +1034,13 @@
     }
 
     function selectFrameInfo(index) {
-        var el = allFrameInfos[index];
+        var el = document.querySelector(".frame_info[data-frame-idx='" + index + "']")
+        if (!el) {
+          el = document.createElement("div");
+          el.className = "frame_info";
+          el.setAttribute('data-frame-idx', index);
+          frameInfos.appendChild(el);
+        }
         if(el) {
             if (el.loaded) {
                 return switchTo(el);

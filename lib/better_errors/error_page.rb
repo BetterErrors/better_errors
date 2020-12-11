@@ -26,7 +26,7 @@ module BetterErrors
       @id ||= SecureRandom.hex(8)
     end
 
-    def render(template_name = "main", csrf_token = nil)
+    def render(template_name = "main", csrf_token = nil, csp_nonce = nil)
       binding.eval(self.class.template(template_name).src)
     rescue => e
       # Fix the backtrace, which doesn't identify the template that failed (within Better Errors).

@@ -94,12 +94,13 @@ module BetterErrors
     def show_error_page(env, exception=nil)
       request = Rack::Request.new(env)
       csrf_token = request.cookies[CSRF_TOKEN_COOKIE_NAME] || SecureRandom.uuid
+      csp_nonce = SecureRandom.base64(12)
 
       type, content = if @error_page
         if text?(env)
-          [ 'plain', @error_page.render('text') ]
+          [ 'plain', @error_page.render_text ]
         else
-          [ 'html', @error_page.render('main', csrf_token) ]
+          [ 'html', @error_page.render_main(csrf_token, csp_nonce) ]
         end
       else
         [ 'html', no_errors_page ]
@@ -110,7 +111,22 @@ module BetterErrors
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 
-      response = Rack::Response.new(content, status_code, { "Content-Type" => "text/#{type}; charset=utf-8" })
+      headers = {
+        "Content-Type" => "text/#{type}; charset=utf-8",
+        "Content-Security-Policy" => [
+          "default-src 'none'",
+          # Specifying nonce makes a modern browser ignore 'unsafe-inline' which could still be set 
+          # for older browsers without nonce support.
+          # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
+          "script-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
+          # Inline style is required by the syntax highlighter.
+          "style-src 'self' 'unsafe-inline'",
+          "connect-src 'self'",
+          "navigate-to 'self' #{BetterErrors.editor.scheme}",
+        ].join('; '),
+      }
+
+      response = Rack::Response.new(content, status_code, headers)
 
       unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
         response.set_cookie(CSRF_TOKEN_COOKIE_NAME, value: csrf_token, path: "/", httponly: true, same_site: :strict)

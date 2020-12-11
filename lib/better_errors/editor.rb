@@ -84,6 +84,10 @@ module BetterErrors
       url_proc.call(file, line)
     end
 
+    def scheme
+      url('/fake', 42).sub(/:.*/, ':')
+    end
+
     private
 
     attr_reader :url_proc

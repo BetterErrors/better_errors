@@ -107,12 +107,17 @@
         }
 
         .frame_info {
+            display: none;
+
             right: 0;
             left: 40%;
 
             padding: 20px;
             padding-left: 10px;
             margin-left: 30px;
+        }
+        .frame_info.current {
+            display: block;
         }
     }
 
@@ -787,7 +792,7 @@
         </nav>
 
         <% backtrace_frames.each_with_index do |frame, index| %>
-            <div class="frame_info" id="frame_info_<%= index %>" style="display:none;"></div>
+            <div class="frame_info" id="frame_info_<%= index %>"></div>
         <% end %>
     </section>
 </body>
@@ -974,10 +979,12 @@
     };
 
     function switchTo(el) {
-        if(previousFrameInfo) previousFrameInfo.style.display = "none";
+        if(previousFrameInfo) {
+            previousFrameInfo.className = "frame_info";
+        }
         previousFrameInfo = el;
 
-        el.style.display = "block";
+        el.className = "frame_info current";
 
         var replInput = el.querySelector('.be-console input');
         if (replInput) replInput.focus();

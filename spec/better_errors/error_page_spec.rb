@@ -13,7 +13,7 @@ module BetterErrors
 
     let(:error_page) { ErrorPage.new exception, { "PATH_INFO" => "/some/path" } }
 
-    let(:response) { error_page.render }
+    let(:response) { error_page.render_main("CSRF_TOKEN", "CSP_NONCE") }
 
     let(:exception_binding) {
       local_a = :value_for_local_a

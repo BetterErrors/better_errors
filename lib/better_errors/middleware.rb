@@ -98,9 +98,9 @@ module BetterErrors
 
       type, content = if @error_page
         if text?(env)
-          [ 'plain', @error_page.render('text') ]
+          [ 'plain', @error_page.render_text ]
         else
-          [ 'html', @error_page.render('main', csrf_token, csp_nonce) ]
+          [ 'html', @error_page.render_main(csrf_token, csp_nonce) ]
         end
       else
         [ 'html', no_errors_page ]

@@ -5,12 +5,23 @@ require "securerandom"
 module BetterErrors
   # @private
   class ErrorPage
+    VariableInfo = Struct.new(:frame, :editor_url, :rails_params, :rack_session, :start_time)
+
     def self.template_path(template_name)
       File.expand_path("../templates/#{template_name}.erb", __FILE__)
     end
 
     def self.template(template_name)
       Erubi::Engine.new(File.read(template_path(template_name)), escape: true)
+    end
+
+    def self.render_template(template_name, locals)
+      locals.send(:eval, self.template(template_name).src)
+    rescue => e
+      # Fix the backtrace, which doesn't identify the template that failed (within Better Errors).
+      # We don't know the line number, so just injecting the template path has to be enough.
+      e.backtrace.unshift "#{self.template_path(template_name)}:0"
+      raise
     end
 
     attr_reader :exception, :env, :repls
@@ -26,20 +37,21 @@ module BetterErrors
       @id ||= SecureRandom.hex(8)
     end
 
-    def render(template_name = "main", csrf_token = nil, csp_nonce = nil)
-      binding.eval(self.class.template(template_name).src)
-    rescue => e
-      # Fix the backtrace, which doesn't identify the template that failed (within Better Errors).
-      # We don't know the line number, so just injecting the template path has to be enough.
-      e.backtrace.unshift "#{self.class.template_path(template_name)}:0"
-      raise
+    def render_main(csrf_token, csp_nonce)
+      frame = backtrace_frames[0]
+      first_frame_variable_info = VariableInfo.new(frame, editor_url(frame), rails_params, rack_session, Time.now.to_f)
+      self.class.render_template('main', binding)
+    end
+
+    def render_text
+      self.class.render_template('text', binding)
     end
 
     def do_variables(opts)
       index = opts["index"].to_i
-      @frame = backtrace_frames[index]
-      @var_start_time = Time.now.to_f
-      { html: render("variable_info") }
+      frame = backtrace_frames[index]
+      variable_info = VariableInfo.new(frame, editor_url(frame), rails_params, rack_session, Time.now.to_f)
+      { html: self.class.render_template("variable_info", variable_info) }
     end
 
     def do_eval(opts)
@@ -113,11 +125,11 @@ module BetterErrors
       env["PATH_INFO"]
     end
 
-    def html_formatted_code_block(frame)
+    def self.html_formatted_code_block(frame)
       CodeFormatter::HTML.new(frame.filename, frame.line).output
     end
 
-    def text_formatted_code_block(frame)
+    def self.text_formatted_code_block(frame)
       CodeFormatter::Text.new(frame.filename, frame.line).output
     end
 
@@ -125,7 +137,7 @@ module BetterErrors
       str + "\n" + char*str.size
     end
 
-    def inspect_value(obj)
+    def self.inspect_value(obj)
       if BetterErrors.ignored_classes.include? obj.class.name
         "<span class='unsupported'>(Instance of ignored class. "\
         "#{obj.class.name ? "Remove #{CGI.escapeHTML(obj.class.name)} from" : "Modify"}"\

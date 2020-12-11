@@ -114,16 +114,14 @@ module BetterErrors
       headers = {
         "Content-Type" => "text/#{type}; charset=utf-8",
         "Content-Security-Policy" => [
-          "default-src 'self' https:", # TODO: remove https:?
-          "font-src 'self' https: data:",
-          "img-src 'self' https: data:",
-          "object-src 'none'",
+          "default-src 'none'",
           # Specifying nonce makes a modern browser ignore 'unsafe-inline' which could still be set 
           # for older browsers without nonce support.
-          "script-src 'self' https: 'nonce-#{csp_nonce}' 'unsafe-inline'",
+          # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
+          "script-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
           # Inline style is required by the syntax highlighter.
-          "style-src 'self' https: 'unsafe-inline'",
-          "connect-src 'self' https:", 
+          "style-src 'self' 'unsafe-inline'",
+          "connect-src 'self'",
         ].join('; '),
       }
 

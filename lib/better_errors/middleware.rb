@@ -122,6 +122,7 @@ module BetterErrors
           # Inline style is required by the syntax highlighter.
           "style-src 'self' 'unsafe-inline'",
           "connect-src 'self'",
+          "navigate-to 'self' #{BetterErrors.editor.scheme}",
         ].join('; '),
       }
 

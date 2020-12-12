@@ -46,4 +46,9 @@ namespace :style do
       f.write(css)
     end
   end
+
+  desc "Remove main.css so that the SASS sources will be used directly"
+  task :develop do
+    File.unlink File.expand_path("lib/better_errors/templates/main.css", File.dirname(__FILE__))
+  end
 end

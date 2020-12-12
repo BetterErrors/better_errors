@@ -1,6 +1,7 @@
 require "cgi"
 require "json"
 require "securerandom"
+require "better_errors/error_page_style"
 
 module BetterErrors
   # @private

@@ -48,10 +48,14 @@ jobs:
       run: |
         bundle exec gem bump better_errors --version ${{ steps.get_version.outputs.version }} --no-commit
 
+    - name: Compile CSS
+      run: |
+        bundle exec rake style:build
+
     - name: Build gem
       run: gem build better_errors.gemspec
 
-    - name: Upload gem to Release
+    - name: Add gem to GitHub Release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

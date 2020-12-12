@@ -12,9 +12,9 @@ Gem::Specification.new do |s|
   s.homepage      = "https://github.com/BetterErrors/better_errors"
   s.license       = "MIT"
 
-  s.files         = `git ls-files -z`.split("\x0").reject do |f|
-  end
+  s.files         = `git ls-files -z`.split("\x0").reject { |f|
     f.match(%r{^((test|spec|features|feature-screenshots)/|Rakefile)|\.scss$})
+  } + %w[lib/better_errors/templates/main.css]
 
   s.require_paths = ["lib"]
 

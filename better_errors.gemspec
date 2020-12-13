@@ -12,9 +12,9 @@ Gem::Specification.new do |s|
   s.homepage      = "https://github.com/BetterErrors/better_errors"
   s.license       = "MIT"
 
-  s.files         = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{^((test|spec|features|feature-screenshots)/|Rakefile)})
-  end
+  s.files         = `git ls-files -z`.split("\x0").reject { |f|
+    f.match(%r{^((test|spec|features|feature-screenshots)/|Rakefile)|\.scss$})
+  } + %w[lib/better_errors/templates/main.css]
 
   s.require_paths = ["lib"]
 
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec-html-matchers"
   s.add_development_dependency "rspec-its"
   s.add_development_dependency "yard"
+  s.add_development_dependency "sassc"
   # kramdown 2.1 requires Ruby 2.3+
   s.add_development_dependency "kramdown", (RUBY_VERSION < '2.3' ? '< 2.0.0' : '> 2.0.0')
   # simplecov and coveralls must not be included here. See the Gemfiles instead.

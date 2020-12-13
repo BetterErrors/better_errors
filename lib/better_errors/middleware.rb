@@ -120,6 +120,7 @@ module BetterErrors
           # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
           "script-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
           "style-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
+          "img-src data:",
           "connect-src 'self'",
           "navigate-to 'self' #{BetterErrors.editor.scheme}",
         ].join('; '),

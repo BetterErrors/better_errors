@@ -5,7 +5,7 @@
 </head>
 <body class="better-errors-javascript-not-loaded">
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>
-    <%== ErrorPageStyle.style_tag %>
+    <%== ErrorPageStyle.style_tag(csp_nonce) %>
 
     <%# IE8 compatibility crap %>
     <script nonce="<%= csp_nonce %>">

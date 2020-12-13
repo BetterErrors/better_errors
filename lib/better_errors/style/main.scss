@@ -487,10 +487,12 @@ p.no-javascript-notice {
 }
 
 .code, .be-console, .unavailable {
-    background: #fff;
     padding: 5px;
-
     box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.code, .unavailable {
+    text-shadow: none;
 }
 
 .code_linenums{
@@ -506,6 +508,12 @@ p.no-javascript-notice {
 }
 
 .code {
+    @import "syntax_highlighting";
+
+    @media (prefers-color-scheme: dark) {
+        @import "syntax_highlighting_dark";
+    }
+
     margin-bottom: -1px;
     border-top-left-radius:2px;
     padding: 10px 0;
@@ -543,21 +551,24 @@ p.unavailable:before {
     margin-bottom: -10px;
 }
 
+$code-highlight-background: rgba(51, 136, 170, 0.15);
+$code-highlight-background-flash: adjust-color($code-highlight-background, $alpha: 0.3);
+
 @-webkit-keyframes highlight {
-    0%   { background: rgba(220, 30, 30, 0.3); }
-    100% { background: rgba(220, 30, 30, 0.1); }
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
 }
 @-moz-keyframes highlight {
-    0%   { background: rgba(220, 30, 30, 0.3); }
-    100% { background: rgba(220, 30, 30, 0.1); }
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
 }
 @keyframes highlight {
-    0%   { background: rgba(220, 30, 30, 0.3); }
-    100% { background: rgba(220, 30, 30, 0.1); }
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
 }
 
 .code .highlight, .code_linenums .highlight {
-    background: rgba(220, 30, 30, 0.1);
+    background: $code-highlight-background;
     -webkit-animation: highlight 400ms linear 1;
     -moz-animation: highlight 400ms linear 1;
     animation: highlight 400ms linear 1;
@@ -565,6 +576,7 @@ p.unavailable:before {
 
 /* REPL shell */
 .be-console {
+    background: #fff;
     padding: 0 1px 10px 1px;
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px;
@@ -724,8 +736,4 @@ nav.sidebar:hover::-webkit-scrollbar-thumb {
 .inset pre:hover::-webkit-scrollbar-thumb,
 .code:hover::-webkit-scrollbar-thumb {
     background: #888;
-}
-
-.code pre {
-  @import "syntax_highlighting";
 }

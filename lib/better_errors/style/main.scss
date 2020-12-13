@@ -510,11 +510,17 @@ p.no-javascript-notice {
     border-top-left-radius:2px;
     padding: 10px 0;
     overflow: auto;
-}
 
-.code pre{
-    padding-left:12px;
-    min-height:16px;
+    .code-wrapper {
+      // This fixes the highlight or other background of the pre not stretching the full scrollable width.
+      display: inline-block;
+      min-width: 100%;
+    }
+
+    pre {
+        padding-left:12px;
+        min-height:16px;
+    }
 }
 
 /* Source unavailable */

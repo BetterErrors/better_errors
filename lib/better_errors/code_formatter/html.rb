@@ -20,7 +20,10 @@ module BetterErrors
     end
 
     def formatted_code
-      %{<div class="code_linenums">#{formatted_nums.join}</div><div class="code">#{super}</div>}
+      %{
+        <div class="code_linenums">#{formatted_nums.join}</div>
+        <div class="code"><div class='code-wrapper'>#{super}</div></div>
+      }
     end
   end
 end

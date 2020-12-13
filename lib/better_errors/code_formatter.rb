@@ -42,7 +42,7 @@ module BetterErrors
     end
 
     def highlighted_lines
-      CodeRay.scan(context_lines.join, coderay_scanner).div(wrap: nil).lines
+      CodeRay.scan(context_lines.join, coderay_scanner).html(css: :class).lines
     end
 
     def context_lines

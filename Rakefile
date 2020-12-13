@@ -41,7 +41,7 @@ end
 namespace :style do
   desc "Build main.css from the SASS sources"
   task :build do
-    css = BetterErrors::ErrorPageStyle.compiled_style(true)
+    css = BetterErrors::ErrorPageStyle.compiled_css(true)
     File.open(File.expand_path("lib/better_errors/templates/main.css", File.dirname(__FILE__)), "w") do |f|
       f.write(css)
     end

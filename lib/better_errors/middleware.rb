@@ -119,8 +119,8 @@ module BetterErrors
           # for older browsers without nonce support.
           # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
           "script-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
-          # Inline style is required by the syntax highlighter.
-          "style-src 'self' 'unsafe-inline'",
+          "style-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
+          "img-src data:",
           "connect-src 'self'",
           "navigate-to 'self' #{BetterErrors.editor.scheme}",
         ].join('; '),

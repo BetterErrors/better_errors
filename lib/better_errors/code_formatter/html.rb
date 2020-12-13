@@ -8,7 +8,7 @@ module BetterErrors
     def formatted_lines
       each_line_of(highlighted_lines) { |highlight, current_line, str|
         class_name = highlight ? "highlight" : ""
-        sprintf '<pre class="%s">%s</pre>', class_name, str
+        sprintf '<pre class="CodeRay %s">%s</pre>', class_name, str
       }
     end
 

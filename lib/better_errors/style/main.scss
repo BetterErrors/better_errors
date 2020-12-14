@@ -726,4 +726,6 @@ nav.sidebar:hover::-webkit-scrollbar-thumb {
     background: #888;
 }
 
-@import "syntax_highlighting";
+.code pre {
+  @import "syntax_highlighting";
+}

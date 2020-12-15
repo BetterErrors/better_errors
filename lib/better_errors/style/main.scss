@@ -487,10 +487,12 @@ p.no-javascript-notice {
 }
 
 .code, .be-console, .unavailable {
-    background: #fff;
     padding: 5px;
-
     box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.code, .unavailable {
+    text-shadow: none;
 }
 
 .code_linenums{
@@ -505,16 +507,35 @@ p.no-javascript-notice {
     padding:0 12px;
 }
 
+.code, .be-console .syntax-highlighted {
+    text-shadow: none;
+
+    @import "syntax_highlighting";
+}
+.code {
+    // For now, the syntax-highlighted console only supports light mode.
+    // Once the entire page has a dark theme, this should change.
+    @media (prefers-color-scheme: dark) {
+        @import "syntax_highlighting_dark";
+    }
+}
+
 .code {
     margin-bottom: -1px;
     border-top-left-radius:2px;
     padding: 10px 0;
     overflow: auto;
-}
 
-.code pre{
-    padding-left:12px;
-    min-height:16px;
+    .code-wrapper {
+      // This fixes the highlight or other background of the pre not stretching the full scrollable width.
+      display: inline-block;
+      min-width: 100%;
+    }
+
+    pre {
+        padding-left:12px;
+        min-height:16px;
+    }
 }
 
 /* Source unavailable */
@@ -537,21 +558,24 @@ p.unavailable:before {
     margin-bottom: -10px;
 }
 
+$code-highlight-background: rgba(51, 136, 170, 0.15);
+$code-highlight-background-flash: adjust-color($code-highlight-background, $alpha: 0.3);
+
 @-webkit-keyframes highlight {
-    0%   { background: rgba(220, 30, 30, 0.3); }
-    100% { background: rgba(220, 30, 30, 0.1); }
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
 }
 @-moz-keyframes highlight {
-    0%   { background: rgba(220, 30, 30, 0.3); }
-    100% { background: rgba(220, 30, 30, 0.1); }
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
 }
 @keyframes highlight {
-    0%   { background: rgba(220, 30, 30, 0.3); }
-    100% { background: rgba(220, 30, 30, 0.1); }
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
 }
 
 .code .highlight, .code_linenums .highlight {
-    background: rgba(220, 30, 30, 0.1);
+    background: $code-highlight-background;
     -webkit-animation: highlight 400ms linear 1;
     -moz-animation: highlight 400ms linear 1;
     animation: highlight 400ms linear 1;
@@ -559,6 +583,7 @@ p.unavailable:before {
 
 /* REPL shell */
 .be-console {
+    background: #fff;
     padding: 0 1px 10px 1px;
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px;
@@ -719,5 +744,3 @@ nav.sidebar:hover::-webkit-scrollbar-thumb {
 .code:hover::-webkit-scrollbar-thumb {
     background: #888;
 }
-
-@import "syntax_highlighting";

@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   # simplecov and coveralls must not be included here. See the Gemfiles instead.
 
   s.add_dependency "erubi", ">= 1.0.0"
-  s.add_dependency "coderay", ">= 1.0.0"
+  s.add_dependency "rouge", ">= 1.0.0"
   s.add_dependency "rack", ">= 0.9.0"
 
   # optional dependencies:

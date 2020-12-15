@@ -1,6 +1,7 @@
 require "cgi"
 require "json"
 require "securerandom"
+require "rouge"
 require "better_errors/error_page_style"
 
 module BetterErrors
@@ -158,7 +159,7 @@ module BetterErrors
       result, prompt, prefilled_input = @repls[index].send_input(code)
 
       {
-        highlighted_input: CodeRay.scan(code, :ruby).div(wrap: nil),
+        highlighted_input: Rouge::Formatters::HTML.new.format(Rouge::Lexers::Ruby.lex(code)),
         prefilled_input:   prefilled_input,
         prompt:            prompt,
         result:            result

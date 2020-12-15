@@ -1,6 +1,5 @@
 require "pp"
 require "erubi"
-require "coderay"
 require "uri"
 
 require "better_errors/version"

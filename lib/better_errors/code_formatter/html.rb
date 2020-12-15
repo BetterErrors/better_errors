@@ -1,3 +1,5 @@
+require "rouge"
+
 module BetterErrors
   # @private
   class CodeFormatter::HTML < CodeFormatter
@@ -8,7 +10,7 @@ module BetterErrors
     def formatted_lines
       each_line_of(highlighted_lines) { |highlight, current_line, str|
         class_name = highlight ? "highlight" : ""
-        sprintf '<pre class="CodeRay %s">%s</pre>', class_name, str
+        sprintf '<pre class="%s">%s</pre>', class_name, str
       }
     end
 
@@ -20,7 +22,19 @@ module BetterErrors
     end
 
     def formatted_code
-      %{<div class="code_linenums">#{formatted_nums.join}</div><div class="code">#{super}</div>}
+      %{
+        <div class="code_linenums">#{formatted_nums.join}</div>
+        <div class="code"><div class='code-wrapper'>#{super}</div></div>
+      }
     end
+
+    def rouge_lexer
+      Rouge::Lexer.guess(filename: filename, source: source) { Rouge::Lexers::Ruby }
+    end
+
+    def highlighted_lines
+      Rouge::Formatters::HTML.new.format(rouge_lexer.lex(context_lines.join)).lines
+    end
+
   end
 end

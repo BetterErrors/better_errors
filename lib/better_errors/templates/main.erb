@@ -249,7 +249,7 @@
                 self.writeOutput(response.error + "\n");
             }
             self.writeOutput(self._prompt + " ");
-            self.writeRawOutput(response.highlighted_input + "\n");
+            self.writeRawOutput("<span class='syntax-highlighted'>" + response.highlighted_input + "</span>\n");
             self.writeOutput(response.result);
             self.setPrompt(response.prompt);
             self.setInput(response.prefilled_input);

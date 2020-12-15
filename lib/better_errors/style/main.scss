@@ -507,13 +507,20 @@ p.no-javascript-notice {
     padding:0 12px;
 }
 
-.code {
-    @import "syntax_highlighting";
+.code, .be-console .syntax-highlighted {
+    text-shadow: none;
 
+    @import "syntax_highlighting";
+}
+.code {
+    // For now, the syntax-highlighted console only supports light mode.
+    // Once the entire page has a dark theme, this should change.
     @media (prefers-color-scheme: dark) {
         @import "syntax_highlighting_dark";
     }
+}
 
+.code {
     margin-bottom: -1px;
     border-top-left-radius:2px;
     padding: 10px 0;

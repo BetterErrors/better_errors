@@ -81,6 +81,26 @@ module BetterErrors
       end
     end
 
+    context "#local_variable" do
+      it "returns exception details when #get_local_variable raises NameError" do
+        frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
+        allow(frame).to receive(:get_local_variable).and_raise(NameError.new("details"))
+        expect(frame.local_variable("foo")).to eq("NameError: details")
+      end
+
+      it "returns exception details when #eval_local_variable raises NameError" do
+        frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
+        allow(frame).to receive(:eval_local_variable).and_raise(NameError.new("details"))
+        expect(frame.local_variable("foo")).to eq("NameError: details")
+      end
+
+      it "raises on non-NameErrors" do
+        frame = StackFrame.new("/abc/xyz/app/controllers/crap_controller.rb", 123, "index")
+        allow(frame).to receive(:get_local_variable).and_raise(ArgumentError)
+        expect { frame.local_variable("foo") }.to raise_error(ArgumentError)
+      end
+    end
+
     it "special cases SyntaxErrors" do
       begin
         eval(%{ raise SyntaxError, "you wrote bad ruby!" }, nil, "my_file.rb", 123)

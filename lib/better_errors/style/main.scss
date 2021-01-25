@@ -1,0 +1,746 @@
+/* Basic reset */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    vertical-align: top;
+    text-align: left;
+}
+
+textarea {
+    resize: none;
+}
+
+body {
+    font-size: 10pt;
+}
+
+body, td, input, textarea {
+    font-family: helvetica neue, lucida grande, sans-serif;
+    line-height: 1.5;
+    color: #333;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+html {
+    background: #f0f0f5;
+}
+
+.clearfix::after{
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+/* ---------------------------------------------------------------------
+ * Basic layout
+ * --------------------------------------------------------------------- */
+
+/* Small */
+@media screen and (max-width: 1100px) {
+    html {
+        overflow-y: scroll;
+    }
+
+    body {
+        margin: 0 20px;
+    }
+
+    header.exception {
+        margin: 0 -20px;
+    }
+
+    nav.sidebar {
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    ul.frames {
+        max-height: 200px;
+        overflow: auto;
+    }
+}
+
+/* Wide */
+@media screen and (min-width: 1100px) {
+    header.exception {
+       position: fixed;
+       top: 0;
+       left: 0;
+       right: 0;
+    }
+
+    nav.sidebar,
+    .frame_info {
+        position: fixed;
+        top: 102px;
+        bottom: 0;
+
+        box-sizing: border-box;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    nav.sidebar {
+        width: 40%;
+        left: 20px;
+        top: 122px;
+        bottom: 20px;
+    }
+
+    .frame_info {
+        display: none;
+
+        right: 0;
+        left: 40%;
+
+        padding: 20px;
+        padding-left: 10px;
+        margin-left: 30px;
+    }
+    .frame_info.current {
+        display: block;
+    }
+}
+
+nav.sidebar {
+    background: #d3d3da;
+    border-top: solid 3px #a33;
+    border-bottom: solid 3px #a33;
+    border-radius: 4px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------------------------------------------------------------------
+ * Header
+ * --------------------------------------------------------------------- */
+
+header.exception {
+    padding: 18px 20px;
+
+    height: 66px;
+    min-height: 59px;
+
+    overflow: hidden;
+
+    background-color: #20202a;
+    color: #aaa;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+    font-weight: 200;
+    box-shadow: inset 0 -5px 3px -3px rgba(0, 0, 0, 0.05), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+
+    -webkit-text-smoothing: antialiased;
+}
+
+/* Heading */
+header.exception .fix-actions {
+    margin-top: .5em;
+}
+
+header.exception .fix-actions input[type=submit] {
+    font-weight: bold;
+}
+
+header.exception h2 {
+    font-weight: 200;
+    font-size: 11pt;
+}
+
+header.exception h2,
+header.exception p {
+    line-height: 1.5em;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+}
+
+header.exception h2 strong {
+    font-weight: 700;
+    color: #d55;
+}
+
+header.exception p {
+    font-weight: 200;
+    font-size: 17pt;
+    color: white;
+}
+
+header.exception:hover {
+    height: auto;
+    z-index: 2;
+}
+
+header.exception:hover h2,
+header.exception:hover p {
+    padding-right: 20px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    height: auto;
+    max-height: 7.5em;
+}
+
+@media screen and (max-width: 1100px) {
+    header.exception {
+        height: auto;
+    }
+
+    header.exception h2,
+    header.exception p {
+        padding-right: 20px;
+        overflow-y: auto;
+        word-wrap: break-word;
+        height: auto;
+        max-height: 7em;
+    }
+}
+
+
+/* Light theme */
+/*
+header.exception {
+    text-shadow: 0 1px 0 rgba(250, 250, 250, 0.6);
+    background: rgba(200,100,50,0.10);
+    color: #977;
+}
+header.exception h2 strong {
+    color: #533;
+}
+header.exception p {
+    color: #744;
+}
+*/
+
+/* ---------------------------------------------------------------------
+ * Navigation
+ * --------------------------------------------------------------------- */
+
+.better-errors-javascript-not-loaded .backtrace .tabs {
+    display: none;
+}
+
+nav.tabs {
+    border-bottom: solid 1px #ddd;
+
+    background-color: #eee;
+    text-align: center;
+
+    padding: 6px;
+
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+nav.tabs a {
+    display: inline-block;
+
+    height: 22px;
+    line-height: 22px;
+    padding: 0 10px;
+
+    text-decoration: none;
+    font-size: 8pt;
+    font-weight: bold;
+
+    color: #999;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+nav.tabs a.selected {
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 16px;
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+nav.tabs a.disabled {
+    text-decoration: line-through;
+    text-shadow: none;
+    cursor: default;
+}
+
+/* ---------------------------------------------------------------------
+ * Sidebar
+ * --------------------------------------------------------------------- */
+
+ul.frames {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Each item */
+ul.frames li {
+    background-color: #f8f8f8;
+    background: -webkit-linear-gradient(top, #f8f8f8 80%, #f0f0f0);
+    background: -moz-linear-gradient(top, #f8f8f8 80%, #f0f0f0);
+    background: linear-gradient(top, #f8f8f8 80%, #f0f0f0);
+    box-shadow: inset 0 -1px 0 #e2e2e2;
+    padding: 7px 20px;
+
+    cursor: pointer;
+    overflow: hidden;
+}
+
+ul.frames .name,
+ul.frames .location {
+    overflow: hidden;
+    height: 1.5em;
+
+    white-space: nowrap;
+    word-wrap: none;
+    text-overflow: ellipsis;
+}
+
+ul.frames .method {
+    color: #966;
+}
+
+ul.frames .location {
+    font-size: 0.85em;
+    font-weight: 400;
+    color: #999;
+}
+
+ul.frames .line {
+    font-weight: bold;
+}
+
+/* Selected frame */
+ul.frames li.selected {
+    background: #38a;
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1), inset 0 2px 0 rgba(255, 255, 255, 0.01), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+ul.frames li.selected .name,
+ul.frames li.selected .method,
+ul.frames li.selected .location {
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+ul.frames li.selected .location {
+    opacity: 0.6;
+}
+
+/* Iconography */
+ul.frames li {
+    padding-left: 60px;
+    position: relative;
+}
+
+ul.frames li .icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border-radius: 15px;
+
+    text-align: center;
+
+    background: white;
+    border: solid 2px #ccc;
+
+    font-size: 9pt;
+    font-weight: 200;
+    font-style: normal;
+
+    position: absolute;
+    top: 14px;
+    left: 20px;
+}
+
+ul.frames .icon.application {
+    background: #808090;
+    border-color: #555;
+}
+
+ul.frames .icon.application:before {
+    content: 'A';
+    color: white;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsiveness -- flow to single-line mode */
+@media screen and (max-width: 1100px) {
+    ul.frames li {
+        padding-top: 6px;
+        padding-bottom: 6px;
+        padding-left: 36px;
+        line-height: 1.3;
+    }
+
+    ul.frames li .icon {
+        width: 11px;
+        height: 11px;
+        line-height: 11px;
+
+        top: 7px;
+        left: 10px;
+        font-size: 5pt;
+    }
+
+    ul.frames .name,
+    ul.frames .location {
+        display: inline-block;
+        line-height: 1.3;
+        height: 1.3em;
+    }
+
+    ul.frames .name {
+        margin-right: 10px;
+    }
+}
+
+/* ---------------------------------------------------------------------
+ * Monospace
+ * --------------------------------------------------------------------- */
+
+pre, code, .be-repl input, .be-repl .command-line span, textarea, .code_linenums {
+    font-family: menlo, lucida console, monospace;
+    font-size: 8pt;
+}
+
+/* ---------------------------------------------------------------------
+ * Display area
+ * --------------------------------------------------------------------- */
+
+p.no-javascript-notice {
+  margin-bottom: 1em;
+  padding: 1em;
+  border: 2px solid #e00;
+}
+.better-errors-javascript-loaded .no-javascript-notice {
+    display: none;
+}
+.no-inline-style-notice {
+    display: none;
+}
+
+.trace_info {
+    background: #fff;
+    padding: 6px;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.03), 1px 1px 0 rgba(0, 0, 0, 0.05), -1px 1px 0 rgba(0, 0, 0, 0.05), 0 0 0 4px rgba(0, 0, 0, 0.04);
+}
+
+.code_block{
+    background: #f1f1f1;
+    border-left: 1px solid #ccc;
+}
+
+/* Titlebar */
+.trace_info .title {
+    background: #f1f1f1;
+
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    padding: 6px 10px;
+
+    border: solid 1px #ccc;
+    border-bottom: 0;
+
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+
+.trace_info .title .name,
+.trace_info .title .location {
+    font-size: 9pt;
+    line-height: 26px;
+    height: 26px;
+    overflow: hidden;
+}
+
+.trace_info .title .location {
+    float: left;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.trace_info .title .location a {
+    color:inherit;
+    text-decoration:none;
+    border-bottom:1px solid #aaaaaa;
+}
+
+.trace_info .title .location a:hover {
+    border-color:#666666;
+}
+
+.trace_info .title .name {
+    float: right;
+    font-weight: 200;
+}
+
+.better-errors-javascript-not-loaded .be-repl {
+    display: none;
+}
+
+.code, .be-console, .unavailable {
+    padding: 5px;
+    box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.code, .unavailable {
+    text-shadow: none;
+}
+
+.code_linenums{
+    background:#f1f1f1;
+    padding-top:10px;
+    padding-bottom:9px;
+    float:left;
+}
+
+.code_linenums span{
+    display:block;
+    padding:0 12px;
+}
+
+.code, .be-console .syntax-highlighted {
+    text-shadow: none;
+
+    @import "syntax_highlighting";
+}
+.code {
+    // For now, the syntax-highlighted console only supports light mode.
+    // Once the entire page has a dark theme, this should change.
+    @media (prefers-color-scheme: dark) {
+        @import "syntax_highlighting_dark";
+    }
+}
+
+.code {
+    margin-bottom: -1px;
+    border-top-left-radius:2px;
+    padding: 10px 0;
+    overflow: auto;
+
+    .code-wrapper {
+      // This fixes the highlight or other background of the pre not stretching the full scrollable width.
+      display: inline-block;
+      min-width: 100%;
+    }
+
+    pre {
+        padding-left:12px;
+        min-height:16px;
+    }
+}
+
+/* Source unavailable */
+p.unavailable {
+    padding: 20px 0 40px 0;
+    text-align: center;
+    color: #b99;
+    font-weight: bold;
+}
+
+p.unavailable:before {
+    content: '\00d7';
+    display: block;
+
+    color: #daa;
+
+    text-align: center;
+    font-size: 40pt;
+    font-weight: normal;
+    margin-bottom: -10px;
+}
+
+$code-highlight-background: rgba(51, 136, 170, 0.15);
+$code-highlight-background-flash: adjust-color($code-highlight-background, $alpha: 0.3);
+
+@-webkit-keyframes highlight {
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
+}
+@-moz-keyframes highlight {
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
+}
+@keyframes highlight {
+    0%   { background: $code-highlight-background-flash; }
+    100% { background: $code-highlight-background; }
+}
+
+.code .highlight, .code_linenums .highlight {
+    background: $code-highlight-background;
+    -webkit-animation: highlight 400ms linear 1;
+    -moz-animation: highlight 400ms linear 1;
+    animation: highlight 400ms linear 1;
+}
+
+/* REPL shell */
+.be-console {
+    background: #fff;
+    padding: 0 1px 10px 1px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.be-console pre {
+    padding: 10px 10px 0 10px;
+    max-height: 400px;
+    overflow-x: none;
+    overflow-y: auto;
+    margin-bottom: -3px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* .command-line > span + input */
+.be-console .command-line {
+    display: table;
+    width: 100%;
+}
+
+.be-console .command-line span,
+.be-console .command-line input {
+    display: table-cell;
+}
+
+.be-console .command-line span {
+    width: 1%;
+    padding-right: 5px;
+    padding-left: 10px;
+    white-space: pre;
+}
+
+.be-console .command-line input {
+    width: 99%;
+}
+
+/* Input box */
+.be-console input,
+.be-console input:focus {
+    outline: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    margin: 0;
+}
+
+/* Hint text */
+.hint {
+    margin: 15px 0 20px 0;
+    font-size: 8pt;
+    color: #8080a0;
+    padding-left: 20px;
+}
+.console-has-been-used .live-console-hint {
+    display: none;
+}
+.better-errors-javascript-not-loaded .live-console-hint {
+    display: none;
+}
+
+.hint:before {
+    content: '\25b2';
+    margin-right: 5px;
+    opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------------
+ * Variable infos
+ * --------------------------------------------------------------------- */
+
+.sub {
+    padding: 10px 0;
+    margin: 10px 0;
+}
+
+.sub h3 {
+    color: #39a;
+    font-size: 1.1em;
+    margin: 10px 0;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+
+    -webkit-font-smoothing: antialiased;
+}
+
+.sub .inset {
+    overflow-y: auto;
+}
+
+.sub table {
+    table-layout: fixed;
+}
+
+.sub table td {
+    border-top: dotted 1px #ddd;
+    padding: 7px 1px;
+}
+
+.sub table td.name {
+    width: 150px;
+
+    font-weight: bold;
+    font-size: 0.8em;
+    padding-right: 20px;
+
+    word-wrap: break-word;
+}
+
+.sub table td pre {
+    max-height: 15em;
+    overflow-y: auto;
+}
+
+.sub table td pre {
+    width: 100%;
+
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* "(object doesn't support inspect)" */
+.sub .unsupported {
+  font-family: sans-serif;
+  color: #777;
+}
+
+/* ---------------------------------------------------------------------
+ * Scrollbar
+ * --------------------------------------------------------------------- */
+
+nav.sidebar::-webkit-scrollbar,
+.inset pre::-webkit-scrollbar,
+.be-console pre::-webkit-scrollbar,
+.code::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.inset pre::-webkit-scrollbar-thumb,
+.be-console pre::-webkit-scrollbar-thumb,
+.code::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 5px;
+}
+
+nav.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.0);
+    border-radius: 5px;
+}
+
+nav.sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: #999;
+    background: -webkit-linear-gradient(left, #aaa, #999);
+}
+
+.be-console pre:hover::-webkit-scrollbar-thumb,
+.inset pre:hover::-webkit-scrollbar-thumb,
+.code:hover::-webkit-scrollbar-thumb {
+    background: #888;
+}

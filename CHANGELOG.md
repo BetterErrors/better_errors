@@ -1,3 +1,3 @@
 # Changelog
 
-See https://github.com/charliesome/better_errors/releases
+See https://github.com/BetterErrors/better_errors/releases

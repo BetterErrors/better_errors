@@ -9,3 +9,7 @@
 
 /gemfiles/*.gemfile.lock
 /gemfiles/.bundle
+
+
+# No CSS is committed. In development, the SCSS is used. The CSS is compiled when building a gem release.
+*.css

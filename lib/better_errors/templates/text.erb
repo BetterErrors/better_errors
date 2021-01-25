@@ -1,12 +1,15 @@
 <%== text_heading("=", "%s at %s" % [exception_type, request_path]) %>
 
-> <%== exception_message %>
-<% if backtrace_frames.any? %>
+<%== exception_message %>
+
+> To access an interactive console with this error, point your browser to: /__better_errors
+
+<% if backtrace_frames.any? -%>
 
 <%== text_heading("-", "%s, line %i" % [first_frame.pretty_path, first_frame.line]) %>
 
 ``` ruby
-<%== text_formatted_code_block(first_frame) %>```
+<%== ErrorPage.text_formatted_code_block(first_frame) %>```
 
 App backtrace
 -------------

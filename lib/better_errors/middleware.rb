@@ -1,5 +1,6 @@
 require "json"
 require "ipaddr"
+require "securerandom"
 require "set"
 require "rack"
 
@@ -33,11 +34,13 @@ module BetterErrors
     # Adds an address to the set of IP addresses allowed to access Better
     # Errors.
     def self.allow_ip!(addr)
-      ALLOWED_IPS << IPAddr.new(addr)
+      ALLOWED_IPS << (addr.is_a?(IPAddr) ? addr : IPAddr.new(addr))
     end
 
     allow_ip! "127.0.0.0/8"
     allow_ip! "::1/128" rescue nil # windows ruby doesn't have ipv6 support
+
+    CSRF_TOKEN_COOKIE_NAME = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token"
 
     def self.internal_url_prefix
       @internal_url_prefix || ""
@@ -80,7 +83,7 @@ module BetterErrors
     def better_errors_call(env)
       case env["PATH_INFO"]
       when %r{/__better_errors/(?<id>.+?)/(?<method>\w+)\z}
-        internal_call env, $~
+        internal_call(env, $~[:id], $~[:method])
       when %r{/__better_errors/?\z}
         show_error_page env
       else
@@ -97,11 +100,15 @@ module BetterErrors
     end
 
     def show_error_page(env, exception=nil)
+      request = Rack::Request.new(env)
+      csrf_token = request.cookies[CSRF_TOKEN_COOKIE_NAME] || SecureRandom.uuid
+      csp_nonce = SecureRandom.base64(12)
+
       type, content = if @error_page
         if text?(env)
-          [ 'plain', @error_page.render('text') ]
+          [ 'plain', @error_page.render_text ]
         else
-          [ 'html', @error_page.render ]
+          [ 'html', @error_page.render_main(csrf_token, csp_nonce) ]
         end
       else
         [ 'html', no_errors_page ]
@@ -112,12 +119,37 @@ module BetterErrors
         status_code = ActionDispatch::ExceptionWrapper.new(env, exception).status_code
       end
 
-      [status_code, { "Content-Type" => "text/#{type}; charset=utf-8" }, [content]]
+      headers = {
+        "Content-Type" => "text/#{type}; charset=utf-8",
+        "Content-Security-Policy" => [
+          "default-src 'none'",
+          # Specifying nonce makes a modern browser ignore 'unsafe-inline' which could still be set 
+          # for older browsers without nonce support.
+          # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
+          "script-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
+          "style-src 'self' 'nonce-#{csp_nonce}' 'unsafe-inline'",
+          "img-src data:",
+          "connect-src 'self'",
+          "navigate-to 'self' #{BetterErrors.editor.scheme}",
+        ].join('; '),
+      }
+
+      response = Rack::Response.new(content, status_code, headers)
+
+      unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
+        response.set_cookie(CSRF_TOKEN_COOKIE_NAME, value: csrf_token, path: "/", httponly: true, same_site: :strict)
+      end
+
+      # In older versions of Rack, the body returned here is actually a Rack::BodyProxy which seems to be a bug.
+      # (It contains status, headers and body and does not act like an array of strings.)
+      # Since we already have status code and body here, there's no need to use the ones in the Rack::Response.
+      (_status_code, headers, _body) = response.finish
+      [status_code, headers, [content]]
     end
 
     def text?(env)
       env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" ||
-      !env["HTTP_ACCEPT"].to_s.include?('html')
+        !env["HTTP_ACCEPT"].to_s.include?('html')
     end
 
     def log_exception
@@ -137,13 +169,22 @@ module BetterErrors
       end
     end
 
-    def internal_call(env, opts)
+    def internal_call(env, id, method)
+      return not_found_json_response unless %w[variables eval].include?(method)
       return no_errors_json_response unless @error_page
-      return invalid_error_json_response if opts[:id] != @error_page.id
+      return invalid_error_json_response if id != @error_page.id
 
-      env["rack.input"].rewind
-      response = @error_page.send("do_#{opts[:method]}", JSON.parse(env["rack.input"].read))
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(response)]]
+      request = Rack::Request.new(env)
+      return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
+
+      request.body.rewind
+      body = JSON.parse(request.body.read)
+      return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME] == body['csrfToken']
+
+      return not_acceptable_json_response unless request.content_type == 'application/json'
+
+      response = @error_page.send("do_#{method}", body)
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(response)]]
     end
 
     def no_errors_page
@@ -165,17 +206,39 @@ module BetterErrors
         "The application has been restarted since this page loaded, " +
           "or the framework is reloading all gems before each request "
       end
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
         error: 'No exception information available',
         explanation: explanation,
       )]]
     end
 
     def invalid_error_json_response
-      [200, { "Content-Type" => "text/plain; charset=utf-8" }, [JSON.dump(
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
         error: "Session expired",
         explanation: "This page was likely opened from a previous exception, " +
           "and the exception is no longer available in memory.",
+      )]]
+    end
+
+    def invalid_csrf_token_json_response
+      [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Invalid CSRF Token",
+        explanation: "The browser session might have been cleared, " +
+          "or something went wrong.",
+      )]]
+    end
+
+    def not_found_json_response
+      [404, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Not found",
+        explanation: "Not a recognized internal call.",
+      )]]
+    end
+
+    def not_acceptable_json_response
+      [406, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(
+        error: "Request not acceptable",
+        explanation: "The internal request did not match an acceptable content type.",
       )]]
     end
   end

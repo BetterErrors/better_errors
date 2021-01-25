@@ -4,14 +4,6 @@ module BetterErrors
     require "better_errors/code_formatter/html"
     require "better_errors/code_formatter/text"
 
-    FILE_TYPES = {
-      ".rb"   => :ruby,
-      ""      => :ruby,
-      ".html" => :html,
-      ".erb"  => :erb,
-      ".haml" => :haml
-    }
-
     attr_reader :filename, :line, :context
 
     def initialize(filename, line, context = 5)
@@ -26,13 +18,21 @@ module BetterErrors
       source_unavailable
     end
 
-    def formatted_code
-      formatted_lines.join
+    def line_range
+      min = [line - context, 1].max
+      max = [line + context, source_lines.count].min
+      min..max
     end
 
-    def coderay_scanner
-      ext = File.extname(filename)
-      FILE_TYPES[ext] || :text
+    def context_lines
+      range = line_range
+      source_lines[(range.begin - 1)..(range.end - 1)] or raise Errno::EINVAL
+    end
+
+    private
+
+    def formatted_code
+      formatted_lines.join
     end
 
     def each_line_of(lines, &blk)
@@ -41,23 +41,12 @@ module BetterErrors
       }
     end
 
-    def highlighted_lines
-      CodeRay.scan(context_lines.join, coderay_scanner).div(wrap: nil).lines
-    end
-
-    def context_lines
-      range = line_range
-      source_lines[(range.begin - 1)..(range.end - 1)] or raise Errno::EINVAL
+    def source
+      @source ||= File.read(filename)
     end
 
     def source_lines
-      @source_lines ||= File.readlines(filename)
-    end
-
-    def line_range
-      min = [line - context, 1].max
-      max = [line + context, source_lines.count].min
-      min..max
+      @source_lines ||= source.lines
     end
   end
 end

@@ -4,9 +4,14 @@ module BetterErrors
   describe Middleware do
     let(:app) { Middleware.new(->env { ":)" }) }
     let(:exception) { RuntimeError.new("oh no :(") }
+    let(:status) { response_env[0] }
+    let(:headers) { response_env[1] }
+    let(:body) { response_env[2].join }
 
-    it "passes non-error responses through" do
-      expect(app.call({})).to eq(":)")
+    context 'when the application raises no exception' do
+      it "passes non-error responses through" do
+        expect(app.call({})).to eq(":)")
+      end
     end
 
     it "calls the internal methods" do
@@ -24,11 +29,6 @@ module BetterErrors
       app.call("PATH_INFO" => "/__better_errors/")
     end
 
-    it "shows the error page on any subfolder path" do
-      expect(app).to receive :show_error_page
-      app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors/")
-    end
-
     it "doesn't show the error page to a non-local address" do
       expect(app).not_to receive :better_errors_call
       app.call("REMOTE_ADDR" => "1.2.3.4")
@@ -36,6 +36,12 @@ module BetterErrors
 
     it "shows to a whitelisted IP" do
       BetterErrors::Middleware.allow_ip! '77.55.33.11'
+      expect(app).to receive :better_errors_call
+      app.call("REMOTE_ADDR" => "77.55.33.11")
+    end
+
+    it "shows to a whitelisted IPAddr" do
+      BetterErrors::Middleware.allow_ip! IPAddr.new('77.55.33.0/24')
       expect(app).to receive :better_errors_call
       app.call("REMOTE_ADDR" => "77.55.33.11")
     end
@@ -56,124 +62,190 @@ module BetterErrors
       expect { app.call("REMOTE_ADDR" => "0:0:0:0:0:0:0:1%0" ) }.to_not raise_error
     end
 
-    context "when requesting the /__better_errors manually" do
-      let(:app) { Middleware.new(->env { ":)" }) }
+    context "when /__better_errors is requested directly" do
+      let(:response_env) { app.call("PATH_INFO" => "/__better_errors") }
 
-      it "shows that no errors have been recorded" do
-        status, headers, body = app.call("PATH_INFO" => "/__better_errors")
-        expect(body.join).to match /No errors have been recorded yet./
+      context "when no error has been recorded since startup" do
+        it "shows that no errors have been recorded" do
+          expect(body).to match /No errors have been recorded yet./
+        end
+
+        it 'does not attempt to use ActionDispatch::ExceptionWrapper on the nil exception' do
+          ad_ew = double("ActionDispatch::ExceptionWrapper")
+          stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
+          expect(ad_ew).to_not receive :new
+
+          response_env
+        end
+
+        context 'when requested inside a subfolder path' do
+          let(:response_env) { app.call("PATH_INFO" => "/any_sub/folder/__better_errors") }
+
+          it "shows that no errors have been recorded" do
+            expect(body).to match /No errors have been recorded yet./
+          end
+        end
       end
 
-      it 'does not attempt to use ActionDispatch::ExceptionWrapper with a nil exception' do
-        ad_ew = double("ActionDispatch::ExceptionWrapper")
-        stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
-        expect(ad_ew).to_not receive :new
+      context 'when an error has been recorded' do
+        let(:app) {
+          Middleware.new(->env do
+            # Only raise on the first request
+            raise exception unless @already_raised
+            @already_raised = true
+          end)
+        }
+        before do
+          app.call({})
+        end
 
-        status, headers, body = app.call("PATH_INFO" => "/__better_errors")
-      end
+        it 'returns the information of the most recent error' do
+          expect(body).to include("oh no :(")
+        end
 
-      it "shows that no errors have been recorded on any subfolder path" do
-        status, headers, body = app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors")
-        expect(body.join).to match /No errors have been recorded yet./
+        it 'does not attempt to use ActionDispatch::ExceptionWrapper' do
+          ad_ew = double("ActionDispatch::ExceptionWrapper")
+          stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
+          expect(ad_ew).to_not receive :new
+
+          response_env
+        end
+
+        context 'when inside a subfolder path' do
+          let(:response_env) { app.call("PATH_INFO" => "/any_sub/folder/__better_errors") }
+
+          it "shows the error page on any subfolder path" do
+            expect(app).to receive :show_error_page
+            app.call("PATH_INFO" => "/any_sub/folder/path/__better_errors/")
+          end
+        end
       end
     end
 
     context "when handling an error" do
       let(:app) { Middleware.new(->env { raise exception }) }
+      let(:response_env) { app.call({}) }
 
       it "returns status 500" do
-        status, headers, body = app.call({})
-
         expect(status).to eq(500)
       end
 
-      if Exception.new.respond_to?(:cause)
-        context "cause" do
-          class OtherException < Exception
-            def initialize(message)
-              super(message)
+      context "when the exception has a cause" do
+        before do
+          pending "This Ruby does not support `cause`" unless Exception.new.respond_to?(:cause)
+        end
+
+        let(:app) {
+          Middleware.new(->env {
+            begin
+              raise "First Exception"
+            rescue
+              raise "Second Exception"
             end
-          end
+          })
+        }
 
-          it "shows Original Exception if it responds_to and has an cause" do
-            app = Middleware.new(->env {
-              begin
-                raise "Original Exception"
-              rescue
-                raise OtherException.new("Other Exception")
-              end
-            })
+        it "shows the exception as-is" do
+          expect(status).to eq(500)
+          expect(body).to match(/\nSecond Exception\n/)
+          expect(body).not_to match(/\nFirst Exception\n/)
+        end
+      end
 
-            status, _, body = app.call({})
+      context "when the exception responds to #original_exception" do
+        class OriginalExceptionException < Exception
+          attr_reader :original_exception
 
-            expect(status).to eq(500)
-            expect(body.join).not_to match(/\n> Other Exception\n/)
-            expect(body.join).to match(/\n> Original Exception\n/)
+          def initialize(message, original_exception = nil)
+            super(message)
+            @original_exception = original_exception
           end
         end
-      else
-        context "original_exception" do
-          class OriginalExceptionException < Exception
-            attr_reader :original_exception
 
-            def initialize(message, original_exception = nil)
-              super(message)
-              @original_exception = original_exception
-            end
-          end
-
-          it "shows Original Exception if it responds_to and has an original_exception" do
-            app = Middleware.new(->env {
-              raise OriginalExceptionException.new("Other Exception", Exception.new("Original Exception"))
+        context 'and has one' do
+          let(:app) {
+            Middleware.new(->env {
+              raise OriginalExceptionException.new("Second Exception", Exception.new("First Exception"))
             })
+          }
 
-            status, _, body = app.call({})
-
+          it "shows the original exception instead of the last-raised one" do
             expect(status).to eq(500)
-            expect(body.join).not_to match(/Other Exception/)
-            expect(body.join).to match(/Original Exception/)
+            expect(body).not_to match(/Second Exception/)
+            expect(body).to match(/First Exception/)
           end
+        end
 
-          it "won't crash if the exception responds_to but doesn't have an original_exception" do
-            app = Middleware.new(->env {
-              raise OriginalExceptionException.new("Other Exception")
+        context 'and does not have one' do
+          let(:app) {
+            Middleware.new(->env {
+              raise OriginalExceptionException.new("The Exception")
             })
+          }
 
-            status, _, body = app.call({})
-
+          it "shows the exception as-is" do
             expect(status).to eq(500)
-            expect(body.join).to match(/Other Exception/)
+            expect(body).to match(/The Exception/)
           end
         end
       end
 
       it "returns ExceptionWrapper's status_code" do
         ad_ew = double("ActionDispatch::ExceptionWrapper")
-        allow(ad_ew).to receive('new').with({}, exception) { double("ExceptionWrapper", status_code: 404) }
+        allow(ad_ew).to receive('new').with(anything, exception) { double("ExceptionWrapper", status_code: 404) }
         stub_const('ActionDispatch::ExceptionWrapper', ad_ew)
-
-        status, headers, body = app.call({})
 
         expect(status).to eq(404)
       end
 
       it "returns UTF-8 error pages" do
-        status, headers, body = app.call({})
-
         expect(headers["Content-Type"]).to match /charset=utf-8/
       end
 
-      it "returns text pages by default" do
-        status, headers, body = app.call({})
-
+      it "returns text content by default" do
         expect(headers["Content-Type"]).to match /text\/plain/
       end
 
-      it "returns HTML pages by default" do
-        # Chrome's 'Accept' header looks similar this.
-        status, headers, body = app.call("HTTP_ACCEPT" => "text/html,application/xhtml+xml;q=0.9,*/*")
+      context 'when a CSRF token cookie is not specified' do
+        it 'includes a newly-generated CSRF token cookie' do
+          expect(headers).to include(
+            'Set-Cookie' => /BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=[-a-z0-9]+; path=\/; HttpOnly; SameSite=Strict/,
+          )
+        end
+      end
 
-        expect(headers["Content-Type"]).to match /text\/html/
+      context 'when a CSRF token cookie is specified' do
+        let(:response_env) { app.call({ 'HTTP_COOKIE' => "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=abc123" }) }
+
+        it 'does not set a new CSRF token cookie' do
+          expect(headers).not_to include('Set-Cookie')
+        end
+      end
+
+      context 'when the Accept header specifies HTML first' do
+        let(:response_env) { app.call("HTTP_ACCEPT" => "text/html,application/xhtml+xml;q=0.9,*/*") }
+
+        it "returns HTML content" do
+          expect(headers["Content-Type"]).to match /text\/html/
+        end
+
+        it 'includes the newly-generated CSRF token in the body of the page' do
+          matches = headers['Set-Cookie'].match(/BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=(?<tok>[-a-z0-9]+); path=\/; HttpOnly; SameSite=Strict/)
+          expect(body).to include(matches[:tok])
+        end
+
+        context 'when a CSRF token cookie is specified' do
+          let(:response_env) {
+            app.call({
+              'HTTP_COOKIE' => "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfTokenGHI",
+              "HTTP_ACCEPT" => "text/html,application/xhtml+xml;q=0.9,*/*",
+            })
+          }
+
+          it 'includes that CSRF token in the body of the page' do
+            expect(body).to include('csrfTokenGHI')
+          end
+        end
       end
 
       context 'the logger' do
@@ -184,7 +256,7 @@ module BetterErrors
 
         it "receives the exception as a fatal message" do
           expect(logger).to receive(:fatal).with(/RuntimeError/)
-          app.call({})
+          response_env
         end
 
         context 'when Rails is being used' do
@@ -196,7 +268,7 @@ module BetterErrors
             expect(logger).to receive(:fatal) do |message|
               expect(message).to_not match(/rspec-core/)
             end
-            app.call({})
+            response_env
           end
         end
         context 'when Rails is not being used' do
@@ -208,7 +280,7 @@ module BetterErrors
             expect(logger).to receive(:fatal) do |message|
               expect(message).to match(/rspec-core/)
             end
-            app.call({})
+            response_env
           end
         end
       end
@@ -216,19 +288,15 @@ module BetterErrors
 
     context "requesting the variables for a specific frame" do
       let(:env) { {} }
-      let(:result) {
-        app.call(
-          "PATH_INFO" => "/__better_errors/#{id}/#{method}",
-          # This is a POST request, and this is the body of the request.
-          "rack.input" => StringIO.new('{"index": 0}'),
-        )
+      let(:response_env) {
+        app.call(request_env)
       }
-      let(:status) { result[0] }
-      let(:headers) { result[1] }
-      let(:body) { result[2].join }
+      let(:request_env) {
+        Rack::MockRequest.env_for("/__better_errors/#{id}/variables", input: StringIO.new(JSON.dump(request_body_data)))
+      }
+      let(:request_body_data) { { "index" => 0 } }
       let(:json_body) { JSON.parse(body) }
       let(:id) { 'abcdefg' }
-      let(:method) { 'variables' }
 
       context 'when no errors have been recorded' do
         it 'returns a JSON error' do
@@ -279,16 +347,209 @@ module BetterErrors
           end
         end
 
-        context 'and it matches the request', :focus do
+        context 'and its ID matches the requested ID' do
           let(:id) { error_page.id }
 
+          context 'when the body csrfToken matches the CSRF token cookie' do
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken123"
+            end
+
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns JSON containing the HTML content' do
+                expect(error_page).to receive(:do_variables).and_return(html: "<content>")
+                expect(json_body).to match(
+                  'html' => '<content>',
+                )
+              end
+            end
+
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['HTTP_CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns a JSON error' do
+                expect(json_body).to match(
+                  'error' => 'Request not acceptable',
+                  'explanation' => /did not match an acceptable content type/,
+                )
+              end
+            end
+          end
+
+          context 'when the body csrfToken does not match the CSRF token cookie' do
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken456"
+            end
+
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
+          end
+
+          context 'when there is no CSRF token in the request' do
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
+          end
+        end
+      end
+    end
+
+    context "requesting eval for a specific frame" do
+      let(:env) { {} }
+      let(:response_env) {
+        app.call(request_env)
+      }
+      let(:request_env) {
+        Rack::MockRequest.env_for("/__better_errors/#{id}/eval", input: StringIO.new(JSON.dump(request_body_data)))
+      }
+      let(:request_body_data) { { "index" => 0, source: "do_a_thing" } }
+      let(:json_body) { JSON.parse(body) }
+      let(:id) { 'abcdefg' }
+
+      context 'when no errors have been recorded' do
+        it 'returns a JSON error' do
+          expect(json_body).to match(
+            'error' => 'No exception information available',
+            'explanation' => /application has been restarted/,
+          )
+        end
+
+        context 'when Middleman is in use' do
+          let!(:middleman) { class_double("Middleman").as_stubbed_const }
           it 'returns a JSON error' do
-            expect(error_page).to receive(:do_variables).and_return(html: "<content>")
+            expect(json_body['explanation'])
+              .to match(/Middleman reloads all dependencies/)
+          end
+        end
+
+        context 'when Shotgun is in use' do
+          let!(:shotgun) { class_double("Shotgun").as_stubbed_const }
+
+          it 'returns a JSON error' do
+            expect(json_body['explanation'])
+              .to match(/The shotgun gem/)
+          end
+
+          context 'when Hanami is also in use' do
+            let!(:hanami) { class_double("Hanami").as_stubbed_const }
+            it 'returns a JSON error' do
+              expect(json_body['explanation'])
+                .to match(/--no-code-reloading/)
+            end
+          end
+        end
+      end
+
+      context 'when an error has been recorded' do
+        let(:error_page) { ErrorPage.new(exception, env) }
+        before do
+          app.instance_variable_set('@error_page', error_page)
+        end
+
+        context 'but it does not match the request' do
+          it 'returns a JSON error' do
             expect(json_body).to match(
-              'html' => '<content>',
+              'error' => 'Session expired',
+              'explanation' => /no longer available in memory/,
             )
           end
         end
+
+        context 'and its ID matches the requested ID' do
+          let(:id) { error_page.id }
+
+          context 'when the body csrfToken matches the CSRF token cookie' do
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken123"
+            end
+
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns JSON containing the eval result' do
+                expect(error_page).to receive(:do_eval).and_return(prompt: '#', result: "much_stuff_here")
+                expect(json_body).to match(
+                  'prompt' => '#',
+                  'result' => 'much_stuff_here',
+                )
+              end
+            end
+
+            context 'when the Content-Type of the request is application/json' do
+              before do
+                request_env['HTTP_CONTENT_TYPE'] = 'application/json'
+              end
+
+              it 'returns a JSON error' do
+                expect(json_body).to match(
+                  'error' => 'Request not acceptable',
+                  'explanation' => /did not match an acceptable content type/,
+                )
+              end
+            end
+          end
+
+          context 'when the body csrfToken does not match the CSRF token cookie' do
+            let(:request_body_data) { { "index" => 0, "csrfToken" => "csrfToken123" } }
+            before do
+              request_env["HTTP_COOKIE"] = "BetterErrors-#{BetterErrors::VERSION}-CSRF-Token=csrfToken456"
+            end
+
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
+          end
+
+          context 'when there is no CSRF token in the request' do
+            it 'returns a JSON error' do
+              expect(json_body).to match(
+                'error' => 'Invalid CSRF Token',
+                'explanation' => /session might have been cleared/,
+              )
+            end
+          end
+        end
+      end
+    end
+
+    context "requesting an invalid internal method" do
+      let(:env) { {} }
+      let(:response_env) {
+        app.call(request_env)
+      }
+      let(:request_env) {
+        Rack::MockRequest.env_for("/__better_errors/#{id}/invalid", input: StringIO.new(JSON.dump(request_body_data)))
+      }
+      let(:request_body_data) { { "index" => 0 } }
+      let(:json_body) { JSON.parse(body) }
+      let(:id) { 'abcdefg' }
+
+      it 'returns a JSON error' do
+        expect(json_body).to match(
+          'error' => 'Not found',
+          'explanation' => /recognized internal call/,
+        )
       end
     end
   end

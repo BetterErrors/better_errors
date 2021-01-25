@@ -1,0 +1,84 @@
+// Thanks to https://gist.github.com/nicolashery/5765395
+
+// Since the light theme is applied before the dark theme, the dark theme is additive.
+// So we must set the background color and font weight on everything that the light theme might have changed.
+
+$base03: #002b36;
+$base01: #586e75;
+$base1: #93a1a1;
+$orange: #cb4b16;
+$red: #dc322f;
+$blue: #268bd2;
+$cyan: #2aa198;
+$green: #859900;
+$yellow: #B58900;
+
+& { background-color: $base03; color: $base1; }
+.c { color: $base01; background-color: transparent; font-style: inherit; } /* Comment */
+.err { color: $base1; background-color: transparent; font-style: inherit; } /* Error */
+.g { color: $base1; background-color: transparent; font-style: inherit; } /* Generic */
+.k { color: $green; background-color: transparent; font-style: inherit; } /* Keyword */
+.l { color: $base1; background-color: transparent; font-style: inherit; } /* Literal */
+.n { color: $base1; background-color: transparent; font-style: inherit; } /* Name */
+.o { color: $green; background-color: transparent; font-style: inherit; } /* Operator */
+.x { color: $orange; background-color: transparent; font-style: inherit; } /* Other */
+.p { color: $base1; background-color: transparent; font-style: inherit; } /* Punctuation */
+.cm { color: $base01; background-color: transparent; font-style: inherit; } /* Comment.Multiline */
+.cp { color: $green; background-color: transparent; font-style: inherit; } /* Comment.Preproc */
+.c1 { color: $base01; background-color: transparent; font-style: inherit; } /* Comment.Single */
+.cs { color: $green; background-color: transparent; font-style: inherit; } /* Comment.Special */
+.gd { color: $cyan; background-color: transparent; font-style: inherit; } /* Generic.Deleted */
+.ge { color: $base1; background-color: transparent; font-style: italic; } /* Generic.Emph */
+.gr { color: $red; background-color: transparent; font-style: inherit; } /* Generic.Error */
+.gh { color: $orange; background-color: transparent; font-style: inherit; } /* Generic.Heading */
+.gi { color: $green; background-color: transparent; font-style: inherit; } /* Generic.Inserted */
+.go { color: $base1; background-color: transparent; font-style: inherit; } /* Generic.Output */
+.gp { color: $base1; background-color: transparent; font-style: inherit; } /* Generic.Prompt */
+.gs { color: $base1; background-color: transparent; font-weight: bold; } /* Generic.Strong */
+.gu { color: $orange; background-color: transparent; font-style: inherit; } /* Generic.Subheading */
+.gt { color: $base1; background-color: transparent; font-style: inherit; } /* Generic.Traceback */
+.kc { color: $orange; background-color: transparent; font-style: inherit; } /* Keyword.Constant */
+.kd { color: $blue; background-color: transparent; font-style: inherit; } /* Keyword.Declaration */
+.kn { color: $green; background-color: transparent; font-style: inherit; } /* Keyword.Namespace */
+.kp { color: $green; background-color: transparent; font-style: inherit; } /* Keyword.Pseudo */
+.kr { color: $blue; background-color: transparent; font-style: inherit; } /* Keyword.Reserved */
+.kt { color: $red; background-color: transparent; font-style: inherit; } /* Keyword.Type */
+.ld { color: $base1; background-color: transparent; font-style: inherit; } /* Literal.Date */
+.m { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.Number */
+.s { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.String */
+.na { color: $base1; background-color: transparent; font-style: inherit; } /* Name.Attribute */
+.nb { color: $yellow; background-color: transparent; font-style: inherit; } /* Name.Builtin */
+.nc { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Class */
+.no { color: $orange; background-color: transparent; font-style: inherit; } /* Name.Constant */
+.nd { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Decorator */
+.ni { color: $orange; background-color: transparent; font-style: inherit; } /* Name.Entity */
+.ne { color: $orange; background-color: transparent; font-style: inherit; } /* Name.Exception */
+.nf { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Function */
+.nl { color: $base1; background-color: transparent; font-style: inherit; } /* Name.Label */
+.nn { color: $base1; background-color: transparent; font-style: inherit; } /* Name.Namespace */
+.nx { color: $base1; background-color: transparent; font-style: inherit; } /* Name.Other */
+.py { color: $base1; background-color: transparent; font-style: inherit; } /* Name.Property */
+.nt { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Tag */
+.nv { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Variable */
+.ow { color: $green; background-color: transparent; font-style: inherit; } /* Operator.Word */
+.w { color: $base1; background-color: transparent; font-style: inherit; } /* Text.Whitespace */
+.mf { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.Number.Float */
+.mh { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.Number.Hex */
+.mi { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.Number.Integer */
+.mo { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.Number.Oct */
+.sb { color: $base01; background-color: transparent; font-style: inherit; } /* Literal.String.Backtick */
+.sc { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.String.Char */
+.sd { color: $base1; background-color: transparent; font-style: inherit; } /* Literal.String.Doc */
+.s2 { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.String.Double */
+.se { color: $orange; background-color: transparent; font-style: inherit; } /* Literal.String.Escape */
+.sh { color: $base1; background-color: transparent; font-style: inherit; } /* Literal.String.Heredoc */
+.si { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.String.Interpol */
+.sx { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.String.Other */
+.sr { color: $red; background-color: transparent; font-style: inherit; } /* Literal.String.Regex */
+.s1 { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.String.Single */
+.ss { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.String.Symbol */
+.bp { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Builtin.Pseudo */
+.vc { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Variable.Class */
+.vg { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Variable.Global */
+.vi { color: $blue; background-color: transparent; font-style: inherit; } /* Name.Variable.Instance */
+.il { color: $cyan; background-color: transparent; font-style: inherit; } /* Literal.Number.Integer.Long */

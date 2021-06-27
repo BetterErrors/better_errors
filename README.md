@@ -120,8 +120,8 @@ BetterErrors.maximum_variable_inspect_size = 100_000
 ```ruby
 # e.g. in config/initializers/better_errors.rb
 # This will stop BetterErrors from trying to inspect objects of these classes, which can cause
-# slow loading times and unneccessary database queries. Does not check inheritance chain, use
-# strings not contants.
+# slow loading times and unnecessary database queries. Does not check inheritance chain, use
+# strings not constants.
 # default value: ['ActionDispatch::Request', 'ActionDispatch::Response']
 BetterErrors.ignored_classes = ['ActionDispatch::Request', 'ActionDispatch::Response']
 ```

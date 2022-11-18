@@ -493,6 +493,20 @@ module BetterErrors
               end
             end
 
+            context 'when the Content-Type of the request is application/json; charset=utf-8' do
+              before do
+                request_env['CONTENT_TYPE'] = 'application/json; charset=utf-8'
+              end
+
+              it 'returns JSON containing the eval result' do
+                expect(error_page).to receive(:do_eval).and_return(prompt: '#', result: "much_stuff_here")
+                expect(json_body).to match(
+                  'prompt' => '#',
+                  'result' => 'much_stuff_here',
+                )
+              end
+            end
+
             context 'when the Content-Type of the request is application/json' do
               before do
                 request_env['HTTP_CONTENT_TYPE'] = 'application/json'

@@ -173,7 +173,7 @@ module BetterErrors
       body = JSON.parse(request.body.read)
       return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME] == body['csrfToken']
 
-      return not_acceptable_json_response unless request.content_type == 'application/json'
+      return not_acceptable_json_response unless request.media_type == 'application/json'
 
       response = @error_page.send("do_#{method}", body)
       [200, { "Content-Type" => "application/json; charset=utf-8" }, [JSON.dump(response)]]

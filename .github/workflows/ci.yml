@@ -121,15 +121,3 @@ jobs:
       run: bundle exec rspec -f doc --color
       env:
         BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
-
-
-  finish:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Report completion to Coveralls
-      uses: coverallsapp/github-action@v1.1.2
-      with:
-        github-token: ${{ secrets.github_token }}
-        parallel-finished: true

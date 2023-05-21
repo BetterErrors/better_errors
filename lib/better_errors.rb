@@ -74,6 +74,7 @@ module BetterErrors
   #   * `:textmate`, `:txmt`, `:tm`
   #   * `:sublime`, `:subl`, `:st`
   #   * `:macvim`
+  #   * `:nova`
   #   * `:atom`
   #
   #   @param [Symbol] sym

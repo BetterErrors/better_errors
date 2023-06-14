@@ -1,9 +1,9 @@
-require "sassc"
-
 module BetterErrors
   # @private
   module ErrorPageStyle
     def self.compiled_css(for_deployment = false)
+      require "sassc"
+
       style_dir = File.expand_path("style", File.dirname(__FILE__))
       style_file = "#{style_dir}/main.scss"
 

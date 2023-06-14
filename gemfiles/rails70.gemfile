@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 6.1.0"
-gem "haml"
+gem "rails", "~> 7.0.0"
 
 gem 'simplecov',      require: false
 gem 'simplecov-lcov', require: false

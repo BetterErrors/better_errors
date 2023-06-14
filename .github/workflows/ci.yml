@@ -22,7 +22,9 @@ jobs:
           - 2.5
           - 2.6
           - 2.7
-          - 3.0.0-preview1
+          - 3.0
+          - 3.1
+          - 3.2
           # - truffleruby-head
         gemfile:
           # These are located in the gemfiles/ folder
@@ -32,18 +34,21 @@ jobs:
           - rails52
           - rails60
           - rails61
+          - rails70
           - rails42_haml
           - rails50_haml
           - rails51_haml
           - rails52_haml
           - rails60_haml
           - rails61_haml
+          - rails70_haml
           - rails42_boc
           - rails50_boc
           - rails51_boc
           - rails52_boc
           - rails60_boc
           - rails61_boc
+          - rails70_boc
           - rack
           - rack_boc
           # - pry09
@@ -58,6 +63,9 @@ jobs:
           - { ruby: 2.2,              gemfile: rails61 }
           - { ruby: 2.2,              gemfile: rails61_boc }
           - { ruby: 2.2,              gemfile: rails61_haml }
+          - { ruby: 2.2,              gemfile: rails70 }
+          - { ruby: 2.2,              gemfile: rails70_boc }
+          - { ruby: 2.2,              gemfile: rails70_haml }
           - { ruby: 2.3,              gemfile: rails42 }
           - { ruby: 2.3,              gemfile: rails42_boc }
           - { ruby: 2.3,              gemfile: rails42_haml }
@@ -67,6 +75,9 @@ jobs:
           - { ruby: 2.3,              gemfile: rails61 }
           - { ruby: 2.3,              gemfile: rails61_boc }
           - { ruby: 2.3,              gemfile: rails61_haml }
+          - { ruby: 2.3,              gemfile: rails70 }
+          - { ruby: 2.3,              gemfile: rails70_boc }
+          - { ruby: 2.3,              gemfile: rails70_haml }
           - { ruby: 2.4,              gemfile: rails42 }
           - { ruby: 2.4,              gemfile: rails42_boc }
           - { ruby: 2.4,              gemfile: rails42_haml }
@@ -76,9 +87,15 @@ jobs:
           - { ruby: 2.4,              gemfile: rails61 }
           - { ruby: 2.4,              gemfile: rails61_boc }
           - { ruby: 2.4,              gemfile: rails61_haml }
+          - { ruby: 2.4,              gemfile: rails70 }
+          - { ruby: 2.4,              gemfile: rails70_boc }
+          - { ruby: 2.4,              gemfile: rails70_haml }
           - { ruby: 2.5,              gemfile: rails42 }
           - { ruby: 2.5,              gemfile: rails42_boc }
           - { ruby: 2.5,              gemfile: rails42_haml }
+          - { ruby: 2.5,              gemfile: rails70 }
+          - { ruby: 2.5,              gemfile: rails70_boc }
+          - { ruby: 2.5,              gemfile: rails70_haml }
           - { ruby: 2.5,              gemfile: rails50 }
           - { ruby: 2.5,              gemfile: rails50_boc }
           - { ruby: 2.5,              gemfile: rails50_haml }
@@ -97,6 +114,9 @@ jobs:
           - { ruby: 2.6,              gemfile: rails60 }
           - { ruby: 2.6,              gemfile: rails60_boc }
           - { ruby: 2.6,              gemfile: rails60_haml }
+          - { ruby: 2.6,              gemfile: rails70 }
+          - { ruby: 2.6,              gemfile: rails70_boc }
+          - { ruby: 2.6,              gemfile: rails70_haml }
           - { ruby: 2.7,              gemfile: rails42 }
           - { ruby: 2.7,              gemfile: rails42_boc }
           - { ruby: 2.7,              gemfile: rails42_haml }
@@ -112,26 +132,58 @@ jobs:
           - { ruby: 2.7,              gemfile: rails60 }
           - { ruby: 2.7,              gemfile: rails60_boc }
           - { ruby: 2.7,              gemfile: rails60_haml }
-          - { ruby: 3.0.0-preview1,   gemfile: rails42 }
-          - { ruby: 3.0.0-preview1,   gemfile: rails42_boc }
-          - { ruby: 3.0.0-preview1,   gemfile: rails42_haml }
-          - { ruby: 3.0.0-preview1,   gemfile: rails50 }
-          - { ruby: 3.0.0-preview1,   gemfile: rails50_boc }
-          - { ruby: 3.0.0-preview1,   gemfile: rails50_haml }
-          - { ruby: 3.0.0-preview1,   gemfile: rails51 }
-          - { ruby: 3.0.0-preview1,   gemfile: rails51_boc }
-          - { ruby: 3.0.0-preview1,   gemfile: rails51_haml }
-          - { ruby: 3.0.0-preview1,   gemfile: rails52 }
-          - { ruby: 3.0.0-preview1,   gemfile: rails52_boc }
-          - { ruby: 3.0.0-preview1,   gemfile: rails52_haml }
-          - { ruby: 3.0.0-preview1,   gemfile: rails60 }
-          - { ruby: 3.0.0-preview1,   gemfile: rails60_boc }
-          - { ruby: 3.0.0-preview1,   gemfile: rails60_haml }
+          - { ruby: 3.0,              gemfile: rails42 }
+          - { ruby: 3.0,              gemfile: rails42_boc }
+          - { ruby: 3.0,              gemfile: rails42_haml }
+          - { ruby: 3.0,              gemfile: rails50 }
+          - { ruby: 3.0,              gemfile: rails50_boc }
+          - { ruby: 3.0,              gemfile: rails50_haml }
+          - { ruby: 3.0,              gemfile: rails51 }
+          - { ruby: 3.0,              gemfile: rails51_boc }
+          - { ruby: 3.0,              gemfile: rails51_haml }
+          - { ruby: 3.0,              gemfile: rails52 }
+          - { ruby: 3.0,              gemfile: rails52_boc }
+          - { ruby: 3.0,              gemfile: rails52_haml }
+          - { ruby: 3.0,              gemfile: rails60 }
+          - { ruby: 3.0,              gemfile: rails60_boc }
+          - { ruby: 3.0,              gemfile: rails60_haml }
+          - { ruby: 3.1,              gemfile: rails42 }
+          - { ruby: 3.1,              gemfile: rails42_boc }
+          - { ruby: 3.1,              gemfile: rails42_haml }
+          - { ruby: 3.1,              gemfile: rails50 }
+          - { ruby: 3.1,              gemfile: rails50_boc }
+          - { ruby: 3.1,              gemfile: rails50_haml }
+          - { ruby: 3.1,              gemfile: rails51 }
+          - { ruby: 3.1,              gemfile: rails51_boc }
+          - { ruby: 3.1,              gemfile: rails51_haml }
+          - { ruby: 3.1,              gemfile: rails52 }
+          - { ruby: 3.1,              gemfile: rails52_boc }
+          - { ruby: 3.1,              gemfile: rails52_haml }
+          - { ruby: 3.1,              gemfile: rails60 }
+          - { ruby: 3.1,              gemfile: rails60_boc }
+          - { ruby: 3.1,              gemfile: rails60_haml }
+          - { ruby: 3.2,              gemfile: rails42 }
+          - { ruby: 3.2,              gemfile: rails42_boc }
+          - { ruby: 3.2,              gemfile: rails42_haml }
+          - { ruby: 3.2,              gemfile: rails50 }
+          - { ruby: 3.2,              gemfile: rails50_boc }
+          - { ruby: 3.2,              gemfile: rails50_haml }
+          - { ruby: 3.2,              gemfile: rails51 }
+          - { ruby: 3.2,              gemfile: rails51_boc }
+          - { ruby: 3.2,              gemfile: rails51_haml }
+          - { ruby: 3.2,              gemfile: rails52 }
+          - { ruby: 3.2,              gemfile: rails52_boc }
+          - { ruby: 3.2,              gemfile: rails52_haml }
+          - { ruby: 3.2,              gemfile: rails60 }
+          - { ruby: 3.2,              gemfile: rails60_boc }
+          - { ruby: 3.2,              gemfile: rails60_haml }
           # - { ruby: truffleruby-head, gemfile: rails42_boc }
           # - { ruby: truffleruby-head, gemfile: rails50_boc }
           # - { ruby: truffleruby-head, gemfile: rails51_boc }
           # - { ruby: truffleruby-head, gemfile: rails52_boc }
           # - { ruby: truffleruby-head, gemfile: rails60_boc }
+          # - { ruby: truffleruby-head, gemfile: rails61_boc }
+          # - { ruby: truffleruby-head, gemfile: rails70_boc }
           # - { ruby: truffleruby-head, gemfile: rack_boc }
 
     steps:

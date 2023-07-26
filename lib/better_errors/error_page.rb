@@ -78,7 +78,7 @@ module BetterErrors
     end
 
     def exception_message
-      exception.message.strip.gsub(/(\r?\n\s*\r?\n)+/, "\n")
+      exception.message&.strip&.gsub(/(\r?\n\s*\r?\n)+/, "\n")
     end
 
     def exception_hint

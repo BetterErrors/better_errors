@@ -169,7 +169,7 @@ module BetterErrors
       request = Rack::Request.new(env)
       return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME]
 
-      request.body.rewind
+      request.body.rewind if defined?(request.body.rewind)
       body = JSON.parse(request.body.read)
       return invalid_csrf_token_json_response unless request.cookies[CSRF_TOKEN_COOKIE_NAME] == body['csrfToken']
 

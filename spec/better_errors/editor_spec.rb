@@ -210,6 +210,16 @@ RSpec.describe BetterErrors::Editor do
       end
     end
 
+    [:nova].each do |symbol|
+      context "when symbol is '#{symbol}'" do
+        let(:symbol) { symbol }
+
+        it "uses txmt:// scheme" do
+          expect(subject.url("file", 42)).to start_with("nova://")
+        end
+      end
+    end
+
     [:sublime, :subl, :st].each do |symbol|
       context "when symbol is '#{symbol}'" do
         let(:symbol) { symbol }

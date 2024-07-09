@@ -12,6 +12,7 @@ module BetterErrors
       { symbols: [:textmate, :txmt, :tm], sniff: /mate/i, url: "txmt://open?url=file://%{file}&line=%{line}" },
       { symbols: [:vscode, :code], sniff: /code/i, url: "vscode://file/%{file}:%{line}" },
       { symbols: [:vscodium, :codium], sniff: /codium/i, url: "vscodium://file/%{file}:%{line}" },
+      { symbols: [:cursor], sniff: /cursor/i, url: "cursor://file/%{file}:%{line}" }
     ]
 
     def self.for_formatting_string(formatting_string)
@@ -80,7 +81,7 @@ module BetterErrors
       else
         file = raw_path
       end
-        
+
       url_proc.call(file, line)
     end
 

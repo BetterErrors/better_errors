@@ -47,10 +47,15 @@ module BetterErrors
     # List of classes that are excluded from inspection.
     # @return [Array]
     attr_accessor :ignored_classes
+
+    # The abolsute path to the favicon without extension.
+    # @return [String]
+    attr_accessor :icon
   end
   @ignored_instance_variables = []
   @maximum_variable_inspect_size = 100_000
   @ignored_classes = ['ActionDispatch::Request', 'ActionDispatch::Response']
+  @icon = "/icon"
 
   # Returns an object which responds to #url, which when called with
   # a filename and line number argument,

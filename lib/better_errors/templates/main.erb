@@ -2,7 +2,12 @@
 <html>
 <head>
     <title><%= exception_type %> at <%= request_path %></title>
+    <% if BetterErrors.icon.present? %>
+    <link rel="icon" href="<%= BetterErrors.icon %>.png" type="image/png" />
+    <link rel="icon" href="<%= BetterErrors.icon %>.svg" type="image/svg+xml" />
+    <% else %>
     <link rel="icon" href="data:;base64,=" />
+    <% end %>
 </head>
 <body class="better-errors-javascript-not-loaded">
     <%# Stylesheets are placed in the <body> for Turbolinks compatibility. %>

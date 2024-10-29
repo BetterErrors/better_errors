@@ -126,6 +126,15 @@ BetterErrors.maximum_variable_inspect_size = 100_000
 BetterErrors.ignored_classes = ['ActionDispatch::Request', 'ActionDispatch::Response']
 ```
 
+## Setting the favicon
+
+By default BetterErrors will link to `/icon.png` and `/icon.svg` as the favicon. You can customize this by setting `BetterErrors.icon`:
+
+```ruby
+# e.g. in config/initializers/better_errors.rb
+BetterErrors.icon = '/assets/favicon' # will link to /assets/favicon.png and /assets/favicon.svg
+```
+
 ## Get in touch!
 
 If you're using better_errors, I'd love to hear from you. Drop me a line and tell me what you think!

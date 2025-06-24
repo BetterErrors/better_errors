@@ -4,6 +4,7 @@ module BetterErrors
   class Editor
     KNOWN_EDITORS = [
       { symbols: [:atom], sniff: /atom/i, url: "atom://core/open/file?filename=%{file}&line=%{line}" },
+      { symbols: [:cursor], sniff: /cursor/i, url: "cursor://file/%{file}:%{line}" },
       { symbols: [:emacs, :emacsclient], sniff: /emacs/i, url: "emacs://open?url=file://%{file}&line=%{line}" },
       { symbols: [:idea], sniff: /idea/i, url: "idea://open?file=%{file}&line=%{line}" },
       { symbols: [:macvim, :mvim], sniff: /vim/i, url: "mvim://open?url=file://%{file_unencoded}&line=%{line}" },
@@ -80,7 +81,7 @@ module BetterErrors
       else
         file = raw_path
       end
-        
+
       url_proc.call(file, line)
     end
 
